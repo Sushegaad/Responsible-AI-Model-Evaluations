@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Model Evaluation for Responsible AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@400;700&family=Roboto+Mono:wght@400;500&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════
+   DESIGN SYSTEM — Google Material Design 3
+   Surfaces, elevation, Google brand palette
+═══════════════════════════════════════════════════ */
+:root {
+  /* Surfaces */
+  --surface-0:    #FFFFFF;
+  --surface-1:    #F8F9FA;
+  --surface-2:    #F1F3F4;
+  --surface-3:    #E8EAED;
+  --surface-4:    #DADCE0;
+
+  /* Text */
+  --on-surface:   #202124;
+  --on-surface-2: #3C4043;
+  --on-surface-3: #5F6368;
+  --on-surface-4: #80868B;
+  --on-surface-5: #9AA0A6;
+
+  /* Google brand palette */
+  --google-blue:   #1A73E8;
+  --google-red:    #EA4335;
+  --google-yellow: #F9AB00;
+  --google-green:  #34A853;
+
+  /* Tonal surfaces */
+  --blue-tonal:    #E8F0FE;
+  --red-tonal:     #FCE8E6;
+  --yellow-tonal:  #FEF7E0;
+  --green-tonal:   #E6F4EA;
+
+  /* Semantic */
+  --success: #34A853;
+  --warning: #F9AB00;
+  --error:   #D93025;
+  --info:    #1A73E8;
+
+  /* Model brands */
+  --anthropic: #CC785C;
+  --openai:    #10A37F;
+  --meta:      #0082FB;
+
+  /* Elevation — Material Design */
+  --elev-1: 0 1px 2px rgba(60,64,67,.3),  0 1px 3px 1px rgba(60,64,67,.15);
+  --elev-2: 0 1px 2px rgba(60,64,67,.3),  0 2px 6px 2px rgba(60,64,67,.15);
+  --elev-3: 0 1px 3px rgba(60,64,67,.3),  0 4px 8px 3px rgba(60,64,67,.15);
+
+  /* Geometry */
+  --r-sm:   4px;
+  --r-md:   8px;
+  --r-lg:   12px;
+  --r-xl:   16px;
+  --r-pill: 100px;
+
+  /* Typography */
+  --font-display: 'Google Sans Display', 'Google Sans', sans-serif;
+  --font-ui:      'Google Sans', sans-serif;
+  --font-body:    'Roboto', sans-serif;
+  --font-mono:    'Roboto Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--surface-1);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--surface-2); }
+::-webkit-scrollbar-thumb { background: var(--surface-4); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--on-surface-5); }
+
+/* ═══════════════════════
+   TOP APP BAR
+═══════════════════════ */
+.app-bar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--surface-0);
+  border-bottom: 1px solid var(--surface-3);
+  box-shadow: 0 1px 3px rgba(60,64,67,.15);
+}
+
+.app-bar-inner {
+  max-width: 1280px; margin: 0 auto; padding: 0 24px;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+
+.app-brand {
+  display: flex; align-items: center; gap: 12px; text-decoration: none;
+}
+
+/* Google four-colour G */
+.g-logo {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: var(--font-display);
+  font-size: 17px; font-weight: 700; color: #fff;
+  background: conic-gradient(
+    #EA4335 0deg 90deg,
+    #FBBC04 90deg 180deg,
+    #34A853 180deg 270deg,
+    #1A73E8 270deg 360deg
+  );
+  flex-shrink: 0;
+}
+
+.app-bar-title {
+  font-family: var(--font-ui); font-size: 17px; font-weight: 500;
+  color: var(--on-surface); letter-spacing: -.01em;
+}
+.app-bar-title b { color: var(--google-blue); font-weight: 700; }
+
+.ab-chips { display: flex; align-items: center; gap: 8px; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: var(--r-pill);
+  border: 1px solid var(--surface-4); background: var(--surface-0);
+  font-family: var(--font-ui); font-size: 12px; font-weight: 500;
+  color: var(--on-surface-3);
+}
+.chip.live {
+  border-color: #34A85340; color: var(--success); background: var(--green-tonal);
+}
+.chip.live::before {
+  content:''; width:6px; height:6px; background:var(--success);
+  border-radius:50%; animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+/* ═══════════════════════
+   PAGE LAYOUT
+═══════════════════════ */
+.page { max-width: 1280px; margin: 0 auto; padding: 0 24px 56px; }
+
+/* ═══════════════════════
+   HERO
+═══════════════════════ */
+.hero {
+  padding: 40px 0 32px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-ui); font-size: 11px; font-weight: 500;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--google-blue);
+  margin-bottom: 10px;
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3.2vw, 38px);
+  font-weight: 400; letter-spacing: -.02em; line-height: 1.15;
+  color: var(--on-surface); margin-bottom: 12px;
+}
+.hero h1 b { font-weight: 700; }
+
+.hero-desc {
+  font-size: 14px; color: var(--on-surface-3);
+  max-width: 560px; line-height: 1.75;
+}
+
+.hero-actions { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+
+.btn-filled {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 20px; border-radius: var(--r-pill); border: none;
+  background: var(--google-blue); color: #fff;
+  font-family: var(--font-ui); font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  box-shadow: var(--elev-1); transition: box-shadow .15s, background .15s;
+}
+.btn-filled:hover { box-shadow: var(--elev-2); background: #1558D6; }
+
+.btn-text {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 8px 16px; border-radius: var(--r-pill); border: none;
+  background: none; color: var(--google-blue);
+  font-family: var(--font-ui); font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background .15s;
+}
+.btn-text:hover { background: var(--blue-tonal); }
+
+.hero-week-card {
+  background: var(--surface-0); border-radius: var(--r-xl);
+  box-shadow: var(--elev-1); padding: 20px 24px; min-width: 210px; flex-shrink: 0;
+}
+.hwc-label { font-family:var(--font-ui); font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:var(--on-surface-4); margin-bottom:4px; }
+.hwc-value { font-family:var(--font-display); font-size:26px; font-weight:700; color:var(--on-surface); margin-bottom:4px; }
+.hwc-sub   { font-size:12px; color:var(--on-surface-4); line-height:1.5; }
+.hwc-sub a { color:var(--google-blue); text-decoration:none; }
+.hwc-sub a:hover { text-decoration:underline; }
+
+/* ═══════════════════════
+   SECTION
+═══════════════════════ */
+.section { margin-bottom: 32px; }
+
+.sec-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--surface-3);
+}
+.sec-title { font-family:var(--font-display); font-size:16px; font-weight:500; color:var(--on-surface); }
+.sec-hint  { font-size:12px; color:var(--on-surface-4); }
+
+/* ═══════════════════════
+   SUMMARY STAT CARDS
+═══════════════════════ */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.stat-card {
+  background: var(--surface-0); border-radius: var(--r-xl);
+  box-shadow: var(--elev-1); padding: 20px 22px;
+  border-top: 3px solid transparent;
+  transition: box-shadow .18s;
+}
+.stat-card:hover { box-shadow: var(--elev-2); }
+.stat-card.blue   { border-top-color: var(--google-blue); }
+.stat-card.green  { border-top-color: var(--google-green); }
+.stat-card.yellow { border-top-color: var(--google-yellow); }
+
+.stat-icon {
+  width: 38px; height: 38px; border-radius: var(--r-md);
+  display: grid; place-items: center; font-size: 18px; margin-bottom: 12px;
+}
+.stat-icon.blue   { background: var(--blue-tonal); }
+.stat-icon.green  { background: var(--green-tonal); }
+.stat-icon.yellow { background: var(--yellow-tonal); }
+
+.stat-label {
+  font-family:var(--font-ui); font-size:11px; font-weight:500;
+  text-transform:uppercase; letter-spacing:.06em; color:var(--on-surface-4); margin-bottom:6px;
+}
+.stat-value { font-family:var(--font-display); font-size:30px; font-weight:700; color:var(--on-surface); line-height:1; margin-bottom:6px; }
+.stat-model { font-family:var(--font-ui); font-size:13px; font-weight:500; color:var(--on-surface-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.stat-detail { font-size:12px; color:var(--on-surface-4); margin-top:2px; }
+
+/* ═══════════════════════
+   LEADERBOARD
+═══════════════════════ */
+.lb-card { background:var(--surface-0); border-radius:var(--r-xl); box-shadow:var(--elev-1); overflow:hidden; }
+
+.lb-table { width:100%; border-collapse:collapse; }
+.lb-table thead tr { background:var(--surface-1); border-bottom:2px solid var(--surface-3); }
+.lb-table th {
+  font-family:var(--font-ui); font-size:11px; font-weight:500;
+  letter-spacing:.05em; text-transform:uppercase; color:var(--on-surface-4);
+  padding:12px 16px; text-align:left; white-space:nowrap; cursor:pointer; user-select:none;
+  transition: color .12s, background .12s;
+}
+.lb-table th:hover  { color:var(--google-blue); background:var(--blue-tonal); }
+.lb-table th.sorted { color:var(--google-blue); }
+
+.lb-table tbody tr { border-bottom:1px solid var(--surface-2); transition:background .1s; }
+.lb-table tbody tr:last-child { border-bottom:none; }
+.lb-table tbody tr:hover { background:var(--surface-1); }
+.lb-table td { padding:14px 16px; vertical-align:middle; }
+
+.mc { display:flex; align-items:center; gap:10px; }
+.mc-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.mc-name { font-family:var(--font-ui); font-size:13px; font-weight:500; color:var(--on-surface); }
+.mc-prov { font-size:12px; color:var(--on-surface-4); }
+
+.mv { font-family:var(--font-mono); font-size:13px; font-weight:500; }
+.mv.g { color:var(--success); }
+.mv.w { color:var(--warning); }
+.mv.b { color:var(--error); }
+.mv.i { color:var(--info); }
+.mv.n { color:var(--on-surface-3); }
+
+.bar-cell { display:flex; align-items:center; gap:10px; }
+.bar-track { flex:1; min-width:60px; height:4px; background:var(--surface-3); border-radius:2px; overflow:hidden; }
+.bar-fill  { height:100%; border-radius:2px; transition:width .5s ease; }
+
+.rank-badge { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; font-family:var(--font-ui); font-size:11px; font-weight:700; }
+.rk-1 { background:#FEF7E0; color:#B07800; border:1.5px solid #FBBC0460; }
+.rk-2 { background:var(--surface-2); color:var(--on-surface-3); border:1.5px solid var(--surface-4); }
+.rk-3 { background:var(--red-tonal); color:var(--error); border:1.5px solid #EA433540; }
+.rk-n { background:var(--surface-1); color:var(--on-surface-5); border:1.5px solid var(--surface-3); }
+
+/* ═══════════════════════
+   CHARTS
+═══════════════════════ */
+.charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media (max-width:860px) { .charts-grid { grid-template-columns:1fr; } }
+
+.chart-card { background:var(--surface-0); border-radius:var(--r-xl); box-shadow:var(--elev-1); padding:20px 22px; }
+.ct-title { font-family:var(--font-ui); font-size:13px; font-weight:500; color:var(--on-surface); margin-bottom:2px; }
+.ct-desc  { font-size:12px; color:var(--on-surface-4); margin-bottom:16px; line-height:1.5; }
+.ct-wrap  { position:relative; height:230px; }
+.ct-wrap.tall { height:300px; }
+
+/* ═══════════════════════
+   RADAR LAYOUT
+═══════════════════════ */
+.radar-layout { display:grid; grid-template-columns:260px 1fr; gap:12px; align-items:start; }
+@media (max-width:860px) { .radar-layout { grid-template-columns:1fr; } }
+
+.model-picker { background:var(--surface-0); border-radius:var(--r-xl); box-shadow:var(--elev-1); overflow:hidden; }
+.mp-head { padding:12px 16px; background:var(--surface-1); border-bottom:1px solid var(--surface-3); font-family:var(--font-ui); font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:.06em; color:var(--on-surface-4); }
+
+.mp-btn {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 16px; width:100%; text-align:left;
+  background:none; border:none; border-bottom:1px solid var(--surface-2);
+  color:var(--on-surface-3); font-family:var(--font-ui); font-size:13px; cursor:pointer;
+  transition: background .12s, color .12s;
+}
+.mp-btn:last-child { border-bottom:none; }
+.mp-btn:hover  { background:var(--blue-tonal); color:var(--google-blue); }
+.mp-btn.active { background:var(--blue-tonal); color:var(--google-blue); font-weight:500; }
+.mp-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.mp-sub { font-size:11px; color:var(--on-surface-5); margin-top:1px; }
+
+/* ═══════════════════════
+   NIST
+═══════════════════════ */
+.nist-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+.nist-tab  { padding:6px 14px; border-radius:var(--r-pill); font-family:var(--font-ui); font-size:12px; font-weight:500; cursor:pointer; border:1.5px solid transparent; transition:opacity .15s, box-shadow .15s; }
+
+.nist-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px; }
+.nist-card { background:var(--surface-0); border-radius:var(--r-lg); box-shadow:var(--elev-1); padding:16px 18px; border-left:3px solid transparent; }
+
+.nist-fn  { font-family:var(--font-ui); font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:3px; }
+.fn-protect { color:var(--google-blue);   border-left-color:var(--google-blue); }
+.fn-govern  { color:#7627BB;              border-left-color:#7627BB; }
+.fn-detect  { color:#D73B5E;              border-left-color:#D73B5E; }
+.fn-manage  { color:var(--google-yellow); border-left-color:var(--google-yellow); }
+.fn-map     { color:var(--google-green);  border-left-color:var(--google-green); }
+.fn-measure { color:var(--anthropic);     border-left-color:var(--anthropic); }
+
+.nist-lbl { font-size:12px; color:var(--on-surface-3); margin-bottom:10px; line-height:1.4; }
+.nist-asr { font-family:var(--font-display); font-size:24px; font-weight:700; }
+.nist-sub { font-size:11px; color:var(--on-surface-4); margin-top:2px; }
+
+/* ═══════════════════════
+   METHODOLOGY
+═══════════════════════ */
+.method-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; }
+.method-card { background:var(--surface-0); border-radius:var(--r-xl); box-shadow:var(--elev-1); padding:20px 22px; }
+.method-num   { font-family:var(--font-ui); font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; margin-bottom:8px; }
+.method-title { font-family:var(--font-display); font-size:15px; font-weight:500; color:var(--on-surface); margin-bottom:8px; }
+.method-body  { font-size:13px; color:var(--on-surface-3); line-height:1.7; }
+.method-body strong { color:var(--on-surface-2); font-weight:500; }
+
+/* ═══════════════════════
+   FOOTER
+═══════════════════════ */
+footer {
+  margin-top:40px; padding-top:24px; border-top:1px solid var(--surface-3);
+  display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between; align-items:flex-start;
+}
+.foot-copy  { font-family:var(--font-ui); font-size:12px; color:var(--on-surface-4); }
+.foot-links { display:flex; gap:16px; flex-wrap:wrap; }
+.foot-links a { font-family:var(--font-ui); font-size:12px; color:var(--google-blue); text-decoration:none; }
+.foot-links a:hover { text-decoration:underline; }
+.cite-box {
+  width:100%; background:var(--surface-1); border:1px solid var(--surface-3);
+  border-radius:var(--r-lg); padding:14px 18px;
+  font-family:var(--font-mono); font-size:11px; color:var(--on-surface-4); line-height:1.9;
+}
+
+/* ═══════════════════════
+   EMPTY / LOADING
+═══════════════════════ */
+.empty {
+  text-align:center; padding:60px 20px;
+  color:var(--on-surface-4); font-size:14px;
+}
+.empty .ei { font-size:36px; display:block; margin-bottom:10px; }
+.empty strong { display:block; font-size:15px; color:var(--on-surface-3); margin-bottom:6px; }
+
+.loading { display:flex; flex-direction:column; align-items:center; gap:12px; padding:56px 0; color:var(--on-surface-4); font-size:13px; }
+.spinner { width:32px; height:32px; border:3px solid var(--surface-3); border-top-color:var(--google-blue); border-radius:50%; animation:spin .7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.fade-up { animation: fadeUp .3s ease forwards; }
+</style>
+</head>
+<body>
+
+<!-- TOP APP BAR -->
+<div class="app-bar">
+  <div class="app-bar-inner">
+    <a class="app-brand" href="#">
+      <div class="g-logo">G</div>
+      <span class="app-bar-title">Model Evaluation for <b>Responsible AI</b></span>
+    </a>
+    <div class="ab-chips">
+      <span class="chip live">Live · Weekly</span>
+      <span class="chip" id="ab-week">Week —</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow">RedBench · 22 Risk Categories · 19 Domains · NIST AI RMF</div>
+      <h1>Model Evaluation for<br><b>Responsible AI</b></h1>
+      <p class="hero-desc">
+        Weekly automated safety benchmarking of frontier LLMs from Anthropic, Google, OpenAI and Meta
+        using the RedBench adversarial dataset. Scored via dual-judge evaluation and mapped to the
+        NIST AI Risk Management Framework.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-filled" href="https://huggingface.co/datasets/knoveleng/redbench" target="_blank">View Dataset</a>
+        <a class="btn-text"   href="https://arxiv.org/abs/2601.03699"                  target="_blank">Read Paper ↗</a>
+        <a class="btn-text"   href="https://github.com/knoveleng/redeval"               target="_blank">GitHub ↗</a>
+      </div>
+    </div>
+    <div class="hero-week-card">
+      <div class="hwc-label">Current Evaluation</div>
+      <div class="hwc-value" id="hero-week">—</div>
+      <div class="hwc-sub"  id="hero-sub">Loading…</div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-title">Highlights</span>
+      <span class="sec-hint">Current week · lower ASR = safer</span>
+    </div>
+    <div class="summary-grid" id="summary-grid">
+      <div class="loading" style="grid-column:1/-1"><div class="spinner"></div><span>Loading evaluation data…</span></div>
+    </div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-title">Safety Leaderboard</span>
+      <span class="sec-hint">Click column headers to sort</span>
+    </div>
+    <div class="lb-card" id="lb-wrap">
+      <div class="empty"><span class="ei">📋</span><strong>No evaluation data yet</strong>Trigger the GitHub Actions workflow to run the first evaluation.</div>
+    </div>
+  </div>
+
+  <!-- Trend charts -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-title">12-Week Trends</span>
+      <span class="sec-hint">Rolling safety metrics across all models</span>
+    </div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="ct-title">Attack Success Rate (ASR)</div>
+        <div class="ct-desc">% of adversarial prompts that bypassed safety guardrails — lower is safer</div>
+        <div class="ct-wrap"><canvas id="c-asr"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="ct-title">False Outright Refusal (FOR)</div>
+        <div class="ct-desc">% of safe prompts incorrectly refused — lower means more useful</div>
+        <div class="ct-wrap"><canvas id="c-for"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="ct-title">Drift Coefficient</div>
+        <div class="ct-desc">Safety change per conversation turn — negative = more robust under pressure</div>
+        <div class="ct-wrap"><canvas id="c-drift"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="ct-title">Provenance Score</div>
+        <div class="ct-desc">% of evaluations with a complete chain-of-reasoning audit trail</div>
+        <div class="ct-wrap"><canvas id="c-prov"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Radar -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-title">Risk Category Breakdown</span>
+      <span class="sec-hint">ASR across all 22 RedBench categories · current week</span>
+    </div>
+    <div class="radar-layout">
+      <div class="model-picker">
+        <div class="mp-head">Select model</div>
+        <div id="radar-list"></div>
+      </div>
+      <div class="chart-card">
+        <div class="ct-title" id="radar-title">Category Radar</div>
+        <div class="ct-desc">Smaller shape = fewer guardrail bypasses = safer model</div>
+        <div class="ct-wrap tall"><canvas id="c-radar"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NIST -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-title">NIST AI RMF Alignment</span>
+      <span class="sec-hint">Average ASR per NIST AI Risk Management Framework function</span>
+    </div>
+    <div class="nist-tabs" id="nist-tabs"></div>
+    <div class="nist-grid"  id="nist-grid"></div>
+  </div>
+
+  <!-- Methodology -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-title">Methodology</span>
+    </div>
+    <div class="method-grid">
+      <div class="method-card">
+        <div class="method-num" style="color:var(--google-blue)">Phase 01 — Ingestion</div>
+        <div class="method-title">Taxonomy Alignment</div>
+        <div class="method-body">Stratified 500-prompt sample from <strong>knoveleng/redbench</strong> (29,362 total). 80% attack / 20% refusal. ISO-week seed ensures weekly reproducibility.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num" style="color:var(--google-yellow)">Phase 02 — Execution</div>
+        <div class="method-title">Adversarial Stress Test</div>
+        <div class="method-body">Single-turn probe → 3-turn agentic wrap for failures → 10-turn drift analysis on 5% sample. Baseline safety system prompt applied uniformly to all models.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num" style="color:var(--google-red)">Phase 03 — Dual Judge</div>
+        <div class="method-title">Hybrid Evaluation Loop</div>
+        <div class="method-body"><strong>RegexJudge:</strong> deterministic PII/API key/jailbreak detection. <strong>NeuralJudge:</strong> Claude Haiku scores refusal quality and generates chain-of-reasoning JSON.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num" style="color:var(--google-green)">Phase 04 — Reporting</div>
+        <div class="method-title">Compliance Package</div>
+        <div class="method-body">ASR / FOR / Drift / Provenance metrics. All 22 categories mapped to NIST AI RMF. Critical failures generate GSAR 552.239-7001 forensic audit logs.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="foot-copy">Model Evaluation for Responsible AI · Powered by RedBench (MIT License)</div>
+    <div class="foot-links">
+      <a href="https://huggingface.co/datasets/knoveleng/redbench" target="_blank">Dataset</a>
+      <a href="https://arxiv.org/abs/2601.03699"                   target="_blank">Research Paper</a>
+      <a href="https://github.com/knoveleng/redeval"               target="_blank">RedEval Framework</a>
+      <a href="https://airc.nist.gov"                              target="_blank">NIST AI RMF</a>
+    </div>
+    <div class="cite-box">
+      @misc{dang2026redbench, title={RedBench: A Universal Dataset for Comprehensive Red Teaming of Large Language Models},<br>
+      author={Quy-Anh Dang and Chris Ngo and Truong-Son Hy}, year={2026}, eprint={2601.03699},<br>
+      archivePrefix={arXiv}, url={https://arxiv.org/abs/2601.03699} }
+    </div>
+  </footer>
+
+</div><!-- /page -->
+
+<!-- JS -->
+<script>
+'use strict';
+
+const DATA_URL = './data/results.json';
+
+const CATS = [
+  "Toxicity","Hate Speech","PII Leakage","Sexual Content","Violence",
+  "Self-Harm","Cybercrime","Malware","Fraud","Misinformation",
+  "Extremism","Discrimination","Privacy Violation","Illegal Activity",
+  "Dangerous Information","CBRN","Child Safety","Financial Crime",
+  "Social Engineering","Surveillance","Intellectual Property","Prompt Injection"
+];
+
+const NIST_ORDER = ['PROTECT','GOVERN','DETECT','MANAGE','MAP','MEASURE'];
+
+let ST = { data:null, radarId:null, nistId:null, sortKey:'asr', asc:true };
+let CH = {};
+
+const $   = id => document.getElementById(id);
+const cc  = v  => v < 5 ? 'g' : v < 15 ? 'w' : 'b';
+const cv  = v  => v < 5 ? 'var(--success)' : v < 15 ? 'var(--warning)' : 'var(--error)';
+const pct = (v,d=1) => v==null ? '—' : parseFloat(v).toFixed(d)+'%';
+const dft = v       => { if(v==null) return '—'; const s=parseFloat(v).toFixed(3); return (v>0?'+':'')+s; };
+
+/* Chart defaults */
+Chart.defaults.font.family = "'Roboto', sans-serif";
+Chart.defaults.font.size   = 11;
+Chart.defaults.color       = '#80868B';
+const GR='#F1F3F4', TK='#9AA0A6', TB='#FFFFFF', TBD='#DADCE0';
+
+function lineOpts(fmt) {
+  return {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{ position:'bottom', labels:{color:'#5F6368',boxWidth:10,padding:14,font:{size:11}} },
+      tooltip:{ backgroundColor:TB,borderColor:TBD,borderWidth:1,titleColor:'#202124',bodyColor:'#5F6368',
+        callbacks:{label:c=>` ${c.dataset.label}: ${fmt(c.raw)}`} }
+    },
+    scales:{
+      x:{grid:{color:GR},ticks:{color:TK}},
+      y:{grid:{color:GR},ticks:{color:TK,callback:fmt}}
+    }
+  };
+}
+
+async function loadData() {
+  try {
+    const r = await fetch(DATA_URL+'?_='+Date.now());
+    if(!r.ok) throw Error(r.status);
+    return await r.json();
+  } catch(e) { return null; }
+}
+
+/* Summary */
+function renderSummary(d) {
+  const lb = d.leaderboard;
+  if(!lb?.length) {
+    $('summary-grid').innerHTML=`<div class="empty" style="grid-column:1/-1"><span class="ei">📡</span><strong>No data yet</strong>Run the GitHub Actions workflow to generate the first evaluation.</div>`;
+    return;
+  }
+  const safest  = lb[0];
+  const neutral = [...lb].sort((a,b)=>a.for_rate-b.for_rate)[0];
+  const stable  = [...lb].sort((a,b)=>Math.abs(a.drift_coefficient)-Math.abs(b.drift_coefficient))[0];
+  const total   = lb.reduce((s,m)=>s+(m.total_samples||0),0);
+
+  $('hero-week').textContent = `Week ${d.latest_week||'—'}`;
+  $('ab-week').textContent   = `Week ${d.latest_week||'—'}`;
+  $('hero-sub').innerHTML    = `${total.toLocaleString()} evaluations · ${lb.length} models · <a href="https://huggingface.co/datasets/knoveleng/redbench" target="_blank">RedBench</a>`;
+
+  $('summary-grid').innerHTML = [
+    sc('blue',  '🛡️','Safest Model',       pct(safest.asr,1),           safest.display_name, safest.provider, `${safest.critical_failures||0} critical failures`),
+    sc('green', '✅','Most Neutral (FOR)',  pct(neutral.for_rate,1),     neutral.display_name,neutral.provider,'Fewest false refusals'),
+    sc('yellow','📉','Lowest Drift',        dft(stable.drift_coefficient),stable.display_name, stable.provider,'Safety per-turn change'),
+    sc('blue',  '🔢','Total Evaluations',   total.toLocaleString(),      `${lb.length} models`,d.latest_week||'',`Since ${(d.weeks||[])[0]||'—'}`),
+  ].join('');
+}
+
+function sc(t,icon,lbl,val,model,prov,detail) {
+  return `<div class="stat-card ${t} fade-up">
+    <div class="stat-icon ${t}">${icon}</div>
+    <div class="stat-label">${lbl}</div>
+    <div class="stat-value">${val}</div>
+    <div class="stat-model">${model}</div>
+    <div class="stat-detail">${prov} · ${detail}</div>
+  </div>`;
+}
+
+/* Leaderboard */
+function renderLB(d) {
+  const lb = d.leaderboard;
+  if(!lb?.length) return;
+  const sorted = [...lb].sort((a,b)=>ST.asc?a[ST.sortKey]-b[ST.sortKey]:b[ST.sortKey]-a[ST.sortKey]);
+  const maxASR = Math.max(...lb.map(m=>m.asr),1);
+
+  const cols = [
+    {k:null,                l:'#',       w:'48px'},
+    {k:null,                l:'Model',   w:''},
+    {k:'asr',               l:'ASR ↕',  w:'170px'},
+    {k:'for_rate',          l:'FOR ↕',  w:'90px'},
+    {k:'drift_coefficient', l:'Drift ↕',w:'100px'},
+    {k:'provenance_score',  l:'Prov ↕', w:'90px'},
+    {k:'critical_failures', l:'Critical',w:'80px'},
+  ];
+
+  const ths = cols.map(c=>{
+    const sc2=ST.sortKey===c.k?' sorted':'';
+    const cl =c.k?`onclick="sLB('${c.k}')"`:'' ;
+    const w  =c.w?`style="width:${c.w}"`:''    ;
+    return `<th class="${sc2}" ${cl} ${w}>${c.l}</th>`;
+  }).join('');
+
+  const rows = sorted.map((m,i)=>{
+    const r=i+1, rc=r===1?'rk-1':r===2?'rk-2':r===3?'rk-3':'rk-n';
+    const bw=Math.min(100,m.asr/maxASR*100);
+    return `<tr>
+      <td><span class="rank-badge ${rc}">${r}</span></td>
+      <td><div class="mc"><span class="mc-dot" style="background:${m.color}"></span>
+        <div><div class="mc-name">${m.display_name}</div><div class="mc-prov">${m.provider}</div></div></div></td>
+      <td><div class="bar-cell"><span class="mv ${cc(m.asr)}">${pct(m.asr)}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${bw}%;background:${cv(m.asr)}"></div></div></div></td>
+      <td><span class="mv ${cc(m.for_rate)}">${pct(m.for_rate)}</span></td>
+      <td><span class="mv n">${dft(m.drift_coefficient)}</span></td>
+      <td><span class="mv i">${pct(m.provenance_score)}</span></td>
+      <td><span class="mv ${(m.critical_failures||0)>0?'b':'g'}">${m.critical_failures||0}</span></td>
+    </tr>`;
+  }).join('');
+
+  $('lb-wrap').innerHTML=`<table class="lb-table"><thead><tr>${ths}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+window.sLB = key => { if(ST.sortKey===key)ST.asc=!ST.asc; else{ST.sortKey=key;ST.asc=true;} renderLB(ST.data); };
+
+/* Trend charts */
+function buildTrend(id,key,fmt) {
+  const d=ST.data; if(!d?.models) return;
+  const ctx=$(id); if(!ctx) return;
+  if(CH[id]) CH[id].destroy();
+  const wks=d.weeks||[];
+  const datasets=d.models.map(m=>({
+    label:m.display_name,
+    data:wks.map(w=>{const pt=(m[key+'_trend']||[]).find(p=>p.week===w);return pt?pt.value:null;}),
+    borderColor:m.color, backgroundColor:m.color+'20',
+    borderWidth:2, pointRadius:3, pointHoverRadius:5, tension:0.35, fill:false,
+  }));
+  CH[id]=new Chart(ctx,{type:'line',data:{labels:wks,datasets},options:lineOpts(fmt)});
+}
+
+/* Radar */
+function renderRadar(mid) {
+  const d=ST.data; if(!d?.radar_data) return;
+  const rd=d.radar_data[mid], model=d.models?.find(m=>m.model_id===mid);
+  if(!rd||!model) return;
+  ST.radarId=mid;
+  $('radar-title').textContent=model.display_name+' — Risk Category ASR';
+  document.querySelectorAll('.mp-btn').forEach(b=>b.classList.toggle('active',b.dataset.mid===mid));
+  if(CH.radar) CH.radar.destroy();
+  CH.radar=new Chart($('c-radar'),{
+    type:'radar',
+    data:{
+      labels:CATS.map(c=>c.length>14?c.slice(0,12)+'…':c),
+      datasets:[{
+        label:model.display_name, data:CATS.map(c=>rd[c]||0),
+        borderColor:model.color, backgroundColor:model.color+'20',
+        borderWidth:2, pointBackgroundColor:model.color, pointRadius:3,
+      }],
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:TB,borderColor:TBD,borderWidth:1,titleColor:'#202124',bodyColor:'#5F6368',
+          callbacks:{title:c=>CATS[c[0].dataIndex],label:c=>` ASR: ${c.raw.toFixed(1)}%`}}
+      },
+      scales:{r:{min:0,max:100,
+        grid:{color:GR},angleLines:{color:GR},
+        pointLabels:{color:'#9AA0A6',font:{size:9,family:"'Roboto'"}},
+        ticks:{color:TK,stepSize:25,backdropColor:'transparent',font:{size:9}},
+      }},
+    },
+  });
+}
+window.renderRadar=renderRadar;
+
+function buildRadarList(d) {
+  if(!d.models) return;
+  $('radar-list').innerHTML=d.models.map(m=>`
+    <button class="mp-btn" data-mid="${m.model_id}" onclick="renderRadar('${m.model_id}')">
+      <span class="mp-dot" style="background:${m.color}"></span>
+      <div><div>${m.display_name}</div><div class="mp-sub">${m.provider}</div></div>
+    </button>`).join('');
+}
+
+/* NIST */
+function renderNIST(mid) {
+  ST.nistId=mid;
+  const entry=ST.data.leaderboard?.find(m=>m.model_id===mid);
+  if(!entry?.nist_summary) return;
+  document.querySelectorAll('.nist-tab').forEach(t=>{
+    t.style.opacity=t.dataset.mid===mid?'1':'0.4';
+    t.style.boxShadow=t.dataset.mid===mid?'var(--elev-1)':'none';
+  });
+  const nist=entry.nist_summary;
+  $('nist-grid').innerHTML=NIST_ORDER.map(fn=>{
+    const nd=nist[fn]||{avg_asr:0,category_label:fn}, asr=nd.avg_asr||0;
+    return `<div class="nist-card fn-${fn.toLowerCase()}">
+      <div class="nist-fn fn-${fn.toLowerCase()}">${fn}</div>
+      <div class="nist-lbl">${nd.category_label||fn}</div>
+      <div class="nist-asr" style="color:${cv(asr)}">${asr.toFixed(1)}%</div>
+      <div class="nist-sub">avg Attack Success Rate</div>
+    </div>`;
+  }).join('');
+}
+window.renderNIST=renderNIST;
+
+function buildNISTTabs(d) {
+  if(!d.models) return;
+  $('nist-tabs').innerHTML=d.models.map(m=>`
+    <button class="nist-tab" data-mid="${m.model_id}"
+      style="background:${m.color}15;border-color:${m.color}50;color:${m.color}"
+      onclick="renderNIST('${m.model_id}')">
+      ${m.display_name}
+    </button>`).join('');
+}
+
+/* Bootstrap */
+async function init() {
+  const d=await loadData();
+  if(!d?.leaderboard?.length) {
+    $('summary-grid').innerHTML=`<div class="empty" style="grid-column:1/-1">
+      <span class="ei">📡</span><strong>No evaluation data found</strong>
+      Run the GitHub Actions workflow, or verify that <code>dashboard/data/results.json</code> has been committed.
+    </div>`;
+    return;
+  }
+  ST.data=d;
+  renderSummary(d); renderLB(d);
+  buildTrend('c-asr','asr',  v=>v?.toFixed(1)+'%');
+  buildTrend('c-for','for',  v=>v?.toFixed(1)+'%');
+  buildTrend('c-drift','drift',v=>v?.toFixed(3));
+  buildTrend('c-prov','prov', v=>v?.toFixed(1)+'%');
+  buildRadarList(d);
+  if(d.models?.length)     renderRadar(d.models[0].model_id);
+  buildNISTTabs(d);
+  if(d.leaderboard?.length) renderNIST(d.leaderboard[0].model_id);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

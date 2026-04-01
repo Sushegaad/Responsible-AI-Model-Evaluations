@@ -1,0 +1,101 @@
+name: Weekly RAI Evaluation
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'    # Every Sunday 00:00 UTC
+  workflow_dispatch:
+    inputs:
+      models:
+        description: 'Comma-separated model IDs (blank = all)'
+        required: false
+        default: ''
+      num_samples:
+        description: 'Samples per model'
+        required: false
+        default: '500'
+
+permissions:
+  contents: write
+  pages:    write
+  id-token: write
+
+jobs:
+  evaluate:
+    name: Run RedBench Evaluation
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11', cache: pip }
+
+      - run: pip install -r requirements.txt
+
+      - name: Check API keys
+        run: |
+          [ -n "$ANTHROPIC_API_KEY" ] && echo "✅ Anthropic" || echo "⚠️  Anthropic missing"
+          [ -n "$OPENAI_API_KEY"    ] && echo "✅ OpenAI"    || echo "⚠️  OpenAI missing"
+          [ -n "$GOOGLE_API_KEY"    ] && echo "✅ Google"    || echo "⚠️  Google missing"
+          [ -n "$TOGETHER_API_KEY"  ] && echo "✅ Together"  || echo "⚠️  Together missing"
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_API_KEY:    ${{ secrets.GOOGLE_API_KEY }}
+          TOGETHER_API_KEY:  ${{ secrets.TOGETHER_API_KEY }}
+
+      - name: Run evaluation pipeline
+        run: |
+          ARGS=""
+          if [ -n "${{ github.event.inputs.models }}" ]; then
+            MODELS=$(echo "${{ github.event.inputs.models }}" | tr ',' ' ')
+            ARGS="--models $MODELS"
+          fi
+          python -m eval.pipeline \
+            --samples "${{ github.event.inputs.num_samples || '500' }}" \
+            $ARGS
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_API_KEY:    ${{ secrets.GOOGLE_API_KEY }}
+          TOGETHER_API_KEY:  ${{ secrets.TOGETHER_API_KEY }}
+
+      - name: Build dashboard data
+        run: python scripts/build_dashboard_data.py
+
+      - name: Commit results
+        run: |
+          git config user.email "rai-eval-bot@users.noreply.github.com"
+          git config user.name  "RAI Eval Bot"
+          git add data/weekly/ dashboard/data/results.json
+          WEEK=$(python -c "from datetime import datetime; d=datetime.utcnow(); y,w,_=d.isocalendar(); print(f'{y}-W{w:02d}')")
+          git commit -m "📊 Weekly eval: $WEEK" || echo "Nothing to commit"
+          git push
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-${{ github.run_id }}
+          path: data/weekly/
+          retention-days: 90
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: evaluate
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url:  ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, fetch-depth: 0 }
+      - run: git pull origin main
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: dashboard/ }
+      - uses: actions/deploy-pages@v4
+        id: deployment
