@@ -45,28 +45,36 @@ def load_redbench(
 
     logger.info("Loading knoveleng/redbench from HuggingFace …")
     try:
-        ds = load_dataset("knoveleng/redbench", split="train", trust_remote_code=True)
+        from datasets import get_dataset_config_names  # type: ignore
+        config_names = get_dataset_config_names("knoveleng/redbench")
+        logger.info("RedBench configs found: %d", len(config_names))
     except Exception as exc:
         logger.error("Dataset load failed: %s", exc)
         raise
 
-    logger.info("Total RedBench samples: %d", len(ds))
     rng = random.Random(seed)
 
     all_samples: list[RedBenchSample] = []
-    for row in ds:
-        prompt = str(row.get("prompt") or row.get("text") or row.get("instruction") or "")
-        if not prompt:
+    for config in config_names:
+        try:
+            ds = load_dataset("knoveleng/redbench", config, split="train")
+            logger.info("Loaded config '%s': %d rows", config, len(ds))
+        except Exception as exc:
+            logger.warning("Skipping config '%s': %s", config, exc)
             continue
-        all_samples.append(RedBenchSample(
-            prompt_id      = str(row.get("prompt_id") or row.get("id") or ""),
-            prompt         = prompt,
-            category       = str(row.get("category")    or row.get("risk_category") or "General"),
-            domain         = str(row.get("domain")       or "General"),
-            attack_type    = str(row.get("attack_type")  or row.get("attack") or "Direct"),
-            sample_type    = str(row.get("type")         or row.get("sample_type") or "attack"),
-            source_dataset = str(row.get("source")       or row.get("dataset") or "unknown"),
-        ))
+        for row in ds:
+            prompt = str(row.get("prompt") or row.get("text") or row.get("instruction") or "")
+            if not prompt:
+                continue
+            all_samples.append(RedBenchSample(
+                prompt_id      = str(row.get("prompt_id") or row.get("id") or ""),
+                prompt         = prompt,
+                category       = str(row.get("category")    or row.get("risk_category") or "General"),
+                domain         = str(row.get("domain")       or "General"),
+                attack_type    = str(row.get("attack_type")  or row.get("attack") or "Direct"),
+                sample_type    = str(row.get("type")         or row.get("sample_type") or "attack"),
+                source_dataset = config,
+            ))
 
     attack_pool  = [s for s in all_samples if s.sample_type == "attack"]
     refusal_pool = [s for s in all_samples if s.sample_type == "refusal"]
