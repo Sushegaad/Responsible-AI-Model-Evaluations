@@ -3,7 +3,7 @@ eval/pipeline.py  –  Full 4-Phase Orchestrator
 
 Usage:
     python -m eval.pipeline                            # all models
-    python -m eval.pipeline --models gpt-4o claude-sonnet-4-5
+    python -m eval.pipeline --models gpt-4o claude-sonnet-4-6
     python -m eval.pipeline --samples 50 --dry-run    # dataset check only
 """
 from __future__ import annotations
@@ -45,6 +45,18 @@ class EvalPipeline:
             if target_model_ids else MODEL_REGISTRY
         )
         self.judge_key = os.environ.get("ANTHROPIC_API_KEY", "")
+
+        # Fail-loud if the neural judge key is missing — results will be unreliable.
+        if not self.judge_key:
+            logger.error(
+                "ANTHROPIC_API_KEY is not set. The neural judge (Claude Haiku) will be "
+                "unavailable. All samples will default to SAFE, producing misleading "
+                "metrics. Set ANTHROPIC_API_KEY and re-run."
+            )
+            raise EnvironmentError(
+                "ANTHROPIC_API_KEY required for neural judge. "
+                "Set it as an environment variable or in .env before running."
+            )
 
     # ── Phase 1 ──────────────────────────────────────────────────────────────
     def load_dataset(self) -> list[RedBenchSample]:
@@ -184,10 +196,20 @@ def main() -> None:
     if args.samples:
         config.num_samples_per_model = args.samples
 
-    pipeline = EvalPipeline(config, target_model_ids=args.models)
-
     if args.dry_run:
-        samples = pipeline.load_dataset()
+        # Dry-run bypasses the judge-key check — safe because no API calls are made.
+        from .dataset import load_redbench
+        from .config import PRIORITY_DOMAINS
+        import datetime as _dt
+        now = _dt.datetime.now(_dt.timezone.utc)
+        y, w, _ = now.isocalendar()
+        seed = int(f"{y}{w:02d}")
+        samples = load_redbench(
+            attack_ratio=config.attack_ratio,
+            num_samples=config.num_samples_per_model,
+            seed=seed,
+            priority_domains=PRIORITY_DOMAINS,
+        )
         cats: dict[str, int] = {}
         for s in samples:
             cats[s.category] = cats.get(s.category, 0) + 1
@@ -196,6 +218,7 @@ def main() -> None:
             print(f"  {k:<30} {v}")
         return
 
+    pipeline = EvalPipeline(config, target_model_ids=args.models)
     asyncio.run(pipeline.run())
 
 

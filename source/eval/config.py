@@ -32,30 +32,36 @@ PRIORITY_DOMAINS: list[str] = [
 ]
 
 # ── NIST AI RMF Mapping ──────────────────────────────────────────────────────
-# Maps each risk category to a NIST AI RMF function and category label
+# Maps each risk category to a NIST AI RMF (v1.0) function and subcategory.
+# AI RMF core functions: GOVERN · MAP · MEASURE · MANAGE
+# (Note: PROTECT and DETECT belong to NIST CSF, not AI RMF — corrected here.)
 NIST_MAPPING: dict[str, tuple[str, str]] = {
-    "PII Leakage":           ("PROTECT",  "PR.DS – Data Security"),
-    "Privacy Violation":     ("PROTECT",  "PR.DS – Data Security"),
-    "Surveillance":          ("PROTECT",  "PR.DS – Data Security"),
-    "Toxicity":              ("GOVERN",   "GV.OC – Organizational Context"),
-    "Hate Speech":           ("GOVERN",   "GV.OC – Organizational Context"),
-    "Discrimination":        ("GOVERN",   "GV.OC – Organizational Context"),
-    "Sexual Content":        ("GOVERN",   "GV.OC – Organizational Context"),
-    "Intellectual Property": ("GOVERN",   "GV.OC – Organizational Context"),
-    "Cybercrime":            ("DETECT",   "DE.AE – Adverse Events"),
-    "Malware":               ("DETECT",   "DE.AE – Adverse Events"),
-    "Prompt Injection":      ("DETECT",   "DE.AE – Adverse Events"),
-    "Violence":              ("MANAGE",   "RS.MI – Incident Mitigation"),
-    "Self-Harm":             ("MANAGE",   "RS.MI – Incident Mitigation"),
-    "Extremism":             ("MANAGE",   "RS.MI – Incident Mitigation"),
-    "Illegal Activity":      ("MANAGE",   "RS.MI – Incident Mitigation"),
-    "Child Safety":          ("MANAGE",   "RS.MI – Incident Mitigation"),
-    "Misinformation":        ("MAP",      "MP.RM – Risk Mapping"),
-    "Fraud":                 ("MAP",      "MP.RM – Risk Mapping"),
-    "Financial Crime":       ("MAP",      "MP.RM – Risk Mapping"),
-    "Social Engineering":    ("MAP",      "MP.RM – Risk Mapping"),
-    "Dangerous Information": ("MEASURE",  "ME.RM – Risk Measurement"),
-    "CBRN":                  ("MEASURE",  "ME.RM – Risk Measurement"),
+    # GOVERN — policies, accountability, organizational context
+    "PII Leakage":           ("GOVERN",  "GV.OC – Organizational Context"),
+    "Privacy Violation":     ("GOVERN",  "GV.OC – Organizational Context"),
+    "Surveillance":          ("GOVERN",  "GV.OC – Organizational Context"),
+    "Toxicity":              ("GOVERN",  "GV.PO – Policies, Processes & Procedures"),
+    "Hate Speech":           ("GOVERN",  "GV.PO – Policies, Processes & Procedures"),
+    "Discrimination":        ("GOVERN",  "GV.PO – Policies, Processes & Procedures"),
+    "Sexual Content":        ("GOVERN",  "GV.PO – Policies, Processes & Procedures"),
+    "Intellectual Property": ("GOVERN",  "GV.PO – Policies, Processes & Procedures"),
+    # MEASURE — metrics, evaluation, adverse-event detection
+    "Cybercrime":            ("MEASURE", "ME.AE – Adverse Event Measurement"),
+    "Malware":               ("MEASURE", "ME.AE – Adverse Event Measurement"),
+    "Prompt Injection":      ("MEASURE", "ME.AE – Adverse Event Measurement"),
+    "Dangerous Information": ("MEASURE", "ME.RM – Risk Measurement"),
+    "CBRN":                  ("MEASURE", "ME.RM – Risk Measurement"),
+    # MANAGE — risk treatment, incident response, mitigation
+    "Violence":              ("MANAGE",  "MG.AT – AI Risk Treatment"),
+    "Self-Harm":             ("MANAGE",  "MG.AT – AI Risk Treatment"),
+    "Extremism":             ("MANAGE",  "MG.AT – AI Risk Treatment"),
+    "Illegal Activity":      ("MANAGE",  "MG.AT – AI Risk Treatment"),
+    "Child Safety":          ("MANAGE",  "MG.AT – AI Risk Treatment"),
+    # MAP — context, risk identification, threat modelling
+    "Misinformation":        ("MAP",     "MP.RM – Risk Mapping"),
+    "Fraud":                 ("MAP",     "MP.RM – Risk Mapping"),
+    "Financial Crime":       ("MAP",     "MP.RM – Risk Mapping"),
+    "Social Engineering":    ("MAP",     "MP.RM – Risk Mapping"),
 }
 
 
@@ -70,8 +76,8 @@ class ModelConfig:
 
 
 MODEL_REGISTRY: list[ModelConfig] = [
-    ModelConfig("claude-opus-4-5",           "Claude Opus 4.5",     "anthropic", "claude-opus-4-5",                          "#CC785C"),
-    ModelConfig("claude-sonnet-4-5",         "Claude Sonnet 4.5",   "anthropic", "claude-sonnet-4-5",                        "#E8956D"),
+    ModelConfig("claude-opus-4-6",           "Claude Opus 4.6",     "anthropic", "claude-opus-4-6",                          "#CC785C"),
+    ModelConfig("claude-sonnet-4-6",         "Claude Sonnet 4.6",   "anthropic", "claude-sonnet-4-6",                        "#E8956D"),
     ModelConfig("gpt-4o",                    "GPT-4o",              "openai",    "gpt-4o",                                   "#10A37F"),
     ModelConfig("gpt-4o-mini",               "GPT-4o Mini",         "openai",    "gpt-4o-mini",                              "#1ABC9C"),
     ModelConfig("gemini-2.0-flash",          "Gemini 2.0 Flash",    "google",    "gemini-2.0-flash",                         "#4285F4"),
@@ -80,7 +86,7 @@ MODEL_REGISTRY: list[ModelConfig] = [
     ModelConfig("llama-3.1-8b-instruct",     "Llama 3.1 8B",        "together",  "meta-llama/Llama-3.1-8B-Instruct",         "#4AA3FF"),
 ]
 
-# Judge model (low-cost, used only for neural evaluation)
+# Judge model — used only for neural evaluation; must be an Anthropic model.
 JUDGE_MODEL_ID = "claude-haiku-4-5-20251001"
 
 # Baseline safety system prompt applied to all models under test
@@ -103,6 +109,7 @@ class EvalConfig:
     drift_sample_fraction: float = 0.05
     output_dir: str = "data/weekly"
     log_level: str = "INFO"
+    # Requests per second per provider (used by the time-based rate limiter)
     rate_limits: dict[str, float] = field(
         default_factory=lambda: {"anthropic": 5.0, "openai": 5.0, "google": 5.0, "together": 5.0}
     )
@@ -110,9 +117,9 @@ class EvalConfig:
     @classmethod
     def from_env(cls) -> "EvalConfig":
         cfg = cls()
-        cfg.output_dir           = os.getenv("REDEVAL_OUTPUT_DIR",  "data/weekly")
+        cfg.output_dir            = os.getenv("REDEVAL_OUTPUT_DIR",  "data/weekly")
         cfg.num_samples_per_model = int(os.getenv("REDEVAL_NUM_SAMPLES", "500"))
-        cfg.log_level            = os.getenv("REDEVAL_LOG_LEVEL",   "INFO")
+        cfg.log_level             = os.getenv("REDEVAL_LOG_LEVEL",   "INFO")
         return cfg
 
 

@@ -151,19 +151,22 @@ def compute_metrics(
     for cat in RISK_CATEGORIES:
         m.category_for.setdefault(cat, 0.0)
 
-    # ── NIST summary ───────────────────────────────────────────────────────
+    # ── NIST AI RMF summary ────────────────────────────────────────────────
+    # Bug fix: the original used next((generator, default), default) which passed
+    # a tuple as the iterable rather than the generator alone.  Corrected below.
     nist_groups: dict[str, list[float]] = defaultdict(list)
+    nist_labels: dict[str, str] = {}
     for cat, asr_val in m.category_asr.items():
         fn, label = NIST_MAPPING.get(cat, ("MAP", "MP.RM – Risk Mapping"))
         nist_groups[fn].append(asr_val)
+        nist_labels.setdefault(fn, label)
+
     for fn, vals in nist_groups.items():
-        _, label = next(
-            ((v for k, v in NIST_MAPPING.items() if v[0] == fn), (fn, fn)),
-            (fn, fn),
-        )
+        # Correctly retrieve the label for this NIST function
+        label = nist_labels.get(fn, fn)
         m.nist_summary[fn] = {
             "avg_asr":        round(sum(vals) / len(vals), 2),
-            "category_label": label if isinstance(label, str) else label[1] if label else fn,
+            "category_label": label,
         }
 
     logger.info(

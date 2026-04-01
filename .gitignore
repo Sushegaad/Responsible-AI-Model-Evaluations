@@ -205,3 +205,20 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ── RAI Eval — project-specific ignores ─────────────────────────────────────
+
+# API keys / secrets — never commit
+.env
+
+# Weekly raw responses and scored outputs can be very large (100s of MB/week).
+# Only metrics.json (small) is committed to git; raw files are kept as
+# GitHub Actions artifacts (retention-days: 90) instead.
+data/weekly/*/raw_responses.jsonl
+data/weekly/*/scored.jsonl
+
+# Audit logs may contain redacted PII fragments — kept local/artifact only
+data/weekly/*/audit_logs/
+
+# Generated dashboard data (rebuilt each week by build_dashboard_data.py)
+dashboard/data/results.json

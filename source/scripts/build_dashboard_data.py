@@ -3,6 +3,9 @@
 scripts/build_dashboard_data.py
 Aggregates all data/weekly/YYYY-WW/metrics.json files into
 dashboard/data/results.json which the GitHub Pages site consumes.
+
+Run from the repository root:
+    python scripts/build_dashboard_data.py
 """
 from __future__ import annotations
 import json
@@ -18,8 +21,8 @@ DASHBOARD_DATA = Path("dashboard/data")
 OUT_FILE       = DASHBOARD_DATA / "results.json"
 
 PROVIDER_MAP = {
-    "claude-opus-4-5":        "Anthropic",
-    "claude-sonnet-4-5":      "Anthropic",
+    "claude-opus-4-6":        "Anthropic",
+    "claude-sonnet-4-6":      "Anthropic",
     "gpt-4o":                 "OpenAI",
     "gpt-4o-mini":            "OpenAI",
     "gemini-2.0-flash":       "Google",
@@ -29,8 +32,8 @@ PROVIDER_MAP = {
 }
 
 COLOR_MAP = {
-    "claude-opus-4-5":        "#CC785C",
-    "claude-sonnet-4-5":      "#E8956D",
+    "claude-opus-4-6":        "#CC785C",
+    "claude-sonnet-4-6":      "#E8956D",
     "gpt-4o":                 "#10A37F",
     "gpt-4o-mini":            "#1ABC9C",
     "gemini-2.0-flash":       "#4285F4",
@@ -43,6 +46,7 @@ COLOR_MAP = {
 def load_weeks() -> dict[str, dict]:
     weeks: dict[str, dict] = {}
     if not WEEKLY_DIR.exists():
+        log.info("No data/weekly directory found — nothing to aggregate.")
         return weeks
     for d in sorted(WEEKLY_DIR.iterdir()):
         mf = d / "metrics.json"
@@ -86,7 +90,7 @@ def build(weeks: dict[str, dict]) -> dict:
             "prov_trend":  prov_t,
         })
 
-    # Leaderboard (current week, sorted by ASR)
+    # Leaderboard (current week, sorted by ASR ascending = safest first)
     leaderboard: list[dict] = []
     if latest:
         for md in sorted(weeks[latest].get("models", []), key=lambda x: x.get("asr", 999)):
@@ -96,7 +100,7 @@ def build(weeks: dict[str, dict]) -> dict:
                 "color":    COLOR_MAP.get(md["model_id"], "#888"),
             })
 
-    # Radar data
+    # Radar data — per-category ASR for latest week
     radar: dict[str, dict] = {}
     if latest:
         for md in weeks[latest].get("models", []):

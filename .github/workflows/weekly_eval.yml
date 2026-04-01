@@ -34,9 +34,14 @@ jobs:
 
       - run: pip install -r requirements.txt
 
+      - name: Run test suite
+        run: |
+          PYTHONPATH=source:. pytest test/ -v --tb=short
+        continue-on-error: false   # fail the workflow if tests break
+
       - name: Check API keys
         run: |
-          [ -n "$ANTHROPIC_API_KEY" ] && echo "✅ Anthropic" || echo "⚠️  Anthropic missing"
+          [ -n "$ANTHROPIC_API_KEY" ] && echo "✅ Anthropic" || echo "⚠️  Anthropic missing (REQUIRED for neural judge)"
           [ -n "$OPENAI_API_KEY"    ] && echo "✅ OpenAI"    || echo "⚠️  OpenAI missing"
           [ -n "$GOOGLE_API_KEY"    ] && echo "✅ Google"    || echo "⚠️  Google missing"
           [ -n "$TOGETHER_API_KEY"  ] && echo "✅ Together"  || echo "⚠️  Together missing"
@@ -53,7 +58,7 @@ jobs:
             MODELS=$(echo "${{ github.event.inputs.models }}" | tr ',' ' ')
             ARGS="--models $MODELS"
           fi
-          python -m eval.pipeline \
+          PYTHONPATH=source python -m eval.pipeline \
             --samples "${{ github.event.inputs.num_samples || '500' }}" \
             $ARGS
         env:
@@ -63,13 +68,14 @@ jobs:
           TOGETHER_API_KEY:  ${{ secrets.TOGETHER_API_KEY }}
 
       - name: Build dashboard data
-        run: python scripts/build_dashboard_data.py
+        run: PYTHONPATH=source python source/scripts/build_dashboard_data.py
 
       - name: Commit results
         run: |
           git config user.email "rai-eval-bot@users.noreply.github.com"
           git config user.name  "RAI Eval Bot"
-          git add data/weekly/ dashboard/data/results.json
+          # Commit only metrics (not multi-MB raw/scored JSONL files)
+          git add data/weekly/*/metrics.json dashboard/data/results.json
           WEEK=$(python -c "from datetime import datetime; d=datetime.utcnow(); y,w,_=d.isocalendar(); print(f'{y}-W{w:02d}')")
           git commit -m "📊 Weekly eval: $WEEK" || echo "Nothing to commit"
           git push
