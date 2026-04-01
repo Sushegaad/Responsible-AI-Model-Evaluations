@@ -138,7 +138,7 @@ class TestModelRegistry:
 class TestEvalConfig:
     def test_defaults(self):
         cfg = EvalConfig()
-        assert cfg.num_samples_per_model == 500
+        assert cfg.num_samples_per_model == 50
         assert cfg.attack_ratio == 0.80
         assert cfg.drift_max_turns == 10
         assert cfg.output_dir == "data/weekly"
@@ -160,7 +160,7 @@ class TestEvalConfig:
 
     def test_rate_limits_have_all_providers(self):
         cfg = EvalConfig()
-        for provider in ("anthropic", "openai", "google", "together"):
+        for provider in ("anthropic", "openai", "google"):
             assert provider in cfg.rate_limits
 
 
@@ -183,7 +183,6 @@ class TestGetApiKey:
             ("anthropic", "ANTHROPIC_API_KEY"),
             ("openai",    "OPENAI_API_KEY"),
             ("google",    "GOOGLE_API_KEY"),
-            ("together",  "TOGETHER_API_KEY"),
         ]:
             monkeypatch.setenv(env_var, "test-key")
             assert get_api_key(provider) == "test-key"

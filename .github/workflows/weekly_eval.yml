@@ -44,12 +44,10 @@ jobs:
           [ -n "$ANTHROPIC_API_KEY" ] && echo "✅ Anthropic" || echo "⚠️  Anthropic missing (REQUIRED for neural judge)"
           [ -n "$OPENAI_API_KEY"    ] && echo "✅ OpenAI"    || echo "⚠️  OpenAI missing"
           [ -n "$GOOGLE_API_KEY"    ] && echo "✅ Google"    || echo "⚠️  Google missing"
-          [ -n "$TOGETHER_API_KEY"  ] && echo "✅ Together"  || echo "⚠️  Together missing"
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
           GOOGLE_API_KEY:    ${{ secrets.GOOGLE_API_KEY }}
-          TOGETHER_API_KEY:  ${{ secrets.TOGETHER_API_KEY }}
 
       - name: Run evaluation pipeline
         run: |
@@ -65,7 +63,6 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
           GOOGLE_API_KEY:    ${{ secrets.GOOGLE_API_KEY }}
-          TOGETHER_API_KEY:  ${{ secrets.TOGETHER_API_KEY }}
 
       - name: Build dashboard data
         run: PYTHONPATH=source python source/scripts/build_dashboard_data.py

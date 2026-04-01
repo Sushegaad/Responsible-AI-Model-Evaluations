@@ -4,38 +4,37 @@
 > [RedBench](https://arxiv.org/abs/2601.03699) adversarial dataset.
 > Results published to a public GitHub Pages dashboard every Sunday.
 
-[![Weekly Eval](https://github.com/YOUR_ORG/rai-eval/actions/workflows/weekly_eval.yml/badge.svg)](https://github.com/YOUR_ORG/rai-eval/actions)
+[![Weekly Eval](https://github.com/Sushegaad/rai-eval/actions/workflows/weekly_eval.yml/badge.svg)](https://github.com/Sushegaad/rai-eval/actions)
 [![Dataset: RedBench](https://img.shields.io/badge/Dataset-RedBench-blue)](https://huggingface.co/datasets/knoveleng/redbench)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
 ## Live Dashboard
 
-**[→ https://YOUR_ORG.github.io/rai-eval/](https://YOUR_ORG.github.io/rai-eval/)**
+**[→ https://Sushegaad.github.io/rai-eval/](https://Sushegaad.github.io/rai-eval/)**
 
 ---
 
 ## What This Evaluates
 
-| Provider   | Models                                          |
-|------------|-------------------------------------------------|
-| Anthropic  | Claude Opus 4.5, Claude Sonnet 4.5              |
-| OpenAI     | GPT-4o, GPT-4o Mini                             |
-| Google     | Gemini 2.0 Flash, Gemini 1.5 Pro                |
-| Meta       | Llama 3.3 70B Instruct, Llama 3.1 8B Instruct   |
+| Provider  | Models                           |
+|-----------|----------------------------------|
+| Anthropic | Claude Opus 4.6, Claude Sonnet 4.6 |
+| OpenAI    | GPT-4o, GPT-4o Mini              |
+| Google    | Gemini 2.0 Flash, Gemini 1.5 Pro |
 
 ## Metrics
 
-| Metric               | Definition                                      | Target      |
-|----------------------|-------------------------------------------------|-------------|
-| **ASR**              | % of attack prompts that bypassed guardrails    | < 5 %       |
-| **FOR**              | % of safe prompts incorrectly refused           | < 10 %      |
-| **Drift Coefficient**| Safety change per conversation turn             | < 0.5 %/turn|
-| **Provenance Score** | % with complete chain-of-reasoning audit trail  | > 95 %      |
+| Metric                | Definition                                      | Target       |
+|-----------------------|-------------------------------------------------|--------------|
+| **ASR**               | % of attack prompts that bypassed guardrails    | < 5 %        |
+| **FOR**               | % of safe prompts incorrectly refused           | < 10 %       |
+| **Drift Coefficient** | Safety change per conversation turn             | < 0.5 %/turn |
+| **Provenance Score**  | % with complete chain-of-reasoning audit trail  | > 95 %       |
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/YOUR_ORG/rai-eval.git
+git clone https://github.com/Sushegaad/rai-eval.git
 cd rai-eval
 pip install -r requirements.txt
 
@@ -51,7 +50,7 @@ PYTHONPATH=source python -m eval.pipeline --dry-run
 # Lightweight test run (~$1)
 PYTHONPATH=source python -m eval.pipeline --models claude-sonnet-4-6 gpt-4o-mini --samples 20
 
-# Full weekly run (all 8 models, 500 samples each, ~$29)
+# Full weekly run (all 6 models, 50 samples each)
 PYTHONPATH=source python -m eval.pipeline
 
 # Build dashboard data file
@@ -86,7 +85,7 @@ rai-eval/
 ├── data/                          # Auto-generated evaluation results (gitignored except metrics)
 │   └── weekly/
 │       └── YYYY-WW/
-│           ├── metrics.json       # ✅ committed to git
+│           ├── metrics.json         # ✅ committed to git
 │           ├── raw_responses.jsonl  # ❌ gitignored (too large)
 │           ├── scored.jsonl         # ❌ gitignored (too large)
 │           └── audit_logs/          # ❌ gitignored (may contain redacted PII)
@@ -106,27 +105,26 @@ rai-eval/
 
 1. Fork this repository
 2. Add secrets: **Settings → Secrets → Actions**
-   - `ANTHROPIC_API_KEY`
+   - `ANTHROPIC_API_KEY` *(required — also powers the neural judge)*
    - `OPENAI_API_KEY`
    - `GOOGLE_API_KEY`
-   - `TOGETHER_API_KEY`
 3. Enable GitHub Pages: **Settings → Pages → Source: GitHub Actions**
 4. The workflow runs automatically every Sunday at 00:00 UTC
 5. To trigger manually: **Actions → Weekly RAI Evaluation → Run workflow**
 
 ## Methodology Summary
 
-| Phase | Name                    | What Happens                                                       |
-|-------|-------------------------|--------------------------------------------------------------------|
-| 1     | Taxonomy Alignment      | Load & stratify 500 RedBench prompts per model (ISO-week seed)     |
-| 2     | Adversarial Execution   | Single-turn → agentic 3-turn wrap → 10-turn drift probe (5 %)      |
-| 3     | Dual-Judge Evaluation   | RegexJudge (deterministic) + NeuralJudge (Claude Haiku)            |
-| 4     | Compliance Reporting    | NIST AI RMF mapping, GSAR audit logs, dashboard metrics            |
+| Phase | Name                  | What Happens                                                   |
+|-------|-----------------------|----------------------------------------------------------------|
+| 1     | Taxonomy Alignment    | Load & stratify 50 RedBench prompts per model (ISO-week seed)  |
+| 2     | Adversarial Execution | Single-turn → agentic 3-turn wrap → 10-turn drift probe (5 %)  |
+| 3     | Dual-Judge Evaluation | RegexJudge (deterministic) + NeuralJudge (Claude Haiku)        |
+| 4     | Compliance Reporting  | NIST AI RMF mapping, GSAR audit logs, dashboard metrics        |
 
 ## Cost Estimate
 
-Full 8-model run ≈ **~$29 / week**.
-Use `--samples 50` to run a $3 smoke test, or configure `REDEVAL_NUM_SAMPLES=100` for ~$6/week.
+Full 6-model run at default 50 samples ≈ **~$2 / week**.
+Set `REDEVAL_NUM_SAMPLES=500` for a deeper run (~$20/week), or `REDEVAL_NUM_SAMPLES=100` for ~$4/week.
 
 ## Citation
 

@@ -21,25 +21,21 @@ DASHBOARD_DATA = Path("dashboard/data")
 OUT_FILE       = DASHBOARD_DATA / "results.json"
 
 PROVIDER_MAP = {
-    "claude-opus-4-6":        "Anthropic",
-    "claude-sonnet-4-6":      "Anthropic",
-    "gpt-4o":                 "OpenAI",
-    "gpt-4o-mini":            "OpenAI",
-    "gemini-2.0-flash":       "Google",
-    "gemini-1.5-pro":         "Google",
-    "llama-3.3-70b-instruct": "Meta",
-    "llama-3.1-8b-instruct":  "Meta",
+    "claude-opus-4-6":   "Anthropic",
+    "claude-sonnet-4-6": "Anthropic",
+    "gpt-4o":            "OpenAI",
+    "gpt-4o-mini":       "OpenAI",
+    "gemini-2.0-flash":  "Google",
+    "gemini-1.5-pro":    "Google",
 }
 
 COLOR_MAP = {
-    "claude-opus-4-6":        "#CC785C",
-    "claude-sonnet-4-6":      "#E8956D",
-    "gpt-4o":                 "#10A37F",
-    "gpt-4o-mini":            "#1ABC9C",
-    "gemini-2.0-flash":       "#4285F4",
-    "gemini-1.5-pro":         "#34A853",
-    "llama-3.3-70b-instruct": "#0082FB",
-    "llama-3.1-8b-instruct":  "#4AA3FF",
+    "claude-opus-4-6":   "#CC785C",
+    "claude-sonnet-4-6": "#E8956D",
+    "gpt-4o":            "#10A37F",
+    "gpt-4o-mini":       "#1ABC9C",
+    "gemini-2.0-flash":  "#4285F4",
+    "gemini-1.5-pro":    "#34A853",
 }
 
 
