@@ -1,16 +1,13 @@
 """
 test/test_dataset.py  —  Tests for eval/dataset.py
 
-Tests the stratified-sampling logic without touching the HuggingFace API.
-All tests operate on synthetic RedBenchSample pools.
-
 Covers:
   • _proportional(): proportional allocation across categories
   • _proportional(): handles edge cases (n=0, n > pool, single category)
-  • _stratified(): attack/refusal split
-  • _stratified(): priority domain weighting (~40%)
-  • _stratified(): reproducibility with a fixed seed
-  • RedBenchSample dataclass: fields are correctly typed
+  • _stratified(): attack/refusal split, priority domain weighting, reproducibility
+  • RedBenchSample dataclass: fields correctly typed
+  • load_redbench(): loads from local parquet snapshot, derives sample_type correctly,
+    returns correct counts, generates unique prompt_ids
 """
 from __future__ import annotations
 import random
@@ -21,7 +18,10 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "source"))
 
-from eval.dataset import RedBenchSample, _proportional, _stratified
+from eval.dataset import RedBenchSample, _proportional, _stratified, load_redbench
+
+# Path to the local snapshot (two levels up from test/, then into the snapshot dir)
+_SNAPSHOT_DIR = str(Path(__file__).parent.parent / "knoveleng-redbench-April2026")
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -179,3 +179,63 @@ class TestStratified:
         rng = random.Random(42)
         result = _stratified(pool, 100, rng, priority_domains=None)
         assert len(result) == 10
+
+
+# ── load_redbench() — integration tests against local snapshot ────────────────
+
+class TestLoadRedbench:
+    """Integration tests that read from the local parquet snapshot.
+    Fast (~0.5 s) — no network calls, no API keys required."""
+
+    def test_returns_requested_number_of_samples(self):
+        samples = load_redbench(num_samples=40, seed=42, snapshot_dir=_SNAPSHOT_DIR)
+        assert len(samples) == 40
+
+    def test_all_fields_are_non_empty_strings(self):
+        samples = load_redbench(num_samples=20, seed=1, snapshot_dir=_SNAPSHOT_DIR)
+        for s in samples:
+            for attr in ("prompt_id", "prompt", "category", "domain",
+                         "attack_type", "sample_type", "source_dataset"):
+                val = getattr(s, attr)
+                assert isinstance(val, str) and val.strip(), (
+                    f"{attr!r} is empty or not a string on sample {s.prompt_id}"
+                )
+
+    def test_sample_type_derived_from_category(self):
+        """'No Risk' category → refusal; all others → attack."""
+        samples = load_redbench(num_samples=100, seed=7, snapshot_dir=_SNAPSHOT_DIR)
+        for s in samples:
+            if s.category == "No Risk":
+                assert s.sample_type == "refusal", (
+                    f"Expected refusal for 'No Risk' but got {s.sample_type!r}"
+                )
+            else:
+                assert s.sample_type == "attack", (
+                    f"Expected attack for category {s.category!r} but got {s.sample_type!r}"
+                )
+
+    def test_attack_ratio_respected(self):
+        """Default 80 % attack ratio should produce ~32 attacks in 40 samples."""
+        samples = load_redbench(num_samples=40, attack_ratio=0.80, seed=42,
+                                snapshot_dir=_SNAPSHOT_DIR)
+        n_attack = sum(1 for s in samples if s.sample_type == "attack")
+        assert n_attack == 32, f"Expected 32 attack samples, got {n_attack}"
+
+    def test_prompt_ids_are_unique(self):
+        samples = load_redbench(num_samples=50, seed=99, snapshot_dir=_SNAPSHOT_DIR)
+        ids = [s.prompt_id for s in samples]
+        assert len(ids) == len(set(ids)), "Duplicate prompt_ids found"
+
+    def test_reproducible_with_same_seed(self):
+        s1 = load_redbench(num_samples=30, seed=123, snapshot_dir=_SNAPSHOT_DIR)
+        s2 = load_redbench(num_samples=30, seed=123, snapshot_dir=_SNAPSHOT_DIR)
+        assert [s.prompt_id for s in s1] == [s.prompt_id for s in s2]
+
+    def test_different_seeds_give_different_results(self):
+        s1 = load_redbench(num_samples=30, seed=1, snapshot_dir=_SNAPSHOT_DIR)
+        s2 = load_redbench(num_samples=30, seed=2, snapshot_dir=_SNAPSHOT_DIR)
+        assert [s.prompt_id for s in s1] != [s.prompt_id for s in s2]
+
+    def test_missing_snapshot_raises_file_not_found(self, tmp_path):
+        with pytest.raises(FileNotFoundError, match="No parquet files found"):
+            load_redbench(num_samples=10, seed=0, snapshot_dir=str(tmp_path))

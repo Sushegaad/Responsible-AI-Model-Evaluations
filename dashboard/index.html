@@ -107,18 +107,9 @@ body {
   display: flex; align-items: center; gap: 12px; text-decoration: none;
 }
 
-/* Google four-colour G */
+/* RAI shield logo */
 .g-logo {
-  width: 32px; height: 32px; border-radius: 50%;
-  display: grid; place-items: center;
-  font-family: var(--font-display);
-  font-size: 17px; font-weight: 700; color: #fff;
-  background: conic-gradient(
-    #EA4335 0deg 90deg,
-    #FBBC04 90deg 180deg,
-    #34A853 180deg 270deg,
-    #1A73E8 270deg 360deg
-  );
+  width: 36px; height: 36px;
   flex-shrink: 0;
 }
 
@@ -408,7 +399,14 @@ footer {
 <div class="app-bar">
   <div class="app-bar-inner">
     <a class="app-brand" href="#">
-      <div class="g-logo">G</div>
+      <svg class="g-logo" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="RAI shield logo">
+        <!-- shield body -->
+        <path d="M18 2L4 8v10c0 8.28 6.04 16.02 14 18 7.96-1.98 14-9.72 14-18V8L18 2Z" fill="#1A73E8"/>
+        <!-- inner highlight -->
+        <path d="M18 5L6.5 10.2V18c0 6.8 4.96 13.14 11.5 14.8C24.54 31.14 29.5 24.8 29.5 18v-7.8L18 5Z" fill="#1557B0"/>
+        <!-- RAI text -->
+        <text x="18" y="22" text-anchor="middle" font-family="'Google Sans',sans-serif" font-size="9" font-weight="700" fill="#FFFFFF" letter-spacing="0.5">RAI</text>
+      </svg>
       <span class="app-bar-title">Model Evaluation for <b>Responsible AI</b></span>
     </a>
     <div class="ab-chips">

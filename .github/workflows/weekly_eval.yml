@@ -12,7 +12,7 @@ on:
       num_samples:
         description: 'Samples per model'
         required: false
-        default: '500'
+        default: '50'
 
 permissions:
   contents: write
@@ -57,7 +57,7 @@ jobs:
             ARGS="--models $MODELS"
           fi
           PYTHONPATH=source python -m eval.pipeline \
-            --samples "${{ github.event.inputs.num_samples || '500' }}" \
+            --samples "${{ github.event.inputs.num_samples || '50' }}" \
             $ARGS
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -72,7 +72,9 @@ jobs:
           git config user.email "rai-eval-bot@users.noreply.github.com"
           git config user.name  "RAI Eval Bot"
           # Commit only metrics (not multi-MB raw/scored JSONL files)
-          git add data/weekly/*/metrics.json dashboard/data/results.json
+          # -f needed for dashboard/data/results.json in case of any gitignore edge-cases
+          git add data/weekly/*/metrics.json
+          git add -f dashboard/data/results.json
           WEEK=$(python -c "from datetime import datetime; d=datetime.utcnow(); y,w,_=d.isocalendar(); print(f'{y}-W{w:02d}')")
           git commit -m "📊 Weekly eval: $WEEK" || echo "Nothing to commit"
           git push

@@ -1,0 +1,172 @@
+{
+  "source": "knoveleng/redbench",
+  "license": "MIT",
+  "snapshot_date": "April 2026",
+  "configs": {
+    "AdvBench": {
+      "rows": 1094,
+      "size_kb": 1012
+    },
+    "CatQA": {
+      "rows": 550,
+      "size_kb": 532
+    },
+    "CoCoNot": {
+      "rows": 1380,
+      "size_kb": 1249
+    },
+    "CoNA": {
+      "rows": 178,
+      "size_kb": 214
+    },
+    "CoSafe": {
+      "rows": 1400,
+      "size_kb": 1479
+    },
+    "ControversialInstructions": {
+      "rows": 40,
+      "size_kb": 61
+    },
+    "CyberattackAssistance": {
+      "rows": 1000,
+      "size_kb": 1128
+    },
+    "DAN": {
+      "rows": 390,
+      "size_kb": 357
+    },
+    "DeMET": {
+      "rows": 29,
+      "size_kb": 58
+    },
+    "DiaSafety": {
+      "rows": 501,
+      "size_kb": 563
+    },
+    "DoNotAnswer": {
+      "rows": 939,
+      "size_kb": 932
+    },
+    "ForbiddenQuestions": {
+      "rows": 390,
+      "size_kb": 369
+    },
+    "GEST": {
+      "rows": 3565,
+      "size_kb": 3634
+    },
+    "GPTFuzzer": {
+      "rows": 100,
+      "size_kb": 113
+    },
+    "GandalfIgnoreInstructions": {
+      "rows": 112,
+      "size_kb": 136
+    },
+    "GandalfSummarization": {
+      "rows": 13,
+      "size_kb": 37
+    },
+    "HarmBench": {
+      "rows": 320,
+      "size_kb": 354
+    },
+    "HarmfulQ": {
+      "rows": 200,
+      "size_kb": 222
+    },
+    "HarmfulQA": {
+      "rows": 1960,
+      "size_kb": 1847
+    },
+    "JADE": {
+      "rows": 80,
+      "size_kb": 102
+    },
+    "JBBBehaviours": {
+      "rows": 100,
+      "size_kb": 105
+    },
+    "LatentJailbreak": {
+      "rows": 2424,
+      "size_kb": 2230
+    },
+    "MaliciousInstruct": {
+      "rows": 100,
+      "size_kb": 141
+    },
+    "MaliciousInstructions": {
+      "rows": 100,
+      "size_kb": 121
+    },
+    "MedSafetyBench": {
+      "rows": 900,
+      "size_kb": 1055
+    },
+    "MoralExceptQA": {
+      "rows": 148,
+      "size_kb": 195
+    },
+    "ORBench": {
+      "rows": 1319,
+      "size_kb": 1377
+    },
+    "PhysicalSafetyInstructions": {
+      "rows": 100,
+      "size_kb": 171
+    },
+    "QHarm": {
+      "rows": 100,
+      "size_kb": 138
+    },
+    "SGBench": {
+      "rows": 1192,
+      "size_kb": 1179
+    },
+    "SGXSTest": {
+      "rows": 100,
+      "size_kb": 154
+    },
+    "SafeText": {
+      "rows": 367,
+      "size_kb": 578
+    },
+    "StrongREJECT": {
+      "rows": 313,
+      "size_kb": 385
+    },
+    "ToxiGen": {
+      "rows": 940,
+      "size_kb": 987
+    },
+    "WMDP": {
+      "rows": 3668,
+      "size_kb": 5414
+    },
+    "XSTest": {
+      "rows": 450,
+      "size_kb": 453
+    },
+    "XSafety": {
+      "rows": 2800,
+      "size_kb": 2820
+    }
+  },
+  "total_rows": 29362,
+  "columns": [
+    "prompt",
+    "choices",
+    "answer",
+    "task",
+    "subtask",
+    "category",
+    "domain",
+    "language",
+    "source",
+    "risk_response",
+    "risk_property",
+    "domain_response",
+    "domain_property"
+  ],
+  "sample_type_logic": "category == \"No Risk\" -> refusal; else -> attack"
+}

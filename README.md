@@ -4,13 +4,13 @@
 > [RedBench](https://arxiv.org/abs/2601.03699) adversarial dataset.
 > Results published to a public GitHub Pages dashboard every Sunday.
 
-[![Weekly Eval](https://github.com/Sushegaad/rai-eval/actions/workflows/weekly_eval.yml/badge.svg)](https://github.com/Sushegaad/rai-eval/actions)
+[![Weekly Eval](https://github.com/Sushegaad/Responsible-AI-Model-Evaluations/actions/workflows/weekly_eval.yml/badge.svg)](https://github.com/Sushegaad/Responsible-AI-Model-Evaluations/actions)
 [![Dataset: RedBench](https://img.shields.io/badge/Dataset-RedBench-blue)](https://huggingface.co/datasets/knoveleng/redbench)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
 ## Live Dashboard
 
-**[→ https://Sushegaad.github.io/rai-eval/](https://Sushegaad.github.io/rai-eval/)**
+**[→ https://Sushegaad.github.io/Responsible-AI-Model-Evaluations/](https://Sushegaad.github.io/Responsible-AI-Model-Evaluations/)**
 
 ---
 
@@ -34,8 +34,8 @@
 ## Quick Start
 
 ```bash
-git clone https://github.com/Sushegaad/rai-eval.git
-cd rai-eval
+git clone https://github.com/Sushegaad/Responsible-AI-Model-Evaluations.git
+cd Responsible-AI-Model-Evaluations
 pip install -r requirements.txt
 
 cp .env.template .env
@@ -60,7 +60,7 @@ PYTHONPATH=source python source/scripts/build_dashboard_data.py
 ## Repository Structure
 
 ```
-rai-eval/
+Responsible-AI-Model-Evaluations/
 ├── source/                        # All production Python source code
 │   ├── eval/                      # Core evaluation package
 │   │   ├── __init__.py
@@ -80,7 +80,13 @@ rai-eval/
 │   ├── test_judges.py             # Regex judge, neural verdict combiner
 │   ├── test_metrics.py            # ASR, FOR, drift, provenance computation
 │   ├── test_reporter.py           # PII redaction, audit log threshold
-│   └── test_dataset.py            # Stratified sampling logic
+│   └── test_dataset.py            # Stratified sampling + local snapshot loader
+│
+├── knoveleng-redbench-April2026/  # 📦 Local RedBench snapshot (committed to git)
+│   ├── AdvBench.parquet           #    37 sub-benchmark configs
+│   ├── HarmBench.parquet          #    29 362 rows total
+│   ├── ...                        #    MIT License (knoveleng/redbench)
+│   └── metadata.json              #    Snapshot date, schema, row counts
 │
 ├── data/                          # Auto-generated evaluation results (gitignored except metrics)
 │   └── weekly/
@@ -101,9 +107,34 @@ rai-eval/
 └── README.md
 ```
 
+## Dataset
+
+RedBench is a unified adversarial red-teaming benchmark covering **23 risk categories** and **19 domains** across 37 sub-benchmarks (AdvBench, HarmBench, ToxiGen, XSTest, DAN, GPTFuzzer, and more).
+
+The dataset snapshot (`knoveleng-redbench-April2026/`) is committed directly to this repository as Parquet files. This means:
+
+- **No HuggingFace download at runtime** — evaluations start instantly with no network dependency on the dataset host
+- **Reproducible across runs** — the exact same prompt pool is used every week, with only the random seed changing
+- **Version-controlled** — the dataset version is locked; updates require an explicit snapshot refresh
+
+To refresh the snapshot in the future, run:
+
+```bash
+python3 -c "
+from datasets import load_dataset, get_dataset_config_names
+import os
+out = 'knoveleng-redbench-<Month><Year>'
+os.makedirs(out, exist_ok=True)
+for cfg in get_dataset_config_names('knoveleng/redbench'):
+    load_dataset('knoveleng/redbench', cfg, split='train').to_parquet(f'{out}/{cfg}.parquet')
+"
+```
+
+Then update `_SNAPSHOT_DIR` in `source/eval/dataset.py` to point to the new folder.
+
 ## GitHub Actions Setup
 
-1. Fork this repository
+1. Fork or clone this repository — the dataset snapshot is already included
 2. Add secrets: **Settings → Secrets → Actions**
    - `ANTHROPIC_API_KEY` *(required — also powers the neural judge)*
    - `OPENAI_API_KEY`
@@ -114,12 +145,12 @@ rai-eval/
 
 ## Methodology Summary
 
-| Phase | Name                  | What Happens                                                   |
-|-------|-----------------------|----------------------------------------------------------------|
-| 1     | Taxonomy Alignment    | Load & stratify 50 RedBench prompts per model (ISO-week seed)  |
-| 2     | Adversarial Execution | Single-turn → agentic 3-turn wrap → 10-turn drift probe (5 %)  |
-| 3     | Dual-Judge Evaluation | RegexJudge (deterministic) + NeuralJudge (Claude Haiku)        |
-| 4     | Compliance Reporting  | NIST AI RMF mapping, GSAR audit logs, dashboard metrics        |
+| Phase | Name                  | What Happens                                                          |
+|-------|-----------------------|-----------------------------------------------------------------------|
+| 1     | Taxonomy Alignment    | Load & stratify 50 prompts from local snapshot per model (ISO-week seed) |
+| 2     | Adversarial Execution | Single-turn → agentic 3-turn wrap → 10-turn drift probe (5 %)         |
+| 3     | Dual-Judge Evaluation | RegexJudge (deterministic) + NeuralJudge (Claude Haiku)               |
+| 4     | Compliance Reporting  | NIST AI RMF mapping, GSAR audit logs, dashboard metrics               |
 
 ## Cost Estimate
 

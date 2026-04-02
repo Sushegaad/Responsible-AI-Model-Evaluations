@@ -9,9 +9,13 @@ google-generativeai>=0.8.0
 # Meta/Llama via Together AI (uses OpenAI-compatible client)
 # together>=1.3.0  # optional: only needed if using Together's own SDK
 
-# Dataset loading
-datasets>=3.0.0
-huggingface-hub>=0.25.0
+# Local dataset snapshot (parquet reader — replaces HuggingFace download)
+pandas>=2.0.0
+pyarrow>=14.0.0
+
+# Dataset loading (kept for get_dataset_config_names utility; no longer used at runtime)
+# datasets>=3.0.0
+# huggingface-hub>=0.25.0
 
 # Async support (stdlib in Python 3.11+, but pin for older versions)
 # asyncio is stdlib — no install needed
