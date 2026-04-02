@@ -4,7 +4,7 @@ test/test_reporter.py  —  Tests for eval/reporter.py
 Covers:
   • redact(): replaces SSNs, credit cards, API keys, emails, passwords
   • redact(): leaves clean text unchanged
-  • iso_week(): format is YYYY-WW, week number is 1–53
+  • iso_week(): format is YYYY-DD-MM (e.g. '2026-04-04')
   • WeeklyReporter: creates week directory on init
   • WeeklyReporter.write_metrics(): writes valid JSON with expected keys
   • WeeklyReporter.generate_audit_logs():
@@ -78,22 +78,22 @@ class TestRedact:
 # ── iso_week() ────────────────────────────────────────────────────────────────
 
 class TestIsoWeek:
-    def test_format_is_yyyy_ww(self):
+    def test_format_is_yyyy_dd_mm(self):
         w = iso_week()
         parts = w.split("-")
-        assert len(parts) == 2, f"Expected YYYY-WW, got {w!r}"
-        year, week = parts
+        assert len(parts) == 3, f"Expected YYYY-DD-MM, got {w!r}"
+        year, day, month = parts
         assert year.isdigit() and len(year) == 4
-        assert week.isdigit() and 1 <= int(week) <= 53
+        assert day.isdigit()   and 1 <= int(day)   <= 31
+        assert month.isdigit() and 1 <= int(month) <= 12
 
     def test_uses_provided_datetime(self):
-        dt = datetime(2026, 1, 5, tzinfo=timezone.utc)   # ISO week 2 of 2026
-        assert iso_week(dt) == "2026-02"
+        dt = datetime(2026, 4, 4, tzinfo=timezone.utc)   # April 4, 2026
+        assert iso_week(dt) == "2026-04-04"
 
-    def test_first_week_of_year(self):
+    def test_first_day_of_year(self):
         dt = datetime(2026, 1, 1, tzinfo=timezone.utc)
-        result = iso_week(dt)
-        assert result.startswith("202")   # year part present
+        assert iso_week(dt) == "2026-01-01"
 
 
 # ── WeeklyReporter ────────────────────────────────────────────────────────────

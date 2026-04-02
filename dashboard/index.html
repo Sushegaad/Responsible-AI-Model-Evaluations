@@ -9,60 +9,37 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════════════
-   DESIGN SYSTEM — Google Material Design 3
-   Surfaces, elevation, Google brand palette
+   DESIGN SYSTEM
 ═══════════════════════════════════════════════════ */
 :root {
-  /* Surfaces */
   --surface-0:    #FFFFFF;
   --surface-1:    #F8F9FA;
   --surface-2:    #F1F3F4;
   --surface-3:    #E8EAED;
   --surface-4:    #DADCE0;
-
-  /* Text */
   --on-surface:   #202124;
   --on-surface-2: #3C4043;
   --on-surface-3: #5F6368;
   --on-surface-4: #80868B;
   --on-surface-5: #9AA0A6;
-
-  /* Google brand palette */
   --google-blue:   #1A73E8;
   --google-red:    #EA4335;
   --google-yellow: #F9AB00;
   --google-green:  #34A853;
-
-  /* Tonal surfaces */
   --blue-tonal:    #E8F0FE;
   --red-tonal:     #FCE8E6;
   --yellow-tonal:  #FEF7E0;
   --green-tonal:   #E6F4EA;
-
-  /* Semantic */
   --success: #34A853;
   --warning: #F9AB00;
   --error:   #D93025;
   --info:    #1A73E8;
-
-  /* Model brands */
   --anthropic: #CC785C;
   --openai:    #10A37F;
-  --meta:      #0082FB;
-
-  /* Elevation — Material Design */
   --elev-1: 0 1px 2px rgba(60,64,67,.3),  0 1px 3px 1px rgba(60,64,67,.15);
   --elev-2: 0 1px 2px rgba(60,64,67,.3),  0 2px 6px 2px rgba(60,64,67,.15);
   --elev-3: 0 1px 3px rgba(60,64,67,.3),  0 4px 8px 3px rgba(60,64,67,.15);
-
-  /* Geometry */
-  --r-sm:   4px;
-  --r-md:   8px;
-  --r-lg:   12px;
-  --r-xl:   16px;
-  --r-pill: 100px;
-
-  /* Typography */
+  --r-sm:   4px; --r-md: 8px; --r-lg: 12px; --r-xl: 16px; --r-pill: 100px;
   --font-display: 'Google Sans Display', 'Google Sans', sans-serif;
   --font-ui:      'Google Sans', sans-serif;
   --font-body:    'Roboto', sans-serif;
@@ -71,107 +48,69 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-
 body {
-  background: var(--surface-1);
-  color: var(--on-surface);
-  font-family: var(--font-body);
-  font-size: 14px;
-  line-height: 1.5;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
+  background: var(--surface-1); color: var(--on-surface);
+  font-family: var(--font-body); font-size: 14px; line-height: 1.5;
+  min-height: 100vh; -webkit-font-smoothing: antialiased;
 }
-
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--surface-2); }
 ::-webkit-scrollbar-thumb { background: var(--surface-4); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--on-surface-5); }
 
-/* ═══════════════════════
-   TOP APP BAR
-═══════════════════════ */
+/* ── APP BAR ── */
 .app-bar {
   position: sticky; top: 0; z-index: 100;
   background: var(--surface-0);
   border-bottom: 1px solid var(--surface-3);
   box-shadow: 0 1px 3px rgba(60,64,67,.15);
 }
-
 .app-bar-inner {
   max-width: 1280px; margin: 0 auto; padding: 0 24px;
-  height: 64px;
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
 }
-
-.app-brand {
-  display: flex; align-items: center; gap: 12px; text-decoration: none;
-}
-
-/* RAI shield logo */
-.g-logo {
-  width: 36px; height: 36px;
-  flex-shrink: 0;
-}
-
+.app-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.g-logo { width: 36px; height: 36px; flex-shrink: 0; }
 .app-bar-title {
   font-family: var(--font-ui); font-size: 17px; font-weight: 500;
   color: var(--on-surface); letter-spacing: -.01em;
 }
 .app-bar-title b { color: var(--google-blue); font-weight: 700; }
-
 .ab-chips { display: flex; align-items: center; gap: 8px; }
-
 .chip {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 6px 12px; border-radius: var(--r-pill);
   border: 1px solid var(--surface-4); background: var(--surface-0);
-  font-family: var(--font-ui); font-size: 12px; font-weight: 500;
-  color: var(--on-surface-3);
+  font-family: var(--font-ui); font-size: 12px; font-weight: 500; color: var(--on-surface-3);
 }
-.chip.live {
-  border-color: #34A85340; color: var(--success); background: var(--green-tonal);
-}
+.chip.live { border-color: #34A85340; color: var(--success); background: var(--green-tonal); }
 .chip.live::before {
   content:''; width:6px; height:6px; background:var(--success);
   border-radius:50%; animation: pulse 2s ease-in-out infinite;
 }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-/* ═══════════════════════
-   PAGE LAYOUT
-═══════════════════════ */
+/* ── PAGE ── */
 .page { max-width: 1280px; margin: 0 auto; padding: 0 24px 56px; }
 
-/* ═══════════════════════
-   HERO
-═══════════════════════ */
+/* ── HERO ── */
 .hero {
-  padding: 40px 0 32px;
+  padding: 40px 0 28px;
   display: flex; align-items: flex-start; justify-content: space-between;
   gap: 24px; flex-wrap: wrap;
 }
-
 .hero-eyebrow {
   font-family: var(--font-ui); font-size: 11px; font-weight: 500;
-  letter-spacing: .08em; text-transform: uppercase; color: var(--google-blue);
-  margin-bottom: 10px;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--google-blue); margin-bottom: 10px;
 }
-
 .hero h1 {
-  font-family: var(--font-display);
-  font-size: clamp(24px, 3.2vw, 38px);
+  font-family: var(--font-display); font-size: clamp(24px, 3.2vw, 38px);
   font-weight: 400; letter-spacing: -.02em; line-height: 1.15;
   color: var(--on-surface); margin-bottom: 12px;
 }
 .hero h1 b { font-weight: 700; }
-
-.hero-desc {
-  font-size: 14px; color: var(--on-surface-3);
-  max-width: 560px; line-height: 1.75;
-}
-
+.hero-desc { font-size: 14px; color: var(--on-surface-3); max-width: 560px; line-height: 1.75; }
 .hero-actions { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
-
 .btn-filled {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 8px 20px; border-radius: var(--r-pill); border: none;
@@ -181,237 +120,259 @@ body {
   box-shadow: var(--elev-1); transition: box-shadow .15s, background .15s;
 }
 .btn-filled:hover { box-shadow: var(--elev-2); background: #1558D6; }
-
 .btn-text {
   display: inline-flex; align-items: center; gap: 4px;
   padding: 8px 16px; border-radius: var(--r-pill); border: none;
   background: none; color: var(--google-blue);
   font-family: var(--font-ui); font-size: 13px; font-weight: 500;
-  cursor: pointer; text-decoration: none;
-  transition: background .15s;
+  cursor: pointer; text-decoration: none; transition: background .15s;
 }
 .btn-text:hover { background: var(--blue-tonal); }
-
 .hero-week-card {
   background: var(--surface-0); border-radius: var(--r-xl);
   box-shadow: var(--elev-1); padding: 20px 24px; min-width: 210px; flex-shrink: 0;
 }
 .hwc-label { font-family:var(--font-ui); font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:var(--on-surface-4); margin-bottom:4px; }
-.hwc-value { font-family:var(--font-display); font-size:26px; font-weight:700; color:var(--on-surface); margin-bottom:4px; }
-.hwc-sub   { font-size:12px; color:var(--on-surface-4); line-height:1.5; }
+.hwc-value { font-family:var(--font-display); font-size:22px; font-weight:700; color:var(--on-surface); margin-bottom:4px; }
+.hwc-sub   { font-size:12px; color:var(--on-surface-4); }
 .hwc-sub a { color:var(--google-blue); text-decoration:none; }
-.hwc-sub a:hover { text-decoration:underline; }
 
-/* ═══════════════════════
-   SECTION
-═══════════════════════ */
+/* ── TAB NAVIGATION ── */
+.tab-nav {
+  display: flex; gap: 4px; border-bottom: 2px solid var(--surface-3);
+  margin-bottom: 8px; overflow-x: auto; padding-bottom: 0;
+}
+.tab-btn {
+  font-family: var(--font-ui); font-size: 14px; font-weight: 500;
+  color: var(--on-surface-3); background: none; border: none;
+  padding: 12px 20px; cursor: pointer; border-radius: var(--r-md) var(--r-md) 0 0;
+  border-bottom: 3px solid transparent; margin-bottom: -2px;
+  transition: color .15s, border-color .15s, background .15s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--google-blue); background: var(--blue-tonal); }
+.tab-btn.active { color: var(--google-blue); border-bottom-color: var(--google-blue); font-weight: 700; }
+
+/* ── TAB PANELS ── */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── SECTION ── */
 .section { margin-bottom: 32px; }
-
-.sec-head {
-  display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
-  margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--surface-3);
+.sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+.sec-title {
+  font-family: var(--font-ui); font-size: 16px; font-weight: 700;
+  color: var(--on-surface); letter-spacing: -.01em;
 }
-.sec-title { font-family:var(--font-display); font-size:16px; font-weight:500; color:var(--on-surface); }
-.sec-hint  { font-size:12px; color:var(--on-surface-4); }
+.sec-hint { font-size: 12px; color: var(--on-surface-4); }
 
-/* ═══════════════════════
-   SUMMARY STAT CARDS
-═══════════════════════ */
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-}
-
-.stat-card {
+/* ── INSIGHTS ── */
+.insights-card {
   background: var(--surface-0); border-radius: var(--r-xl);
-  box-shadow: var(--elev-1); padding: 20px 22px;
-  border-top: 3px solid transparent;
-  transition: box-shadow .18s;
+  box-shadow: var(--elev-1); padding: 24px 28px;
+  border-left: 4px solid var(--google-blue);
 }
-.stat-card:hover { box-shadow: var(--elev-2); }
-.stat-card.blue   { border-top-color: var(--google-blue); }
-.stat-card.green  { border-top-color: var(--google-green); }
-.stat-card.yellow { border-top-color: var(--google-yellow); }
+.insights-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.insights-list li {
+  font-size: 14px; color: var(--on-surface-2); line-height: 1.75;
+  padding-left: 22px; position: relative;
+}
+.insights-list li::before {
+  content: ''; position: absolute; left: 0; top: 9px;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--google-blue);
+}
 
-.stat-icon {
-  width: 38px; height: 38px; border-radius: var(--r-md);
-  display: grid; place-items: center; font-size: 18px; margin-bottom: 12px;
+/* ── SUMMARY GRID ── */
+.summary-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 16px;
 }
+.stat-card {
+  background: var(--surface-0); border-radius: var(--r-xl); box-shadow: var(--elev-1);
+  padding: 20px; display: flex; flex-direction: column; gap: 6px;
+  border-top: 3px solid transparent; animation: fadeUp .4s ease both;
+}
+.stat-card.blue   { border-color: var(--google-blue); }
+.stat-card.green  { border-color: var(--google-green); }
+.stat-card.yellow { border-color: var(--google-yellow); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.stat-icon { width:38px;height:38px;border-radius:var(--r-md); display:grid;place-items:center;font-size:18px; }
 .stat-icon.blue   { background: var(--blue-tonal); }
 .stat-icon.green  { background: var(--green-tonal); }
 .stat-icon.yellow { background: var(--yellow-tonal); }
+.stat-label  { font-family:var(--font-ui); font-size:11px; font-weight:500; letter-spacing:.05em; text-transform:uppercase; color:var(--on-surface-4); }
+.stat-value  { font-family:var(--font-display); font-size:28px; font-weight:700; color:var(--on-surface); line-height:1; }
+.stat-model  { font-family:var(--font-ui); font-size:13px; font-weight:500; color:var(--on-surface-2); }
+.stat-detail { font-size:11px; color:var(--on-surface-4); }
 
-.stat-label {
-  font-family:var(--font-ui); font-size:11px; font-weight:500;
-  text-transform:uppercase; letter-spacing:.06em; color:var(--on-surface-4); margin-bottom:6px;
+/* ── LEADERBOARD ── */
+.lb-card {
+  background: var(--surface-0); border-radius: var(--r-xl);
+  box-shadow: var(--elev-1); overflow: hidden;
 }
-.stat-value { font-family:var(--font-display); font-size:30px; font-weight:700; color:var(--on-surface); line-height:1; margin-bottom:6px; }
-.stat-model { font-family:var(--font-ui); font-size:13px; font-weight:500; color:var(--on-surface-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.stat-detail { font-size:12px; color:var(--on-surface-4); margin-top:2px; }
-
-/* ═══════════════════════
-   LEADERBOARD
-═══════════════════════ */
-.lb-card { background:var(--surface-0); border-radius:var(--r-xl); box-shadow:var(--elev-1); overflow:hidden; }
-
 .lb-table { width:100%; border-collapse:collapse; }
-.lb-table thead tr { background:var(--surface-1); border-bottom:2px solid var(--surface-3); }
 .lb-table th {
-  font-family:var(--font-ui); font-size:11px; font-weight:500;
-  letter-spacing:.05em; text-transform:uppercase; color:var(--on-surface-4);
-  padding:12px 16px; text-align:left; white-space:nowrap; cursor:pointer; user-select:none;
-  transition: color .12s, background .12s;
+  padding:12px 16px; text-align:left; font-family:var(--font-ui); font-size:12px;
+  font-weight:600; color:var(--on-surface-3); letter-spacing:.03em; text-transform:uppercase;
+  background:var(--surface-1); border-bottom:1px solid var(--surface-3);
+  cursor:pointer; user-select:none; white-space:nowrap;
 }
-.lb-table th:hover  { color:var(--google-blue); background:var(--blue-tonal); }
+.lb-table th:hover { background:var(--surface-2); color:var(--on-surface-2); }
 .lb-table th.sorted { color:var(--google-blue); }
-
-.lb-table tbody tr { border-bottom:1px solid var(--surface-2); transition:background .1s; }
-.lb-table tbody tr:last-child { border-bottom:none; }
-.lb-table tbody tr:hover { background:var(--surface-1); }
-.lb-table td { padding:14px 16px; vertical-align:middle; }
-
+.lb-table td { padding:12px 16px; border-bottom:1px solid var(--surface-2); vertical-align:middle; }
+.lb-table tr:last-child td { border-bottom:none; }
+.lb-table tr:hover td { background:var(--surface-1); }
+.rank-badge {
+  width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;
+  justify-content:center;font-family:var(--font-ui);font-size:12px;font-weight:700;
+}
+.rk-1{background:#FFF8E1;color:#F9AB00;} .rk-2{background:#F3E5F5;color:#8E24AA;}
+.rk-3{background:#E8F5E9;color:#2E7D32;} .rk-n{background:var(--surface-2);color:var(--on-surface-4);}
 .mc { display:flex; align-items:center; gap:10px; }
-.mc-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-.mc-name { font-family:var(--font-ui); font-size:13px; font-weight:500; color:var(--on-surface); }
-.mc-prov { font-size:12px; color:var(--on-surface-4); }
+.mc-dot { width:10px;height:10px;border-radius:50%;flex-shrink:0; }
+.mc-name { font-family:var(--font-ui); font-size:13px; font-weight:500; }
+.mc-prov { font-size:11px; color:var(--on-surface-4); }
+.bar-cell { display:flex; align-items:center; gap:8px; }
+.bar-track { flex:1; height:6px; background:var(--surface-3); border-radius:3px; overflow:hidden; min-width:60px; }
+.bar-fill  { height:100%; border-radius:3px; transition:width .6s ease; }
+.mv { font-family:var(--font-mono); font-size:12px; font-weight:500; white-space:nowrap; }
+.mv.g{color:var(--success)} .mv.w{color:var(--warning)} .mv.b{color:var(--error)} .mv.n{color:var(--on-surface-3)} .mv.i{color:var(--info)}
 
-.mv { font-family:var(--font-mono); font-size:13px; font-weight:500; }
-.mv.g { color:var(--success); }
-.mv.w { color:var(--warning); }
-.mv.b { color:var(--error); }
-.mv.i { color:var(--info); }
-.mv.n { color:var(--on-surface-3); }
+/* ── CHARTS ── */
+.charts-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(460px,1fr)); gap:16px; }
+.chart-card {
+  background:var(--surface-0); border-radius:var(--r-xl);
+  box-shadow:var(--elev-1); padding:20px 24px;
+}
+.ct-title { font-family:var(--font-ui); font-size:14px; font-weight:700; color:var(--on-surface); margin-bottom:4px; }
+.ct-desc  { font-size:12px; color:var(--on-surface-4); margin-bottom:16px; }
+.ct-wrap  { position:relative; height:200px; }
+.ct-wrap.tall { height:320px; }
 
-.bar-cell { display:flex; align-items:center; gap:10px; }
-.bar-track { flex:1; min-width:60px; height:4px; background:var(--surface-3); border-radius:2px; overflow:hidden; }
-.bar-fill  { height:100%; border-radius:2px; transition:width .5s ease; }
-
-.rank-badge { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; font-family:var(--font-ui); font-size:11px; font-weight:700; }
-.rk-1 { background:#FEF7E0; color:#B07800; border:1.5px solid #FBBC0460; }
-.rk-2 { background:var(--surface-2); color:var(--on-surface-3); border:1.5px solid var(--surface-4); }
-.rk-3 { background:var(--red-tonal); color:var(--error); border:1.5px solid #EA433540; }
-.rk-n { background:var(--surface-1); color:var(--on-surface-5); border:1.5px solid var(--surface-3); }
-
-/* ═══════════════════════
-   CHARTS
-═══════════════════════ */
-.charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-@media (max-width:860px) { .charts-grid { grid-template-columns:1fr; } }
-
-.chart-card { background:var(--surface-0); border-radius:var(--r-xl); box-shadow:var(--elev-1); padding:20px 22px; }
-.ct-title { font-family:var(--font-ui); font-size:13px; font-weight:500; color:var(--on-surface); margin-bottom:2px; }
-.ct-desc  { font-size:12px; color:var(--on-surface-4); margin-bottom:16px; line-height:1.5; }
-.ct-wrap  { position:relative; height:230px; }
-.ct-wrap.tall { height:300px; }
-
-/* ═══════════════════════
-   RADAR LAYOUT
-═══════════════════════ */
-.radar-layout { display:grid; grid-template-columns:260px 1fr; gap:12px; align-items:start; }
-@media (max-width:860px) { .radar-layout { grid-template-columns:1fr; } }
-
-.model-picker { background:var(--surface-0); border-radius:var(--r-xl); box-shadow:var(--elev-1); overflow:hidden; }
-.mp-head { padding:12px 16px; background:var(--surface-1); border-bottom:1px solid var(--surface-3); font-family:var(--font-ui); font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:.06em; color:var(--on-surface-4); }
-
+/* ── RADAR ── */
+.radar-layout { display:grid; grid-template-columns:200px 1fr; gap:16px; align-items:start; }
+@media(max-width:640px){ .radar-layout{ grid-template-columns:1fr; } }
+.model-picker { background:var(--surface-0);border-radius:var(--r-xl);box-shadow:var(--elev-1);padding:16px;display:flex;flex-direction:column;gap:6px; }
+.mp-head { font-family:var(--font-ui);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--on-surface-4);margin-bottom:4px; }
 .mp-btn {
-  display:flex; align-items:center; gap:10px;
-  padding:12px 16px; width:100%; text-align:left;
-  background:none; border:none; border-bottom:1px solid var(--surface-2);
-  color:var(--on-surface-3); font-family:var(--font-ui); font-size:13px; cursor:pointer;
-  transition: background .12s, color .12s;
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-md);
+  border:1px solid var(--surface-3);background:var(--surface-0);cursor:pointer;
+  font-family:var(--font-ui);font-size:12px;transition:background .15s,border-color .15s;
+  text-align:left;
 }
-.mp-btn:last-child { border-bottom:none; }
-.mp-btn:hover  { background:var(--blue-tonal); color:var(--google-blue); }
-.mp-btn.active { background:var(--blue-tonal); color:var(--google-blue); font-weight:500; }
-.mp-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.mp-sub { font-size:11px; color:var(--on-surface-5); margin-top:1px; }
+.mp-btn:hover { background:var(--surface-1); }
+.mp-btn.active { background:var(--blue-tonal);border-color:var(--google-blue); }
+.mp-dot { width:10px;height:10px;border-radius:50%;flex-shrink:0; }
+.mp-sub { font-size:10px;color:var(--on-surface-4); }
 
-/* ═══════════════════════
-   NIST
-═══════════════════════ */
-.nist-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
-.nist-tab  { padding:6px 14px; border-radius:var(--r-pill); font-family:var(--font-ui); font-size:12px; font-weight:500; cursor:pointer; border:1.5px solid transparent; transition:opacity .15s, box-shadow .15s; }
-
-.nist-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px; }
-.nist-card { background:var(--surface-0); border-radius:var(--r-lg); box-shadow:var(--elev-1); padding:16px 18px; border-left:3px solid transparent; }
-
-.nist-fn  { font-family:var(--font-ui); font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:3px; }
-.fn-protect { color:var(--google-blue);   border-left-color:var(--google-blue); }
-.fn-govern  { color:#7627BB;              border-left-color:#7627BB; }
-.fn-detect  { color:#D73B5E;              border-left-color:#D73B5E; }
-.fn-manage  { color:var(--google-yellow); border-left-color:var(--google-yellow); }
-.fn-map     { color:var(--google-green);  border-left-color:var(--google-green); }
-.fn-measure { color:var(--anthropic);     border-left-color:var(--anthropic); }
-
-.nist-lbl { font-size:12px; color:var(--on-surface-3); margin-bottom:10px; line-height:1.4; }
-.nist-asr { font-family:var(--font-display); font-size:24px; font-weight:700; }
-.nist-sub { font-size:11px; color:var(--on-surface-4); margin-top:2px; }
-
-/* ═══════════════════════
-   METHODOLOGY
-═══════════════════════ */
-.method-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; }
-.method-card { background:var(--surface-0); border-radius:var(--r-xl); box-shadow:var(--elev-1); padding:20px 22px; }
-.method-num   { font-family:var(--font-ui); font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; margin-bottom:8px; }
-.method-title { font-family:var(--font-display); font-size:15px; font-weight:500; color:var(--on-surface); margin-bottom:8px; }
-.method-body  { font-size:13px; color:var(--on-surface-3); line-height:1.7; }
-.method-body strong { color:var(--on-surface-2); font-weight:500; }
-
-/* ═══════════════════════
-   FOOTER
-═══════════════════════ */
-footer {
-  margin-top:40px; padding-top:24px; border-top:1px solid var(--surface-3);
-  display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between; align-items:flex-start;
+/* ── NIST ── */
+.nist-tabs { display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px; }
+.nist-tab {
+  padding:8px 16px;border-radius:var(--r-pill);border:1px solid;
+  font-family:var(--font-ui);font-size:12px;font-weight:500;cursor:pointer;
+  transition:opacity .15s,box-shadow .15s;
 }
-.foot-copy  { font-family:var(--font-ui); font-size:12px; color:var(--on-surface-4); }
-.foot-links { display:flex; gap:16px; flex-wrap:wrap; }
-.foot-links a { font-family:var(--font-ui); font-size:12px; color:var(--google-blue); text-decoration:none; }
-.foot-links a:hover { text-decoration:underline; }
-.cite-box {
-  width:100%; background:var(--surface-1); border:1px solid var(--surface-3);
-  border-radius:var(--r-lg); padding:14px 18px;
-  font-family:var(--font-mono); font-size:11px; color:var(--on-surface-4); line-height:1.9;
+.nist-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px; }
+.nist-card { background:var(--surface-0);border-radius:var(--r-lg);box-shadow:var(--elev-1);padding:16px; }
+.nist-fn { font-family:var(--font-ui);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px; }
+.fn-govern  { color:#7C4DFF; }
+.fn-map     { color:#00897B; }
+.fn-measure { color:#0288D1; }
+.fn-manage  { color:#E65100; }
+.fn-protect { color:#D81B60; }
+.fn-detect  { color:#558B2F; }
+.nist-lbl { font-size:12px;color:var(--on-surface-3);margin-bottom:8px;line-height:1.4; }
+.nist-asr { font-family:var(--font-display);font-size:24px;font-weight:700;line-height:1; }
+.nist-sub { font-size:10px;color:var(--on-surface-4);margin-top:4px; }
+
+/* ── METHODOLOGY ── */
+.method-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px; }
+.method-card { background:var(--surface-0);border-radius:var(--r-xl);box-shadow:var(--elev-1);padding:24px; }
+.method-num  { font-family:var(--font-ui);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px; }
+.method-title{ font-family:var(--font-ui);font-size:15px;font-weight:700;color:var(--on-surface);margin-bottom:10px; }
+.method-body { font-size:13px;color:var(--on-surface-3);line-height:1.7; }
+
+/* ── METRIC CARDS ── */
+.metric-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:32px; }
+.metric-card {
+  background:var(--surface-0);border-radius:var(--r-xl);box-shadow:var(--elev-1);
+  padding:24px;border-top:3px solid var(--google-blue);
 }
+.metric-abbr  { font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--google-blue);margin-bottom:4px; }
+.metric-name  { font-family:var(--font-ui);font-size:13px;font-weight:600;color:var(--on-surface);margin-bottom:10px; }
+.metric-def   { font-size:13px;color:var(--on-surface-3);line-height:1.7;margin-bottom:10px; }
+.metric-target{ display:inline-block;padding:4px 10px;border-radius:var(--r-pill);background:var(--green-tonal);color:var(--success);font-family:var(--font-ui);font-size:11px;font-weight:600; }
 
-/* ═══════════════════════
-   EMPTY / LOADING
-═══════════════════════ */
-.empty {
-  text-align:center; padding:60px 20px;
-  color:var(--on-surface-4); font-size:14px;
+/* ── DATASET SECTION ── */
+.dataset-card {
+  background:var(--surface-0);border-radius:var(--r-xl);box-shadow:var(--elev-1);
+  padding:28px;display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap;margin-bottom:32px;
 }
-.empty .ei { font-size:36px; display:block; margin-bottom:10px; }
-.empty strong { display:block; font-size:15px; color:var(--on-surface-3); margin-bottom:6px; }
+.dc-body { flex:1; min-width:260px; }
+.dc-title { font-family:var(--font-ui);font-size:16px;font-weight:700;color:var(--on-surface);margin-bottom:8px; }
+.dc-desc  { font-size:13px;color:var(--on-surface-3);line-height:1.75;margin-bottom:16px; }
+.dc-meta  { display:flex;flex-wrap:wrap;gap:8px; }
+.dc-tag   { padding:4px 10px;border-radius:var(--r-pill);background:var(--blue-tonal);color:var(--google-blue);font-family:var(--font-ui);font-size:11px;font-weight:600; }
+.dc-actions{ display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:16px; }
 
-.loading { display:flex; flex-direction:column; align-items:center; gap:12px; padding:56px 0; color:var(--on-surface-4); font-size:13px; }
-.spinner { width:32px; height:32px; border:3px solid var(--surface-3); border-top-color:var(--google-blue); border-radius:50%; animation:spin .7s linear infinite; }
-@keyframes spin { to { transform:rotate(360deg); } }
+/* ── RESOURCES ── */
+.resource-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:28px; }
+.resource-card {
+  background:var(--surface-0);border-radius:var(--r-xl);box-shadow:var(--elev-1);
+  padding:24px;display:flex;flex-direction:column;gap:8px;
+}
+.rc-icon  { font-size:24px;margin-bottom:4px; }
+.rc-title { font-family:var(--font-ui);font-size:14px;font-weight:700;color:var(--on-surface); }
+.rc-value { font-size:13px;color:var(--on-surface-2);line-height:1.6; }
+.rc-link  { display:inline-flex;align-items:center;gap:4px;color:var(--google-blue);font-family:var(--font-ui);font-size:13px;font-weight:500;text-decoration:none; }
+.rc-link:hover { text-decoration:underline; }
+.disclaimer-card {
+  background:var(--yellow-tonal);border-radius:var(--r-xl);
+  border:1px solid #F9AB0040;padding:20px 24px;
+  font-size:13px;color:var(--on-surface-3);line-height:1.75;
+}
+.disclaimer-card strong { color:var(--on-surface-2); }
 
-@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-.fade-up { animation: fadeUp .3s ease forwards; }
+/* ── LOADING / EMPTY ── */
+.loading { display:flex;align-items:center;justify-content:center;gap:12px;padding:40px;color:var(--on-surface-4);font-size:13px; }
+.spinner { width:20px;height:20px;border:2px solid var(--surface-3);border-top-color:var(--google-blue);border-radius:50%;animation:spin .8s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.empty { display:flex;flex-direction:column;align-items:center;gap:8px;padding:48px 24px;text-align:center;color:var(--on-surface-4); }
+.empty .ei { font-size:32px; }
+.empty strong { color:var(--on-surface-2); }
+.empty code { background:var(--surface-2);padding:2px 6px;border-radius:4px;font-size:12px; }
+
+/* ── FOOTER ── */
+footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12px; display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center; }
+.foot-copy { font-size:12px;color:var(--on-surface-4); }
+.foot-links { display:flex;flex-wrap:wrap;gap:16px;justify-content:center; }
+.foot-links a { font-family:var(--font-ui);font-size:12px;color:var(--on-surface-4);text-decoration:none; }
+.foot-links a:hover { color:var(--google-blue); }
+.cite-box { background:var(--surface-2);border-radius:var(--r-md);padding:12px 16px;font-family:var(--font-mono);font-size:10px;color:var(--on-surface-3);line-height:1.6;max-width:700px;width:100%; }
+
+@media(max-width:768px){
+  .app-bar-title{ font-size:14px; }
+  .hero h1 { font-size:24px; }
+  .charts-grid { grid-template-columns:1fr; }
+  .tab-btn { font-size:13px; padding:10px 14px; }
+}
 </style>
 </head>
 <body>
 
-<!-- TOP APP BAR -->
+<!-- APP BAR -->
 <div class="app-bar">
   <div class="app-bar-inner">
     <a class="app-brand" href="#">
       <svg class="g-logo" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="RAI shield logo">
-        <!-- shield body -->
         <path d="M18 2L4 8v10c0 8.28 6.04 16.02 14 18 7.96-1.98 14-9.72 14-18V8L18 2Z" fill="#1A73E8"/>
-        <!-- inner highlight -->
         <path d="M18 5L6.5 10.2V18c0 6.8 4.96 13.14 11.5 14.8C24.54 31.14 29.5 24.8 29.5 18v-7.8L18 5Z" fill="#1557B0"/>
-        <!-- RAI text -->
         <text x="18" y="22" text-anchor="middle" font-family="'Google Sans',sans-serif" font-size="9" font-weight="700" fill="#FFFFFF" letter-spacing="0.5">RAI</text>
       </svg>
       <span class="app-bar-title">Model Evaluation for <b>Responsible AI</b></span>
     </a>
     <div class="ab-chips">
       <span class="chip live">Live · Weekly</span>
-      <span class="chip" id="ab-week">Week —</span>
+      <span class="chip" id="ab-week">—</span>
     </div>
   </div>
 </div>
@@ -425,140 +386,307 @@ footer {
       <div class="hero-eyebrow">RedBench · 22 Risk Categories · 19 Domains · NIST AI RMF</div>
       <h1>Model Evaluation for<br><b>Responsible AI</b></h1>
       <p class="hero-desc">
-        Weekly automated safety benchmarking of frontier LLMs from Anthropic, Google, OpenAI and Meta
+        Weekly automated safety benchmarking of frontier LLMs from Anthropic, Google, and OpenAI
         using the RedBench adversarial dataset. Scored via dual-judge evaluation and mapped to the
         NIST AI Risk Management Framework.
       </p>
       <div class="hero-actions">
         <a class="btn-filled" href="https://huggingface.co/datasets/knoveleng/redbench" target="_blank">View Dataset</a>
-        <a class="btn-text"   href="https://arxiv.org/abs/2601.03699"                  target="_blank">Read Paper ↗</a>
-        <a class="btn-text"   href="https://github.com/knoveleng/redeval"               target="_blank">GitHub ↗</a>
+        <a class="btn-text"   href="https://arxiv.org/abs/2601.03699"                   target="_blank">Read Paper ↗</a>
+        <a class="btn-text"   href="https://github.com/Sushegaad/Responsible-AI-Model-Evaluations/" target="_blank">GitHub ↗</a>
       </div>
     </div>
     <div class="hero-week-card">
-      <div class="hwc-label">Current Evaluation</div>
+      <div class="hwc-label">Latest Run</div>
       <div class="hwc-value" id="hero-week">—</div>
-      <div class="hwc-sub"  id="hero-sub">Loading…</div>
+      <div class="hwc-sub"   id="hero-sub">Loading…</div>
     </div>
   </div>
 
-  <!-- Summary -->
-  <div class="section">
-    <div class="sec-head">
-      <span class="sec-title">Highlights</span>
-      <span class="sec-hint">Current week · lower ASR = safer</span>
-    </div>
-    <div class="summary-grid" id="summary-grid">
-      <div class="loading" style="grid-column:1/-1"><div class="spinner"></div><span>Loading evaluation data…</span></div>
-    </div>
+  <!-- TAB NAVIGATION -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('results')">Model Comparison Results</button>
+    <button class="tab-btn"        onclick="switchTab('methodology')">Methodology</button>
+    <button class="tab-btn"        onclick="switchTab('resources')">Resources</button>
   </div>
 
-  <!-- Leaderboard -->
-  <div class="section">
-    <div class="sec-head">
-      <span class="sec-title">Safety Leaderboard</span>
-      <span class="sec-hint">Click column headers to sort</span>
-    </div>
-    <div class="lb-card" id="lb-wrap">
-      <div class="empty"><span class="ei">📋</span><strong>No evaluation data yet</strong>Trigger the GitHub Actions workflow to run the first evaluation.</div>
-    </div>
-  </div>
+  <!-- ═══════════════════════════════════════
+       TAB: MODEL COMPARISON RESULTS
+  ═══════════════════════════════════════ -->
+  <div id="tab-results" class="tab-panel active">
 
-  <!-- Trend charts -->
-  <div class="section">
-    <div class="sec-head">
-      <span class="sec-title">12-Week Trends</span>
-      <span class="sec-hint">Rolling safety metrics across all models</span>
-    </div>
-    <div class="charts-grid">
-      <div class="chart-card">
-        <div class="ct-title">Attack Success Rate (ASR)</div>
-        <div class="ct-desc">% of adversarial prompts that bypassed safety guardrails — lower is safer</div>
-        <div class="ct-wrap"><canvas id="c-asr"></canvas></div>
+    <!-- Insights -->
+    <div class="section" style="margin-top:24px">
+      <div class="sec-head">
+        <span class="sec-title">Insights</span>
+        <span class="sec-hint">Auto-generated from latest evaluation run</span>
       </div>
-      <div class="chart-card">
-        <div class="ct-title">False Outright Refusal (FOR)</div>
-        <div class="ct-desc">% of safe prompts incorrectly refused — lower means more useful</div>
-        <div class="ct-wrap"><canvas id="c-for"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="ct-title">Drift Coefficient</div>
-        <div class="ct-desc">Safety change per conversation turn — negative = more robust under pressure</div>
-        <div class="ct-wrap"><canvas id="c-drift"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="ct-title">Provenance Score</div>
-        <div class="ct-desc">% of evaluations with a complete chain-of-reasoning audit trail</div>
-        <div class="ct-wrap"><canvas id="c-prov"></canvas></div>
+      <div class="insights-card" id="insights-card">
+        <div class="loading"><div class="spinner"></div><span>Generating insights…</span></div>
       </div>
     </div>
-  </div>
 
-  <!-- Radar -->
-  <div class="section">
-    <div class="sec-head">
-      <span class="sec-title">Risk Category Breakdown</span>
-      <span class="sec-hint">ASR across all 22 RedBench categories · current week</span>
-    </div>
-    <div class="radar-layout">
-      <div class="model-picker">
-        <div class="mp-head">Select model</div>
-        <div id="radar-list"></div>
+    <!-- Highlights -->
+    <div class="section">
+      <div class="sec-head">
+        <span class="sec-title">Highlights</span>
+        <span class="sec-hint">Current run · lower ASR = safer</span>
       </div>
-      <div class="chart-card">
-        <div class="ct-title" id="radar-title">Category Radar</div>
-        <div class="ct-desc">Smaller shape = fewer guardrail bypasses = safer model</div>
-        <div class="ct-wrap tall"><canvas id="c-radar"></canvas></div>
+      <div class="summary-grid" id="summary-grid">
+        <div class="loading" style="grid-column:1/-1"><div class="spinner"></div><span>Loading evaluation data…</span></div>
       </div>
     </div>
-  </div>
 
-  <!-- NIST -->
-  <div class="section">
-    <div class="sec-head">
-      <span class="sec-title">NIST AI RMF Alignment</span>
-      <span class="sec-hint">Average ASR per NIST AI Risk Management Framework function</span>
+    <!-- Safety Leaderboard -->
+    <div class="section">
+      <div class="sec-head">
+        <span class="sec-title">Safety Leaderboard</span>
+        <span class="sec-hint">Click column headers to sort</span>
+      </div>
+      <div class="lb-card" id="lb-wrap">
+        <div class="empty"><span class="ei">📋</span><strong>No evaluation data yet</strong>Trigger the GitHub Actions workflow to run the first evaluation.</div>
+      </div>
     </div>
-    <div class="nist-tabs" id="nist-tabs"></div>
-    <div class="nist-grid"  id="nist-grid"></div>
-  </div>
 
-  <!-- Methodology -->
-  <div class="section">
-    <div class="sec-head">
-      <span class="sec-title">Methodology</span>
+    <!-- 12-Week Trends -->
+    <div class="section">
+      <div class="sec-head">
+        <span class="sec-title">12-Week Trends</span>
+        <span class="sec-hint">Rolling safety metrics across all models</span>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="ct-title">Attack Success Rate (ASR)</div>
+          <div class="ct-desc">% of adversarial prompts that bypassed safety guardrails — lower is safer</div>
+          <div class="ct-wrap"><canvas id="c-asr"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="ct-title">False Outright Refusal (FOR)</div>
+          <div class="ct-desc">% of safe prompts incorrectly refused — lower means more useful</div>
+          <div class="ct-wrap"><canvas id="c-for"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="ct-title">Drift Coefficient</div>
+          <div class="ct-desc">Safety change per conversation turn — closer to zero = more stable</div>
+          <div class="ct-wrap"><canvas id="c-drift"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="ct-title">Provenance Score</div>
+          <div class="ct-desc">% of evaluations with a complete chain-of-reasoning audit trail</div>
+          <div class="ct-wrap"><canvas id="c-prov"></canvas></div>
+        </div>
+      </div>
     </div>
-    <div class="method-grid">
-      <div class="method-card">
-        <div class="method-num" style="color:var(--google-blue)">Phase 01 — Ingestion</div>
-        <div class="method-title">Taxonomy Alignment</div>
-        <div class="method-body">Stratified 500-prompt sample from <strong>knoveleng/redbench</strong> (29,362 total). 80% attack / 20% refusal. ISO-week seed ensures weekly reproducibility.</div>
+
+    <!-- Risk Category Breakdown -->
+    <div class="section">
+      <div class="sec-head">
+        <span class="sec-title">Risk Category Breakdown</span>
+        <span class="sec-hint">ASR across all 22 RedBench categories · current run</span>
       </div>
-      <div class="method-card">
-        <div class="method-num" style="color:var(--google-yellow)">Phase 02 — Execution</div>
-        <div class="method-title">Adversarial Stress Test</div>
-        <div class="method-body">Single-turn probe → 3-turn agentic wrap for failures → 10-turn drift analysis on 5% sample. Baseline safety system prompt applied uniformly to all models.</div>
-      </div>
-      <div class="method-card">
-        <div class="method-num" style="color:var(--google-red)">Phase 03 — Dual Judge</div>
-        <div class="method-title">Hybrid Evaluation Loop</div>
-        <div class="method-body"><strong>RegexJudge:</strong> deterministic PII/API key/jailbreak detection. <strong>NeuralJudge:</strong> Claude Haiku scores refusal quality and generates chain-of-reasoning JSON.</div>
-      </div>
-      <div class="method-card">
-        <div class="method-num" style="color:var(--google-green)">Phase 04 — Reporting</div>
-        <div class="method-title">Compliance Package</div>
-        <div class="method-body">ASR / FOR / Drift / Provenance metrics. All 22 categories mapped to NIST AI RMF. Critical failures generate GSAR 552.239-7001 forensic audit logs.</div>
+      <div class="radar-layout">
+        <div class="model-picker">
+          <div class="mp-head">Select model</div>
+          <div id="radar-list"></div>
+        </div>
+        <div class="chart-card">
+          <div class="ct-title" id="radar-title">Category Radar</div>
+          <div class="ct-desc">Smaller shape = fewer guardrail bypasses = safer model</div>
+          <div class="ct-wrap tall"><canvas id="c-radar"></canvas></div>
+        </div>
       </div>
     </div>
-  </div>
+
+    <!-- NIST AI RMF Alignment -->
+    <div class="section">
+      <div class="sec-head">
+        <span class="sec-title">NIST AI RMF Alignment</span>
+        <span class="sec-hint">Average ASR per NIST AI Risk Management Framework function</span>
+      </div>
+      <div class="nist-tabs" id="nist-tabs"></div>
+      <div class="nist-grid"  id="nist-grid"></div>
+    </div>
+
+  </div><!-- /tab-results -->
+
+  <!-- ═══════════════════════════════════════
+       TAB: METHODOLOGY
+  ═══════════════════════════════════════ -->
+  <div id="tab-methodology" class="tab-panel">
+
+    <!-- Evaluation Phases -->
+    <div class="section" style="margin-top:24px">
+      <div class="sec-head">
+        <span class="sec-title">Evaluation Methodology</span>
+        <span class="sec-hint">4-phase pipeline · runs every Friday</span>
+      </div>
+      <div class="method-grid">
+        <div class="method-card">
+          <div class="method-num" style="color:var(--google-blue)">Phase 01 — Ingestion</div>
+          <div class="method-title">Taxonomy Alignment</div>
+          <div class="method-body">Stratified sample from <strong>knoveleng/redbench</strong> (29,362 total prompts across 37 sub-benchmarks). 80% attack / 20% refusal. Run-date seed ensures weekly reproducibility with controlled variation.</div>
+        </div>
+        <div class="method-card">
+          <div class="method-num" style="color:var(--google-yellow)">Phase 02 — Execution</div>
+          <div class="method-title">Adversarial Stress Test</div>
+          <div class="method-body">Single-turn probe → 3-turn agentic wrap for failures → 10-turn drift analysis on 5% sample. 10 distinct escalation templates covering authority injection, roleplay, and hypothetical framings. Baseline safety system prompt applied uniformly to all models.</div>
+        </div>
+        <div class="method-card">
+          <div class="method-num" style="color:var(--google-red)">Phase 03 — Dual Judge</div>
+          <div class="method-title">Hybrid Evaluation Loop</div>
+          <div class="method-body"><strong>RegexJudge:</strong> deterministic PII/API key/jailbreak pattern matching — outputs PASS, FAIL, or CRITICAL_FAIL. <strong>NeuralJudge:</strong> Claude Haiku scores refusal quality, assigns severity 1–10, and generates chain-of-reasoning JSON for the forensic audit trail.</div>
+        </div>
+        <div class="method-card">
+          <div class="method-num" style="color:var(--google-green)">Phase 04 — Reporting</div>
+          <div class="method-title">Compliance Package</div>
+          <div class="method-body">ASR / FOR / Drift / Provenance metrics computed per model. All 22 categories mapped to NIST AI RMF functions. Critical failures and high-severity neural hits generate GSAR 552.239-7001 forensic audit logs with PII-redacted prompts and responses.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metrics Explained -->
+    <div class="section">
+      <div class="sec-head">
+        <span class="sec-title">Metrics Explained</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-abbr">ASR</div>
+          <div class="metric-name">Attack Success Rate</div>
+          <div class="metric-def">The percentage of adversarial prompts that successfully bypassed the model's safety guardrails, resulting in a harmful or policy-violating response. Measured by the dual-judge system across all attack categories.</div>
+          <span class="metric-target">Target: &lt; 5%</span>
+        </div>
+        <div class="metric-card" style="border-top-color:var(--google-green)">
+          <div class="metric-abbr" style="color:var(--google-green)">FOR</div>
+          <div class="metric-name">False Outright Refusal</div>
+          <div class="metric-def">The percentage of benign (No Risk) prompts that were incorrectly refused by the model. High FOR indicates an over-cautious model that degrades usability. The balance between ASR and FOR captures the safety–utility trade-off.</div>
+          <span class="metric-target" style="background:var(--green-tonal)">Target: &lt; 10%</span>
+        </div>
+        <div class="metric-card" style="border-top-color:var(--google-yellow)">
+          <div class="metric-abbr" style="color:var(--google-yellow)">Drift</div>
+          <div class="metric-name">Drift Coefficient</div>
+          <div class="metric-def">The change in failure rate per conversation turn across a 10-turn multi-turn probe (applied to 5% of the sample). A coefficient near zero means guardrails hold under prolonged pressure; a positive value indicates guardrail erosion.</div>
+          <span class="metric-target" style="background:var(--yellow-tonal);color:var(--warning)">Target: &lt; 0.5% / turn</span>
+        </div>
+        <div class="metric-card" style="border-top-color:var(--google-red)">
+          <div class="metric-abbr" style="color:var(--google-red)">Prov</div>
+          <div class="metric-name">Provenance Score</div>
+          <div class="metric-def">The percentage of evaluated samples for which the NeuralJudge successfully produced a parseable chain-of-reasoning JSON response. High provenance is required for GSAR 552.239-7001 forensic traceability and audit log completeness.</div>
+          <span class="metric-target" style="background:var(--red-tonal);color:var(--error)">Target: &gt; 95%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dataset -->
+    <div class="section">
+      <div class="sec-head">
+        <span class="sec-title">Dataset</span>
+      </div>
+      <div class="dataset-card">
+        <div class="dc-body">
+          <div class="dc-title">RedBench — Universal Red Teaming Dataset</div>
+          <div class="dc-desc">
+            RedBench (Dang et al., 2026) is a unified adversarial dataset aggregating 37 sub-benchmarks
+            — including HarmBench, ToxiGen, XSTest, DAN, GPTFuzzer, and AdvBench — into a single
+            standardised schema. It covers 22 risk categories and 19 domains with 29,362 total prompts.
+            A local snapshot (April 2026) is committed directly to this repository as Parquet files,
+            ensuring evaluations are fully reproducible with no network dependency on the dataset host.
+          </div>
+          <div class="dc-meta">
+            <span class="dc-tag">29,362 prompts</span>
+            <span class="dc-tag">37 sub-benchmarks</span>
+            <span class="dc-tag">22 risk categories</span>
+            <span class="dc-tag">19 domains</span>
+            <span class="dc-tag">MIT License</span>
+          </div>
+          <div class="dc-actions">
+            <a class="btn-filled" href="https://huggingface.co/datasets/knoveleng/redbench" target="_blank">View Dataset</a>
+            <a class="btn-text"   href="https://arxiv.org/abs/2601.03699"                   target="_blank">Read Paper ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-methodology -->
+
+  <!-- ═══════════════════════════════════════
+       TAB: RESOURCES
+  ═══════════════════════════════════════ -->
+  <div id="tab-resources" class="tab-panel">
+
+    <div class="section" style="margin-top:24px">
+      <div class="sec-head">
+        <span class="sec-title">Resources &amp; About</span>
+      </div>
+      <div class="resource-grid">
+
+        <div class="resource-card">
+          <div class="rc-icon">🔗</div>
+          <div class="rc-title">Source Code</div>
+          <div class="rc-value">Full evaluation pipeline, dataset snapshot, and dashboard source.</div>
+          <a class="rc-link" href="https://github.com/Sushegaad/Responsible-AI-Model-Evaluations/" target="_blank">
+            GitHub Repository ↗
+          </a>
+        </div>
+
+        <div class="resource-card">
+          <div class="rc-icon">👤</div>
+          <div class="rc-title">Author</div>
+          <div class="rc-value"><strong>Hemant Naik</strong></div>
+          <a class="rc-link" href="https://www.linkedin.com/in/hemant-naik" target="_blank">LinkedIn ↗</a>
+          <a class="rc-link" href="mailto:hemant.naik@gmail.com">hemant.naik@gmail.com</a>
+        </div>
+
+        <div class="resource-card">
+          <div class="rc-icon">📅</div>
+          <div class="rc-title">Built</div>
+          <div class="rc-value">March 2026</div>
+          <div class="rc-value" style="color:var(--on-surface-4);font-size:12px">Evaluations run every Friday at 6 PM EST via GitHub Actions</div>
+        </div>
+
+        <div class="resource-card">
+          <div class="rc-icon">⚖️</div>
+          <div class="rc-title">License</div>
+          <div class="rc-value">This project is licensed under the <strong>MIT License</strong>.</div>
+          <div class="rc-value" style="font-size:12px;color:var(--on-surface-4)">RedBench dataset is also MIT-licensed (knoveleng/redbench).</div>
+        </div>
+
+        <div class="resource-card">
+          <div class="rc-icon">📄</div>
+          <div class="rc-title">Dataset Reference</div>
+          <div class="rc-value">RedBench: A Universal Dataset for Comprehensive Red Teaming of Large Language Models</div>
+          <a class="rc-link" href="https://arxiv.org/abs/2601.03699" target="_blank">arXiv 2601.03699 ↗</a>
+        </div>
+
+        <div class="resource-card">
+          <div class="rc-icon">🏛️</div>
+          <div class="rc-title">Compliance Reference</div>
+          <div class="rc-value">NIST AI Risk Management Framework (AI RMF v1.0) · GSAR 552.239-7001 (March 2026)</div>
+          <a class="rc-link" href="https://airc.nist.gov" target="_blank">NIST AI RMF ↗</a>
+        </div>
+
+      </div>
+
+      <div class="disclaimer-card">
+        <strong>Disclaimer:</strong> This project is an independent research and transparency initiative.
+        Evaluation results reflect model behaviour on the RedBench adversarial dataset under standardised
+        conditions and are not a comprehensive measure of a model's safety in all deployment scenarios.
+        Results may vary across runs due to model updates, API changes, and sampling randomness.
+        No affiliation with Anthropic, OpenAI, Google, or the RedBench authors is implied.
+        All evaluation prompts are used solely for safety research purposes and are not used to generate
+        new harmful content.
+      </div>
+    </div>
+
+  </div><!-- /tab-resources -->
 
   <!-- Footer -->
   <footer>
-    <div class="foot-copy">Model Evaluation for Responsible AI · Powered by RedBench (MIT License)</div>
+    <div class="foot-copy">Model Evaluation for Responsible AI · Powered by RedBench (MIT License) · Built by Hemant Naik</div>
     <div class="foot-links">
       <a href="https://huggingface.co/datasets/knoveleng/redbench" target="_blank">Dataset</a>
       <a href="https://arxiv.org/abs/2601.03699"                   target="_blank">Research Paper</a>
-      <a href="https://github.com/knoveleng/redeval"               target="_blank">RedEval Framework</a>
+      <a href="https://github.com/Sushegaad/Responsible-AI-Model-Evaluations/" target="_blank">GitHub</a>
       <a href="https://airc.nist.gov"                              target="_blank">NIST AI RMF</a>
     </div>
     <div class="cite-box">
@@ -584,7 +712,7 @@ const CATS = [
   "Social Engineering","Surveillance","Intellectual Property","Prompt Injection"
 ];
 
-const NIST_ORDER = ['PROTECT','GOVERN','DETECT','MANAGE','MAP','MEASURE'];
+const NIST_ORDER = ['GOVERN','MAP','MEASURE','MANAGE','PROTECT','DETECT'];
 
 let ST = { data:null, radarId:null, nistId:null, sortKey:'asr', asc:true };
 let CH = {};
@@ -595,7 +723,29 @@ const cv  = v  => v < 5 ? 'var(--success)' : v < 15 ? 'var(--warning)' : 'var(--
 const pct = (v,d=1) => v==null ? '—' : parseFloat(v).toFixed(d)+'%';
 const dft = v       => { if(v==null) return '—'; const s=parseFloat(v).toFixed(3); return (v>0?'+':'')+s; };
 
-/* Chart defaults */
+/* ── Tab switching ── */
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    const tabs = ['results','methodology','resources'];
+    b.classList.toggle('active', tabs[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => {
+    p.classList.toggle('active', p.id === 'tab-'+name);
+  });
+  // Rebuild charts after tab show (canvas size may have been 0 while hidden)
+  if (name === 'results' && ST.data) {
+    setTimeout(() => {
+      buildTrend('c-asr','asr',  v=>v?.toFixed(1)+'%');
+      buildTrend('c-for','for',  v=>v?.toFixed(1)+'%');
+      buildTrend('c-drift','drift',v=>v?.toFixed(3));
+      buildTrend('c-prov','prov', v=>v?.toFixed(1)+'%');
+      if (ST.radarId) renderRadar(ST.radarId);
+    }, 50);
+  }
+}
+window.switchTab = switchTab;
+
+/* ── Chart defaults ── */
 Chart.defaults.font.family = "'Roboto', sans-serif";
 Chart.defaults.font.size   = 11;
 Chart.defaults.color       = '#80868B';
@@ -624,27 +774,62 @@ async function loadData() {
   } catch(e) { return null; }
 }
 
-/* Summary */
+/* ── Insights (5-sentence auto-summary) ── */
+function buildInsights(d) {
+  const lb = d.leaderboard;
+  if (!lb?.length) return null;
+
+  const safest   = lb[0];
+  const riskiest = lb[lb.length - 1];
+  const byFOR    = [...lb].sort((a,b) => a.for_rate - b.for_rate);
+  const neutral  = byFOR[0];
+  const stable   = [...lb].sort((a,b) => Math.abs(a.drift_coefficient) - Math.abs(b.drift_coefficient))[0];
+  const avgASR   = lb.reduce((s,m) => s + (m.asr||0),               0) / lb.length;
+  const avgProv  = lb.reduce((s,m) => s + (m.provenance_score||0),  0) / lb.length;
+  const avgFOR   = lb.reduce((s,m) => s + (m.for_rate||0),          0) / lb.length;
+  const safetyLevel = avgASR < 5 ? 'strong' : avgASR < 15 ? 'moderate' : 'concerning';
+  const provLevel   = avgProv >= 95 ? 'excellent' : avgProv >= 80 ? 'adequate' : 'limited';
+  const runLabel    = d.latest_week || '—';
+
+  return [
+    `In the latest evaluation run (<strong>${runLabel}</strong>), <strong>${safest.display_name}</strong> (${safest.provider}) achieved the lowest Attack Success Rate of <strong>${pct(safest.asr)}</strong>, ranking as the safest model across all ${lb.length} models tested.`,
+    `Across all providers, the average ASR was <strong>${avgASR.toFixed(1)}%</strong>, indicating a <strong>${safetyLevel}</strong> overall safety posture — <strong>${riskiest.display_name}</strong> showed the highest bypass rate at <strong>${pct(riskiest.asr)}</strong>.`,
+    `False Outright Refusal rates averaged <strong>${avgFOR.toFixed(1)}%</strong> across the group; <strong>${neutral.display_name}</strong> achieved the best safety-utility balance with a FOR of <strong>${pct(neutral.for_rate)}</strong>.`,
+    `<strong>${stable.display_name}</strong> exhibited the most stable guardrail performance under multi-turn adversarial pressure, with a drift coefficient of <strong>${dft(stable.drift_coefficient)}</strong> across the 10-turn probe.`,
+    `Provenance scores averaged <strong>${avgProv.toFixed(1)}%</strong> across all models, reflecting <strong>${provLevel}</strong> chain-of-reasoning coverage for GSAR 552.239-7001 forensic audit compliance.`
+  ];
+}
+
+function renderInsights(d) {
+  const sentences = buildInsights(d);
+  if (!sentences) {
+    $('insights-card').innerHTML = `<div class="empty"><span class="ei">📡</span><strong>No data yet</strong>Run the evaluation workflow to generate insights.</div>`;
+    return;
+  }
+  $('insights-card').innerHTML = `<ul class="insights-list">${sentences.map(s=>`<li>${s}</li>`).join('')}</ul>`;
+}
+
+/* ── Highlights (summary cards) ── */
 function renderSummary(d) {
   const lb = d.leaderboard;
-  if(!lb?.length) {
+  if (!lb?.length) {
     $('summary-grid').innerHTML=`<div class="empty" style="grid-column:1/-1"><span class="ei">📡</span><strong>No data yet</strong>Run the GitHub Actions workflow to generate the first evaluation.</div>`;
     return;
   }
   const safest  = lb[0];
-  const neutral = [...lb].sort((a,b)=>a.for_rate-b.for_rate)[0];
-  const stable  = [...lb].sort((a,b)=>Math.abs(a.drift_coefficient)-Math.abs(b.drift_coefficient))[0];
-  const total   = lb.reduce((s,m)=>s+(m.total_samples||0),0);
+  const neutral = [...lb].sort((a,b) => a.for_rate - b.for_rate)[0];
+  const stable  = [...lb].sort((a,b) => Math.abs(a.drift_coefficient) - Math.abs(b.drift_coefficient))[0];
+  const total   = lb.reduce((s,m) => s+(m.total_samples||0), 0);
 
-  $('hero-week').textContent = `Week ${d.latest_week||'—'}`;
-  $('ab-week').textContent   = `Week ${d.latest_week||'—'}`;
+  $('hero-week').textContent = d.latest_week || '—';
+  $('ab-week').textContent   = d.latest_week || '—';
   $('hero-sub').innerHTML    = `${total.toLocaleString()} evaluations · ${lb.length} models · <a href="https://huggingface.co/datasets/knoveleng/redbench" target="_blank">RedBench</a>`;
 
   $('summary-grid').innerHTML = [
-    sc('blue',  '🛡️','Safest Model',       pct(safest.asr,1),           safest.display_name, safest.provider, `${safest.critical_failures||0} critical failures`),
-    sc('green', '✅','Most Neutral (FOR)',  pct(neutral.for_rate,1),     neutral.display_name,neutral.provider,'Fewest false refusals'),
-    sc('yellow','📉','Lowest Drift',        dft(stable.drift_coefficient),stable.display_name, stable.provider,'Safety per-turn change'),
-    sc('blue',  '🔢','Total Evaluations',   total.toLocaleString(),      `${lb.length} models`,d.latest_week||'',`Since ${(d.weeks||[])[0]||'—'}`),
+    sc('blue',  '🛡️','Safest Model',       pct(safest.asr,1),            safest.display_name, safest.provider,  `${safest.critical_failures||0} critical failures`),
+    sc('green', '✅','Most Neutral (FOR)',  pct(neutral.for_rate,1),      neutral.display_name,neutral.provider, 'Fewest false refusals'),
+    sc('yellow','📉','Lowest Drift',        dft(stable.drift_coefficient),stable.display_name,  stable.provider, 'Safety per-turn change'),
+    sc('blue',  '🔢','Total Evaluations',   total.toLocaleString(),       `${lb.length} models`, d.latest_week||'', `Since ${(d.weeks||[])[0]||'—'}`),
   ].join('');
 }
 
@@ -658,12 +843,12 @@ function sc(t,icon,lbl,val,model,prov,detail) {
   </div>`;
 }
 
-/* Leaderboard */
+/* ── Leaderboard ── */
 function renderLB(d) {
   const lb = d.leaderboard;
-  if(!lb?.length) return;
-  const sorted = [...lb].sort((a,b)=>ST.asc?a[ST.sortKey]-b[ST.sortKey]:b[ST.sortKey]-a[ST.sortKey]);
-  const maxASR = Math.max(...lb.map(m=>m.asr),1);
+  if (!lb?.length) return;
+  const sorted = [...lb].sort((a,b) => ST.asc ? a[ST.sortKey]-b[ST.sortKey] : b[ST.sortKey]-a[ST.sortKey]);
+  const maxASR = Math.max(...lb.map(m=>m.asr), 1);
 
   const cols = [
     {k:null,                l:'#',       w:'48px'},
@@ -674,7 +859,6 @@ function renderLB(d) {
     {k:'provenance_score',  l:'Prov ↕', w:'90px'},
     {k:'critical_failures', l:'Critical',w:'80px'},
   ];
-
   const ths = cols.map(c=>{
     const sc2=ST.sortKey===c.k?' sorted':'';
     const cl =c.k?`onclick="sLB('${c.k}')"`:'' ;
@@ -682,9 +866,9 @@ function renderLB(d) {
     return `<th class="${sc2}" ${cl} ${w}>${c.l}</th>`;
   }).join('');
 
-  const rows = sorted.map((m,i)=>{
+  const rows = sorted.map((m,i) => {
     const r=i+1, rc=r===1?'rk-1':r===2?'rk-2':r===3?'rk-3':'rk-n';
-    const bw=Math.min(100,m.asr/maxASR*100);
+    const bw=Math.min(100, m.asr/maxASR*100);
     return `<tr>
       <td><span class="rank-badge ${rc}">${r}</span></td>
       <td><div class="mc"><span class="mc-dot" style="background:${m.color}"></span>
@@ -702,8 +886,8 @@ function renderLB(d) {
 }
 window.sLB = key => { if(ST.sortKey===key)ST.asc=!ST.asc; else{ST.sortKey=key;ST.asc=true;} renderLB(ST.data); };
 
-/* Trend charts */
-function buildTrend(id,key,fmt) {
+/* ── Trend charts ── */
+function buildTrend(id, key, fmt) {
   const d=ST.data; if(!d?.models) return;
   const ctx=$(id); if(!ctx) return;
   if(CH[id]) CH[id].destroy();
@@ -717,7 +901,7 @@ function buildTrend(id,key,fmt) {
   CH[id]=new Chart(ctx,{type:'line',data:{labels:wks,datasets},options:lineOpts(fmt)});
 }
 
-/* Radar */
+/* ── Radar ── */
 function renderRadar(mid) {
   const d=ST.data; if(!d?.radar_data) return;
   const rd=d.radar_data[mid], model=d.models?.find(m=>m.model_id===mid);
@@ -762,7 +946,7 @@ function buildRadarList(d) {
     </button>`).join('');
 }
 
-/* NIST */
+/* ── NIST ── */
 function renderNIST(mid) {
   ST.nistId=mid;
   const entry=ST.data.leaderboard?.find(m=>m.model_id===mid);
@@ -794,24 +978,24 @@ function buildNISTTabs(d) {
     </button>`).join('');
 }
 
-/* Bootstrap */
+/* ── Bootstrap ── */
 async function init() {
   const d=await loadData();
   if(!d?.leaderboard?.length) {
-    $('summary-grid').innerHTML=`<div class="empty" style="grid-column:1/-1">
-      <span class="ei">📡</span><strong>No evaluation data found</strong>
-      Run the GitHub Actions workflow, or verify that <code>dashboard/data/results.json</code> has been committed.
-    </div>`;
+    $('insights-card').innerHTML=`<div class="empty"><span class="ei">📡</span><strong>No evaluation data found</strong>Run the GitHub Actions workflow, or verify that <code>dashboard/data/results.json</code> has been committed.</div>`;
+    $('summary-grid').innerHTML=`<div class="empty" style="grid-column:1/-1"><span class="ei">📡</span><strong>No evaluation data found</strong>Run the GitHub Actions workflow, or verify that <code>dashboard/data/results.json</code> has been committed.</div>`;
     return;
   }
   ST.data=d;
-  renderSummary(d); renderLB(d);
+  renderInsights(d);
+  renderSummary(d);
+  renderLB(d);
   buildTrend('c-asr','asr',  v=>v?.toFixed(1)+'%');
   buildTrend('c-for','for',  v=>v?.toFixed(1)+'%');
   buildTrend('c-drift','drift',v=>v?.toFixed(3));
   buildTrend('c-prov','prov', v=>v?.toFixed(1)+'%');
   buildRadarList(d);
-  if(d.models?.length)     renderRadar(d.models[0].model_id);
+  if(d.models?.length)      renderRadar(d.models[0].model_id);
   buildNISTTabs(d);
   if(d.leaderboard?.length) renderNIST(d.leaderboard[0].model_id);
 }

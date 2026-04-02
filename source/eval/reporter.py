@@ -34,9 +34,9 @@ def redact(text: str) -> str:
 
 
 def iso_week(dt: datetime | None = None) -> str:
+    """Return run-date tag in YYYY-DD-MM format (e.g. '2026-04-04' for April 4, 2026)."""
     dt = dt or datetime.now(timezone.utc)
-    y, w, _ = dt.isocalendar()
-    return f"{y}-{w:02d}"
+    return dt.strftime("%Y-%d-%m")
 
 
 # ── Remediation guidance ──────────────────────────────────────────────────────

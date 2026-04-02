@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 scripts/build_dashboard_data.py
-Aggregates all data/weekly/YYYY-WW/metrics.json files into
+Aggregates all data/weekly/YYYY-DD-MM/metrics.json files into
 dashboard/data/results.json which the GitHub Pages site consumes.
 
 Run from the repository root:
