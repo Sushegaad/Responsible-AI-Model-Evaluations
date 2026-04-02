@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-02T02:01:43.752005+00:00",
+  "generated_at": "2026-04-02T02:19:00.881166+00:00",
   "dataset": "RedBench · knoveleng/redbench (MIT)",
   "weeks": [
     "2026-14"
@@ -203,7 +203,7 @@
       "drift_coefficient": 0.0,
       "provenance_score": 100.0,
       "category_asr": {
-        "Extremism and Radicalization": 0.0,
+        "Misinformation": 0.0,
         "Toxicity": 0.0,
         "Hate Speech": 0.0,
         "PII Leakage": 0.0,
@@ -213,7 +213,6 @@
         "Cybercrime": 0.0,
         "Malware": 0.0,
         "Fraud": 0.0,
-        "Misinformation": 0.0,
         "Extremism": 0.0,
         "Discrimination": 0.0,
         "Privacy Violation": 0.0,
@@ -287,7 +286,7 @@
       "drift_coefficient": 0.0,
       "provenance_score": 100.0,
       "category_asr": {
-        "Extremism and Radicalization": 0.0,
+        "Misinformation": 0.0,
         "Toxicity": 0.0,
         "Hate Speech": 0.0,
         "PII Leakage": 0.0,
@@ -297,7 +296,6 @@
         "Cybercrime": 0.0,
         "Malware": 0.0,
         "Fraud": 0.0,
-        "Misinformation": 0.0,
         "Extremism": 0.0,
         "Discrimination": 0.0,
         "Privacy Violation": 0.0,
@@ -371,7 +369,7 @@
       "drift_coefficient": 0.0,
       "provenance_score": 100.0,
       "category_asr": {
-        "Extremism and Radicalization": 0.0,
+        "Misinformation": 0.0,
         "Toxicity": 0.0,
         "Hate Speech": 0.0,
         "PII Leakage": 0.0,
@@ -381,7 +379,6 @@
         "Cybercrime": 0.0,
         "Malware": 0.0,
         "Fraud": 0.0,
-        "Misinformation": 0.0,
         "Extremism": 0.0,
         "Discrimination": 0.0,
         "Privacy Violation": 0.0,
@@ -455,7 +452,7 @@
       "drift_coefficient": 0.0,
       "provenance_score": 100.0,
       "category_asr": {
-        "Extremism and Radicalization": 0.0,
+        "Misinformation": 0.0,
         "Toxicity": 0.0,
         "Hate Speech": 0.0,
         "PII Leakage": 0.0,
@@ -465,7 +462,6 @@
         "Cybercrime": 0.0,
         "Malware": 0.0,
         "Fraud": 0.0,
-        "Misinformation": 0.0,
         "Extremism": 0.0,
         "Discrimination": 0.0,
         "Privacy Violation": 0.0,
@@ -539,7 +535,7 @@
       "drift_coefficient": 0.0,
       "provenance_score": 100.0,
       "category_asr": {
-        "Extremism and Radicalization": 0.0,
+        "Misinformation": 0.0,
         "Toxicity": 0.0,
         "Hate Speech": 0.0,
         "PII Leakage": 0.0,
@@ -549,7 +545,6 @@
         "Cybercrime": 0.0,
         "Malware": 0.0,
         "Fraud": 0.0,
-        "Misinformation": 0.0,
         "Extremism": 0.0,
         "Discrimination": 0.0,
         "Privacy Violation": 0.0,
@@ -623,7 +618,7 @@
       "drift_coefficient": 0.0,
       "provenance_score": 100.0,
       "category_asr": {
-        "Extremism and Radicalization": 0.0,
+        "Misinformation": 0.0,
         "Toxicity": 0.0,
         "Hate Speech": 0.0,
         "PII Leakage": 0.0,
@@ -633,7 +628,6 @@
         "Cybercrime": 0.0,
         "Malware": 0.0,
         "Fraud": 0.0,
-        "Misinformation": 0.0,
         "Extremism": 0.0,
         "Discrimination": 0.0,
         "Privacy Violation": 0.0,
@@ -695,7 +689,7 @@
   ],
   "radar_data": {
     "claude-opus-4-6": {
-      "Extremism and Radicalization": 0.0,
+      "Misinformation": 0.0,
       "Toxicity": 0.0,
       "Hate Speech": 0.0,
       "PII Leakage": 0.0,
@@ -705,7 +699,6 @@
       "Cybercrime": 0.0,
       "Malware": 0.0,
       "Fraud": 0.0,
-      "Misinformation": 0.0,
       "Extremism": 0.0,
       "Discrimination": 0.0,
       "Privacy Violation": 0.0,
@@ -720,7 +713,7 @@
       "Prompt Injection": 0.0
     },
     "claude-sonnet-4-6": {
-      "Extremism and Radicalization": 0.0,
+      "Misinformation": 0.0,
       "Toxicity": 0.0,
       "Hate Speech": 0.0,
       "PII Leakage": 0.0,
@@ -730,7 +723,6 @@
       "Cybercrime": 0.0,
       "Malware": 0.0,
       "Fraud": 0.0,
-      "Misinformation": 0.0,
       "Extremism": 0.0,
       "Discrimination": 0.0,
       "Privacy Violation": 0.0,
@@ -745,7 +737,7 @@
       "Prompt Injection": 0.0
     },
     "gpt-4o": {
-      "Extremism and Radicalization": 0.0,
+      "Misinformation": 0.0,
       "Toxicity": 0.0,
       "Hate Speech": 0.0,
       "PII Leakage": 0.0,
@@ -755,7 +747,6 @@
       "Cybercrime": 0.0,
       "Malware": 0.0,
       "Fraud": 0.0,
-      "Misinformation": 0.0,
       "Extremism": 0.0,
       "Discrimination": 0.0,
       "Privacy Violation": 0.0,
@@ -770,7 +761,7 @@
       "Prompt Injection": 0.0
     },
     "gpt-4o-mini": {
-      "Extremism and Radicalization": 0.0,
+      "Misinformation": 0.0,
       "Toxicity": 0.0,
       "Hate Speech": 0.0,
       "PII Leakage": 0.0,
@@ -780,7 +771,6 @@
       "Cybercrime": 0.0,
       "Malware": 0.0,
       "Fraud": 0.0,
-      "Misinformation": 0.0,
       "Extremism": 0.0,
       "Discrimination": 0.0,
       "Privacy Violation": 0.0,
@@ -795,7 +785,7 @@
       "Prompt Injection": 0.0
     },
     "gemini-2.0-flash": {
-      "Extremism and Radicalization": 0.0,
+      "Misinformation": 0.0,
       "Toxicity": 0.0,
       "Hate Speech": 0.0,
       "PII Leakage": 0.0,
@@ -805,7 +795,6 @@
       "Cybercrime": 0.0,
       "Malware": 0.0,
       "Fraud": 0.0,
-      "Misinformation": 0.0,
       "Extremism": 0.0,
       "Discrimination": 0.0,
       "Privacy Violation": 0.0,
@@ -820,7 +809,7 @@
       "Prompt Injection": 0.0
     },
     "gemini-1.5-pro": {
-      "Extremism and Radicalization": 0.0,
+      "Misinformation": 0.0,
       "Toxicity": 0.0,
       "Hate Speech": 0.0,
       "PII Leakage": 0.0,
@@ -830,7 +819,6 @@
       "Cybercrime": 0.0,
       "Malware": 0.0,
       "Fraud": 0.0,
-      "Misinformation": 0.0,
       "Extremism": 0.0,
       "Discrimination": 0.0,
       "Privacy Violation": 0.0,
