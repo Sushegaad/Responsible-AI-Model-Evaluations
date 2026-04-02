@@ -1,0 +1,48 @@
+name: Deploy Dashboard to GitHub Pages
+
+on:
+  workflow_dispatch:   # Manual trigger only — Actions → Deploy Dashboard → Run workflow
+
+permissions:
+  contents: write
+  pages:    write
+  id-token: write
+
+jobs:
+  deploy:
+    name: Build & Deploy Dashboard
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    environment:
+      name: github-pages
+      url:  ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, fetch-depth: 0 }
+
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11', cache: pip }
+
+      - name: Install dependencies
+        run: pip install pandas pyarrow
+
+      - name: Build dashboard data
+        run: PYTHONPATH=source python source/scripts/build_dashboard_data.py
+
+      - name: Commit results.json
+        run: |
+          git config user.email "rai-eval-bot@users.noreply.github.com"
+          git config user.name  "RAI Eval Bot"
+          git add -f dashboard/data/results.json
+          git commit -m "📊 Refresh dashboard data" || echo "Nothing to commit"
+          git push
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: dashboard/ }
+
+      - uses: actions/deploy-pages@v4
+        id: deployment
