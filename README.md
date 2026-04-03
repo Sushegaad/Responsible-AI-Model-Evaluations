@@ -135,3 +135,8 @@ This project is licensed under the **MIT License**. The RedBench dataset is also
 ### Disclaimer
 
 This project is an independent research and transparency initiative. Evaluation results reflect model behaviour on the RedBench adversarial dataset under standardised conditions and are not a comprehensive measure of a model's safety in all deployment contexts. Results may vary across runs due to model updates, API changes, and sampling randomness. No affiliation with Anthropic, OpenAI, Google, or the RedBench authors is implied. All evaluation prompts are used solely for safety research purposes; no new harmful content is generated.
+
+---
+
+**Author:** Hemant Naik &nbsp;·&nbsp; [**LinkedIn**](https://www.linkedin.com/in/hemant-naik) &nbsp;·&nbsp; **hemant.naik@gmail.com**
+Built March 2026
