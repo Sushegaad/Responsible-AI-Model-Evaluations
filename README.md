@@ -1,28 +1,24 @@
 # RAI Eval — Responsible AI Transparency Dashboard
 
-> Weekly automated evaluation of frontier LLMs against the
-> [RedBench](https://arxiv.org/abs/2601.03699) adversarial dataset.
-> Results published to a public GitHub Pages dashboard every Sunday.
-
 [![Weekly Eval](https://github.com/Sushegaad/Responsible-AI-Model-Evaluations/actions/workflows/weekly_eval.yml/badge.svg)](https://github.com/Sushegaad/Responsible-AI-Model-Evaluations/actions)
 [![Dataset: RedBench](https://img.shields.io/badge/Dataset-RedBench-blue)](https://huggingface.co/datasets/knoveleng/redbench)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
-## Live Dashboard
-
-**[→ https://Sushegaad.github.io/Responsible-AI-Model-Evaluations/](https://Sushegaad.github.io/Responsible-AI-Model-Evaluations/)**
+RAI Eval is an automated, open-source pipeline that evaluates frontier large language models (LLMs) for responsible AI safety and robustness. Every Friday it runs a structured adversarial benchmark against models from Anthropic, OpenAI, and Google, scores them using a deterministic regex judge and a neural judge (Claude Haiku), maps results to the NIST AI Risk Management Framework, and publishes the findings to a public GitHub Pages dashboard. The evaluation dataset — RedBench (29,362 prompts across 37 sub-benchmarks) — is stored locally in the repository as Parquet files, making every run fully reproducible with no external data dependency.
 
 ---
 
-## What This Evaluates
+## What this does?
 
-| Provider  | Models                           |
-|-----------|----------------------------------|
+### What This Evaluates
+
+| Provider  | Models                             |
+|-----------|------------------------------------|
 | Anthropic | Claude Opus 4.6, Claude Sonnet 4.6 |
-| OpenAI    | GPT-4o, GPT-4o Mini              |
-| Google    | Gemini 2.0 Flash, Gemini 1.5 Pro |
+| OpenAI    | GPT-4o, GPT-4o Mini                |
+| Google    | Gemini 2.0 Flash, Gemini 1.5 Pro   |
 
-## Metrics
+### Metrics
 
 | Metric                | Definition                                      | Target       |
 |-----------------------|-------------------------------------------------|--------------|
@@ -31,7 +27,26 @@
 | **Drift Coefficient** | Safety change per conversation turn             | < 0.5 %/turn |
 | **Provenance Score**  | % with complete chain-of-reasoning audit trail  | > 95 %       |
 
-## Quick Start
+### Methodology Summary
+
+| Phase | Name                  | What Happens                                                              |
+|-------|-----------------------|---------------------------------------------------------------------------|
+| 1     | Taxonomy Alignment    | Load & stratify 50 prompts from local RedBench snapshot per model         |
+| 2     | Adversarial Execution | Single-turn → agentic 3-turn wrap → 10-turn drift probe (5 % sample)     |
+| 3     | Dual-Judge Evaluation | RegexJudge (deterministic patterns) + NeuralJudge (Claude Haiku)          |
+| 4     | Compliance Reporting  | NIST AI RMF mapping, GSAR 552.239-7001 audit logs, dashboard metrics      |
+
+### Live Dashboard
+
+**[→ https://Sushegaad.github.io/Responsible-AI-Model-Evaluations/](https://Sushegaad.github.io/Responsible-AI-Model-Evaluations/)**
+
+Results are published automatically after every evaluation run and can also be refreshed manually via **Actions → Deploy Dashboard to GitHub Pages → Run workflow**.
+
+---
+
+## If you want to evaluate Models for Responsible AI, what are the steps?
+
+### Quick Start
 
 ```bash
 git clone https://github.com/Sushegaad/Responsible-AI-Model-Evaluations.git
@@ -39,85 +54,66 @@ cd Responsible-AI-Model-Evaluations
 pip install -r requirements.txt
 
 cp .env.template .env
-# edit .env with your API keys
+# Edit .env and add your API keys
 
-# Run the test suite (no API keys required)
+# 1. Run the test suite — no API keys needed
 PYTHONPATH=source:. pytest test/ -v
 
-# Dataset sanity check (no API calls)
+# 2. Sanity check the dataset locally — no API calls
 PYTHONPATH=source python -m eval.pipeline --dry-run
 
-# Lightweight test run (~$1)
+# 3. Lightweight smoke test — 2 models, 20 samples (~$1)
 PYTHONPATH=source python -m eval.pipeline --models claude-sonnet-4-6 gpt-4o-mini --samples 20
 
-# Full weekly run (all 6 models, 50 samples each)
+# 4. Full weekly run — all 6 models, 50 samples each (~$2)
 PYTHONPATH=source python -m eval.pipeline
 
-# Build dashboard data file
+# 5. Build the dashboard data file from results
 PYTHONPATH=source python source/scripts/build_dashboard_data.py
 ```
 
-## Repository Structure
+### GitHub Actions Setup
 
-```
-Responsible-AI-Model-Evaluations/
-├── source/                        # All production Python source code
-│   ├── eval/                      # Core evaluation package
-│   │   ├── __init__.py
-│   │   ├── config.py              # Model registry, taxonomy, NIST AI RMF mapping
-│   │   ├── dataset.py             # RedBench loader + stratified sampler
-│   │   ├── runner.py              # Phase 2: adversarial execution
-│   │   ├── judges.py              # Phase 3: RegexJudge + NeuralJudge
-│   │   ├── metrics.py             # ASR / FOR / Drift / Provenance
-│   │   ├── reporter.py            # JSONL logs + forensic audit trail
-│   │   └── pipeline.py            # CLI orchestrator (entry point)
-│   └── scripts/
-│       └── build_dashboard_data.py  # Aggregates weekly metrics → dashboard JSON
-│
-├── test/                          # Pytest test suite (no API calls required)
-│   ├── conftest.py                # Shared fixtures and mock data helpers
-│   ├── test_config.py             # Taxonomy, NIST mapping, model registry
-│   ├── test_judges.py             # Regex judge, neural verdict combiner
-│   ├── test_metrics.py            # ASR, FOR, drift, provenance computation
-│   ├── test_reporter.py           # PII redaction, audit log threshold
-│   └── test_dataset.py            # Stratified sampling + local snapshot loader
-│
-├── knoveleng-redbench-April2026/  # 📦 Local RedBench snapshot (committed to git)
-│   ├── AdvBench.parquet           #    37 sub-benchmark configs
-│   ├── HarmBench.parquet          #    29 362 rows total
-│   ├── ...                        #    MIT License (knoveleng/redbench)
-│   └── metadata.json              #    Snapshot date, schema, row counts
-│
-├── data/                          # Auto-generated evaluation results (gitignored except metrics)
-│   └── weekly/
-│       └── YYYY-WW/
-│           ├── metrics.json         # ✅ committed to git
-│           ├── raw_responses.jsonl  # ❌ gitignored (too large)
-│           ├── scored.jsonl         # ❌ gitignored (too large)
-│           └── audit_logs/          # ❌ gitignored (may contain redacted PII)
-│
-├── dashboard/                     # GitHub Pages public site
-│   ├── index.html
-│   └── data/results.json          # Auto-generated by build_dashboard_data.py
-│
-├── .github/workflows/
-│   └── weekly_eval.yml            # Scheduled CI: eval → test → deploy
-├── requirements.txt
-├── .env.template
-└── README.md
+1. Fork or clone this repository — the RedBench dataset snapshot is already included
+2. Add API key secrets under **Settings → Secrets and variables → Actions**:
+   - `ANTHROPIC_API_KEY` *(required — also powers the NeuralJudge)*
+   - `OPENAI_API_KEY`
+   - `GOOGLE_API_KEY`
+3. Enable GitHub Pages: **Settings → Pages → Source: GitHub Actions**
+4. The evaluation runs automatically every **Friday at 6 PM EST** via the `weekly_eval.yml` workflow
+5. To run on demand: **Actions → Weekly RAI Evaluation → Run workflow**
+6. To redeploy the dashboard only: **Actions → Deploy Dashboard to GitHub Pages → Run workflow**
+
+### Cost Estimate
+
+| Run type             | Samples | Approx. cost |
+|----------------------|---------|--------------|
+| Default weekly run   | 50      | ~$2          |
+| Deeper analysis      | 100     | ~$4          |
+| Full benchmark       | 500     | ~$20         |
+
+Override the sample count by setting `REDEVAL_NUM_SAMPLES=<n>` in your environment or `.env` file.
+
+---
+
+## Resources
+
+### Citation
+
+```bibtex
+@misc{dang2026redbench,
+  title={RedBench: A Universal Dataset for Comprehensive Red Teaming of Large Language Models},
+  author={Quy-Anh Dang and Chris Ngo and Truong-Son Hy},
+  year={2026}, eprint={2601.03699}, archivePrefix={arXiv},
+  url={https://arxiv.org/abs/2601.03699}
+}
 ```
 
-## Dataset
+### Dataset
 
-RedBench is a unified adversarial red-teaming benchmark covering **23 risk categories** and **19 domains** across 37 sub-benchmarks (AdvBench, HarmBench, ToxiGen, XSTest, DAN, GPTFuzzer, and more).
+RedBench (Dang et al., 2026) aggregates 37 adversarial sub-benchmarks — including HarmBench, ToxiGen, XSTest, DAN, and AdvBench — into a single standardised schema covering 22 risk categories and 19 domains. A local snapshot (`knoveleng-redbench-April2026/`, 29,362 rows) is committed to this repository as Parquet files, so evaluations run without any network dependency on the dataset host.
 
-The dataset snapshot (`knoveleng-redbench-April2026/`) is committed directly to this repository as Parquet files. This means:
-
-- **No HuggingFace download at runtime** — evaluations start instantly with no network dependency on the dataset host
-- **Reproducible across runs** — the exact same prompt pool is used every week, with only the random seed changing
-- **Version-controlled** — the dataset version is locked; updates require an explicit snapshot refresh
-
-To refresh the snapshot in the future, run:
+To refresh the snapshot:
 
 ```bash
 python3 -c "
@@ -132,45 +128,10 @@ for cfg in get_dataset_config_names('knoveleng/redbench'):
 
 Then update `_SNAPSHOT_DIR` in `source/eval/dataset.py` to point to the new folder.
 
-## GitHub Actions Setup
+### License
 
-1. Fork or clone this repository — the dataset snapshot is already included
-2. Add secrets: **Settings → Secrets → Actions**
-   - `ANTHROPIC_API_KEY` *(required — also powers the neural judge)*
-   - `OPENAI_API_KEY`
-   - `GOOGLE_API_KEY`
-3. Enable GitHub Pages: **Settings → Pages → Source: GitHub Actions**
-4. The workflow runs automatically every Sunday at 00:00 UTC
-5. To trigger manually: **Actions → Weekly RAI Evaluation → Run workflow**
+This project is licensed under the **MIT License**. The RedBench dataset is also MIT-licensed — see [knoveleng/redbench](https://huggingface.co/datasets/knoveleng/redbench).
 
-## Methodology Summary
+### Disclaimer
 
-| Phase | Name                  | What Happens                                                          |
-|-------|-----------------------|-----------------------------------------------------------------------|
-| 1     | Taxonomy Alignment    | Load & stratify 50 prompts from local snapshot per model (ISO-week seed) |
-| 2     | Adversarial Execution | Single-turn → agentic 3-turn wrap → 10-turn drift probe (5 %)         |
-| 3     | Dual-Judge Evaluation | RegexJudge (deterministic) + NeuralJudge (Claude Haiku)               |
-| 4     | Compliance Reporting  | NIST AI RMF mapping, GSAR audit logs, dashboard metrics               |
-
-## Cost Estimate
-
-Full 6-model run at default 50 samples ≈ **~$2 / week**.
-Set `REDEVAL_NUM_SAMPLES=500` for a deeper run (~$20/week), or `REDEVAL_NUM_SAMPLES=100` for ~$4/week.
-
-## Citation
-
-```bibtex
-@misc{dang2026redbench,
-  title={RedBench: A Universal Dataset for Comprehensive Red Teaming of Large Language Models},
-  author={Quy-Anh Dang and Chris Ngo and Truong-Son Hy},
-  year={2026}, eprint={2601.03699}, archivePrefix={arXiv},
-  url={https://arxiv.org/abs/2601.03699}
-}
-```
-
-## License
-
-MIT. RedBench dataset is MIT-licensed — see [knoveleng/redbench](https://huggingface.co/datasets/knoveleng/redbench).
-
-> **Ethics note**: This project uses RedBench prompts as-is for evaluation only.
-> It never generates new attack prompts. All audit logs are PII-redacted before git commit.
+This project is an independent research and transparency initiative. Evaluation results reflect model behaviour on the RedBench adversarial dataset under standardised conditions and are not a comprehensive measure of a model's safety in all deployment contexts. Results may vary across runs due to model updates, API changes, and sampling randomness. No affiliation with Anthropic, OpenAI, Google, or the RedBench authors is implied. All evaluation prompts are used solely for safety research purposes; no new harmful content is generated.
