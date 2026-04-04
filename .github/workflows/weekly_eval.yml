@@ -2,7 +2,7 @@ name: Weekly RAI Evaluation
 
 on:
   schedule:
-    - cron: '0 23 * * 5'   # Every Friday 23:00 UTC = 6 PM EST
+    - cron: '0 22 * * 5'   # Every Friday 22:00 UTC = 6 PM EDT (UTC-4, Mar–Nov) / 5 PM EST (UTC-5, Nov–Mar)
   workflow_dispatch:
     inputs:
       models:
@@ -12,7 +12,7 @@ on:
       num_samples:
         description: 'Samples per model'
         required: false
-        default: '50'
+        default: '500'
 
 permissions:
   contents: write
@@ -57,7 +57,7 @@ jobs:
             ARGS="--models $MODELS"
           fi
           PYTHONPATH=source python -m eval.pipeline \
-            --samples "${{ github.event.inputs.num_samples || '50' }}" \
+            --samples "${{ github.event.inputs.num_samples || '500' }}" \
             $ARGS
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

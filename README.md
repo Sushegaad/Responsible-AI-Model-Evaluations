@@ -138,5 +138,5 @@ This project is an independent research and transparency initiative. Evaluation 
 
 ---
 
-**Author:** Hemant Naik &nbsp;·&nbsp; [**LinkedIn**](https://www.linkedin.com/in/hemant-naik) &nbsp;·&nbsp; **hemant.naik@gmail.com**
+**Author:** Hemant Naik &nbsp;·&nbsp; [**LinkedIn**](https://www.linkedin.com/in/tanaji-naik/) &nbsp;·&nbsp; **hemant.naik@gmail.com**
 Built March 2026

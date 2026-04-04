@@ -223,6 +223,11 @@ body {
 .lb-table td { padding:12px 16px; border-bottom:1px solid var(--surface-2); vertical-align:middle; }
 .lb-table tr:last-child td { border-bottom:none; }
 .lb-table tr:hover td { background:var(--surface-1); }
+.lb-note {
+  font-size:12px; color:var(--on-surface-3); line-height:1.55;
+  white-space:normal; min-width:220px; max-width:320px;
+}
+.lb-note:hover { color:var(--on-surface-2); }
 .rank-badge {
   width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;
   justify-content:center;font-family:var(--font-ui);font-size:12px;font-weight:700;
@@ -410,11 +415,13 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
   .lb-table td        { padding: 10px 12px; }
   .mc-name            { font-size: 12px; }
   .mc-prov            { font-size: 10px; }
-  /* Hide Drift and Provenance columns on very small screens */
+  /* Hide Drift, Provenance and Notes columns on very small screens */
   .lb-table th:nth-child(5),
   .lb-table td:nth-child(5),
   .lb-table th:nth-child(6),
-  .lb-table td:nth-child(6) { display: none; }
+  .lb-table td:nth-child(6),
+  .lb-table th:nth-child(8),
+  .lb-table td:nth-child(8) { display: none; }
 
   /* Chart cards */
   .chart-card         { padding: 14px 16px; }
@@ -498,11 +505,6 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
         using the RedBench adversarial dataset. Scored via dual-judge evaluation and mapped to the
         NIST AI Risk Management Framework.
       </p>
-      <div class="hero-actions">
-        <a class="btn-filled" href="https://huggingface.co/datasets/knoveleng/redbench" target="_blank">View Dataset</a>
-        <a class="btn-text"   href="https://arxiv.org/abs/2601.03699"                   target="_blank">Read Paper ↗</a>
-        <a class="btn-text"   href="https://github.com/Sushegaad/Responsible-AI-Model-Evaluations/" target="_blank">GitHub ↗</a>
-      </div>
     </div>
     <div class="hero-week-card">
       <div class="hwc-label">Latest Run</div>
@@ -741,7 +743,7 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
           <div class="rc-icon">👤</div>
           <div class="rc-title">Author</div>
           <div class="rc-value"><strong>Hemant Naik</strong></div>
-          <a class="rc-link" href="https://www.linkedin.com/in/hemant-naik" target="_blank">LinkedIn ↗</a>
+          <a class="rc-link" href="https://www.linkedin.com/in/tanaji-naik/" target="_blank">LinkedIn ↗</a>
           <a class="rc-link" href="mailto:hemant.naik@gmail.com">hemant.naik@gmail.com</a>
         </div>
 
@@ -749,7 +751,7 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
           <div class="rc-icon">📅</div>
           <div class="rc-title">Built</div>
           <div class="rc-value">March 2026</div>
-          <div class="rc-value" style="color:var(--on-surface-4);font-size:12px">Evaluations run every Friday at 6 PM EST via GitHub Actions</div>
+          <div class="rc-value" style="color:var(--on-surface-4);font-size:12px">Evaluations run every Friday at 6 PM EDT via GitHub Actions</div>
         </div>
 
         <div class="resource-card">
@@ -961,11 +963,12 @@ function renderLB(d) {
   const cols = [
     {k:null,                l:'#',       w:'48px'},
     {k:null,                l:'Model',   w:''},
-    {k:'asr',               l:'ASR ↕',  w:'170px'},
-    {k:'for_rate',          l:'FOR ↕',  w:'90px'},
-    {k:'drift_coefficient', l:'Drift ↕',w:'100px'},
-    {k:'provenance_score',  l:'Prov ↕', w:'90px'},
+    {k:'asr',               l:'Attack Success Rate ↕',    w:'170px'},
+    {k:'for_rate',          l:'False Outright Refusal ↕',  w:'140px'},
+    {k:'drift_coefficient', l:'Drift Coefficient ↕',       w:'140px'},
+    {k:'provenance_score',  l:'Provenance Score ↕',        w:'140px'},
     {k:'critical_failures', l:'Critical',w:'80px'},
+    {k:null,                l:'Notes',   w:'260px'},
   ];
   const ths = cols.map(c=>{
     const sc2=ST.sortKey===c.k?' sorted':'';
@@ -974,9 +977,46 @@ function renderLB(d) {
     return `<th class="${sc2}" ${cl} ${w}>${c.l}</th>`;
   }).join('');
 
+  /* Build a short plain-English note for each leaderboard row */
+  function lbNote(m, rank) {
+    const parts = [];
+    const asr   = m.asr            || 0;
+    const forR  = m.for_rate       || 0;
+    const drift = m.drift_coefficient || 0;
+    const prov  = m.provenance_score  || 0;
+    const crit  = m.critical_failures || 0;
+
+    // Overall safety stance
+    if      (asr < 0.10) parts.push('Strong safety posture — fewer than 1 in 10 attacks succeed.');
+    else if (asr < 0.25) parts.push('Moderate attack resistance; some prompt-injection risk remains.');
+    else if (asr < 0.50) parts.push('Elevated attack success rate — safety guardrails show notable gaps.');
+    else                  parts.push('High attack success rate — model is frequently bypassed by adversarial prompts.');
+
+    // Over-refusal
+    if      (forR > 0.30) parts.push('Over-refusal is a concern: benign requests are rejected too often.');
+    else if (forR > 0.15) parts.push('Some unnecessary refusals on benign prompts.');
+    else if (forR < 0.05) parts.push('Rarely refuses legitimate requests.');
+
+    // Drift
+    if      (drift > 0.20) parts.push('Significant response drift across similar prompts signals inconsistency.');
+    else if (drift > 0.10) parts.push('Moderate drift — responses vary on semantically similar inputs.');
+
+    // Provenance
+    if      (prov >= 0.80) parts.push('Excellent traceability to source benchmarks.');
+    else if (prov < 0.50)  parts.push('Low provenance score — outputs are hard to trace to known references.');
+
+    // Critical failures — always explained
+    if (crit > 0) {
+      parts.push(`⚠️ ${crit} critical failure${crit>1?'s':''}: the model produced harmful or policy-violating output${crit>1?' on multiple prompts':''} that bypassed all safety layers — immediate review required.`);
+    }
+
+    return parts.join(' ');
+  }
+
   const rows = sorted.map((m,i) => {
     const r=i+1, rc=r===1?'rk-1':r===2?'rk-2':r===3?'rk-3':'rk-n';
     const bw=Math.min(100, m.asr/maxASR*100);
+    const note = lbNote(m, r);
     return `<tr>
       <td><span class="rank-badge ${rc}">${r}</span></td>
       <td><div class="mc"><span class="mc-dot" style="background:${m.color}"></span>
@@ -987,6 +1027,7 @@ function renderLB(d) {
       <td><span class="mv n">${dft(m.drift_coefficient)}</span></td>
       <td><span class="mv i">${pct(m.provenance_score)}</span></td>
       <td><span class="mv ${(m.critical_failures||0)>0?'b':'g'}">${m.critical_failures||0}</span></td>
+      <td class="lb-note">${note}</td>
     </tr>`;
   }).join('');
 
