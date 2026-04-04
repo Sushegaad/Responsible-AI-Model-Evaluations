@@ -1036,24 +1036,24 @@ function renderLB(d) {
     const prov  = m.provenance_score  || 0;
     const crit  = m.critical_failures || 0;
 
-    // Overall safety stance
-    if      (asr < 0.10) parts.push('Strong safety posture — fewer than 1 in 10 attacks succeed.');
-    else if (asr < 0.25) parts.push('Moderate attack resistance; some prompt-injection risk remains.');
-    else if (asr < 0.50) parts.push('Elevated attack success rate — safety guardrails show notable gaps.');
-    else                  parts.push('High attack success rate — model is frequently bypassed by adversarial prompts.');
+    // Overall safety stance  (asr is 0–100 %)
+    if      (asr < 10)  parts.push('Strong safety posture — fewer than 1 in 10 attacks succeed.');
+    else if (asr < 25)  parts.push('Moderate attack resistance; some prompt-injection risk remains.');
+    else if (asr < 50)  parts.push('Elevated attack success rate — safety guardrails show notable gaps.');
+    else                parts.push('High attack success rate — model is frequently bypassed by adversarial prompts.');
 
-    // Over-refusal
-    if      (forR > 0.30) parts.push('Over-refusal is a concern: benign requests are rejected too often.');
-    else if (forR > 0.15) parts.push('Some unnecessary refusals on benign prompts.');
-    else if (forR < 0.05) parts.push('Rarely refuses legitimate requests.');
+    // Over-refusal  (for_rate is 0–100 %)
+    if      (forR > 30) parts.push('Over-refusal is a concern: benign requests are rejected too often.');
+    else if (forR > 15) parts.push('Some unnecessary refusals on benign prompts.');
+    else if (forR <  5) parts.push('Rarely refuses legitimate requests.');
 
-    // Drift
+    // Drift  (drift_coefficient is a small signed decimal, e.g. 0.003 = 0.3 %/turn)
     if      (drift > 0.20) parts.push('Significant response drift across similar prompts signals inconsistency.');
     else if (drift > 0.10) parts.push('Moderate drift — responses vary on semantically similar inputs.');
 
-    // Provenance
-    if      (prov >= 0.80) parts.push('Excellent traceability to source benchmarks.');
-    else if (prov < 0.50)  parts.push('Low provenance score — outputs are hard to trace to known references.');
+    // Provenance  (provenance_score is 0–100 %)
+    if      (prov >= 80) parts.push('Excellent traceability to source benchmarks.');
+    else if (prov <  50) parts.push('Low provenance score — outputs are hard to trace to known references.');
 
     // Critical failures — always explained
     if (crit > 0) {
@@ -1123,13 +1123,14 @@ function renderRadar(mid) {
       responsive:true, maintainAspectRatio:false,
       plugins:{
         legend:{display:false},
-        tooltip:{backgroundColor:TB,borderColor:TBD,borderWidth:1,titleColor:'#202124',bodyColor:'#5F6368',
-          callbacks:{title:c=>CATS[c[0].dataIndex],label:c=>` Attack Success Rate: ${c.raw.toFixed(1)}%`}}
+        tooltip:(()=>{ const t=chartTheme(); return {backgroundColor:t.bg,borderColor:t.border,borderWidth:1,titleColor:t.tick,bodyColor:t.label,
+          callbacks:{title:c=>CATS[c[0].dataIndex],label:c=>` Attack Success Rate: ${c.raw.toFixed(1)}%`}}; })()
       },
       scales:{r:{min:0,max:100,
-        grid:{color:GR},angleLines:{color:GR},
-        pointLabels:{color:'#9AA0A6',font:{size:9,family:"'Roboto'"}},
-        ticks:{color:TK,stepSize:25,backdropColor:'transparent',font:{size:9}},
+        grid:(()=>{ const t=chartTheme(); return {color:t.grid}; })(),
+        angleLines:(()=>{ const t=chartTheme(); return {color:t.grid}; })(),
+        pointLabels:{color:chartTheme().tick,font:{size:9,family:"'Roboto'"}},
+        ticks:{color:chartTheme().tick,stepSize:25,backdropColor:'transparent',font:{size:9}},
       }},
     },
   });
@@ -1206,13 +1207,19 @@ async function init() {
 
   function applyTheme(dark) {
     root.setAttribute('data-theme', dark ? 'dark' : 'light');
-    // Update Chart.js default colors when charts exist
     if (window.Chart) {
       Chart.defaults.color = dark ? '#AEAEB2' : '#5F6368';
       Chart.defaults.borderColor = dark ? '#3A3A3C' : '#E8EAED';
     }
-    // Re-render any live charts so grid/label colors update
-    Object.values(CH).forEach(c => { if (c && typeof c.update === 'function') c.update(); });
+    // Rebuild charts from scratch so lineOpts() re-runs with the new theme colours.
+    // (chart.update() only re-renders with the already-baked options object.)
+    if (ST.data) {
+      buildTrend('c-asr',  'asr',   v => v?.toFixed(1)+'%');
+      buildTrend('c-for',  'for',   v => v?.toFixed(1)+'%');
+      buildTrend('c-drift','drift', v => v?.toFixed(3));
+      buildTrend('c-prov', 'prov',  v => v?.toFixed(1)+'%');
+      if (ST.radarId) renderRadar(ST.radarId);
+    }
   }
 
   function toggleTheme() {
