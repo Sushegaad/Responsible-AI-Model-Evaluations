@@ -48,6 +48,43 @@
   --font-mono:    'Roboto Mono', monospace;
 }
 
+/* ── DARK MODE ── */
+[data-theme="dark"] {
+  --surface-0:    #1C1C1E;
+  --surface-1:    #141416;
+  --surface-2:    #2C2C2E;
+  --surface-3:    #3A3A3C;
+  --surface-4:    #48484A;
+  --on-surface:   #F2F2F7;
+  --on-surface-2: #EBEBF0;
+  --on-surface-3: #AEAEB2;
+  --on-surface-4: #8E8E93;
+  --on-surface-5: #636366;
+  --google-blue:   #4DA3FF;
+  --blue-tonal:    #1C3054;
+  --red-tonal:     #3B1210;
+  --yellow-tonal:  #3B2E00;
+  --green-tonal:   #0D2B16;
+  --elev-1: 0 1px 2px rgba(0,0,0,.5),  0 1px 3px 1px rgba(0,0,0,.3);
+  --elev-2: 0 1px 2px rgba(0,0,0,.5),  0 2px 6px 2px rgba(0,0,0,.3);
+  --elev-3: 0 1px 3px rgba(0,0,0,.5),  0 4px 8px 3px rgba(0,0,0,.3);
+}
+
+/* ── THEME TOGGLE BUTTON ── */
+.theme-toggle {
+  width: 36px; height: 36px;
+  border-radius: 50%; border: 1px solid var(--surface-4);
+  background: var(--surface-1); color: var(--on-surface-3);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 17px; flex-shrink: 0;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.theme-toggle:hover { background: var(--surface-2); color: var(--on-surface); }
+.theme-toggle .icon-sun  { display: none; }
+.theme-toggle .icon-moon { display: block; }
+[data-theme="dark"] .theme-toggle .icon-sun  { display: block; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
@@ -486,6 +523,10 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
       <span class="app-bar-title">Model Evaluation for <b>Responsible AI</b></span>
     </a>
     <div class="ab-chips">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark / light mode">
+        <span class="icon-moon">🌙</span>
+        <span class="icon-sun">☀️</span>
+      </button>
       <span class="chip live">Live · Weekly</span>
       <span class="chip" id="ab-week">—</span>
     </div>
@@ -540,7 +581,7 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
     <div class="section">
       <div class="sec-head">
         <span class="sec-title">Highlights</span>
-        <span class="sec-hint">Current run · lower ASR = safer</span>
+        <span class="sec-hint">Current run · lower Attack Success Rate = safer</span>
       </div>
       <div class="summary-grid" id="summary-grid">
         <div class="loading" style="grid-column:1/-1"><div class="spinner"></div><span>Loading evaluation data…</span></div>
@@ -566,12 +607,12 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
       </div>
       <div class="charts-grid">
         <div class="chart-card">
-          <div class="ct-title">Attack Success Rate (ASR)</div>
+          <div class="ct-title">Attack Success Rate</div>
           <div class="ct-desc">% of adversarial prompts that bypassed safety guardrails — lower is safer</div>
           <div class="ct-wrap"><canvas id="c-asr"></canvas></div>
         </div>
         <div class="chart-card">
-          <div class="ct-title">False Outright Refusal (FOR)</div>
+          <div class="ct-title">False Outright Refusal</div>
           <div class="ct-desc">% of safe prompts incorrectly refused — lower means more useful</div>
           <div class="ct-wrap"><canvas id="c-for"></canvas></div>
         </div>
@@ -592,7 +633,7 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
     <div class="section">
       <div class="sec-head">
         <span class="sec-title">Risk Category Breakdown</span>
-        <span class="sec-hint">ASR across all 22 RedBench categories · current run</span>
+        <span class="sec-hint">Attack Success Rate across all 22 RedBench categories · current run</span>
       </div>
       <div class="radar-layout">
         <div class="model-picker">
@@ -611,7 +652,7 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
     <div class="section">
       <div class="sec-head">
         <span class="sec-title">NIST AI RMF Alignment</span>
-        <span class="sec-hint">Average ASR per NIST AI Risk Management Framework function</span>
+        <span class="sec-hint">Average Attack Success Rate per NIST AI Risk Management Framework function</span>
       </div>
       <div class="nist-tabs" id="nist-tabs"></div>
       <div class="nist-grid"  id="nist-grid"></div>
@@ -649,7 +690,7 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
         <div class="method-card">
           <div class="method-num" style="color:var(--google-green)">Phase 04 — Reporting</div>
           <div class="method-title">Compliance Package</div>
-          <div class="method-body">ASR / FOR / Drift / Provenance metrics computed per model. All 22 categories mapped to NIST AI RMF functions. Critical failures and high-severity neural hits generate GSAR 552.239-7001 forensic audit logs with PII-redacted prompts and responses.</div>
+          <div class="method-body">Attack Success Rate, False Outright Refusal, Drift Coefficient, and Provenance Score are computed per model. All 22 categories mapped to NIST AI RMF functions. Critical failures and high-severity neural hits generate GSAR 552.239-7001 forensic audit logs with PII-redacted prompts and responses.</div>
         </div>
       </div>
     </div>
@@ -661,25 +702,21 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
       </div>
       <div class="metric-grid">
         <div class="metric-card">
-          <div class="metric-abbr">ASR</div>
           <div class="metric-name">Attack Success Rate</div>
           <div class="metric-def">The percentage of adversarial prompts that successfully bypassed the model's safety guardrails, resulting in a harmful or policy-violating response. Measured by the dual-judge system across all attack categories.</div>
           <span class="metric-target">Target: &lt; 5%</span>
         </div>
         <div class="metric-card" style="border-top-color:var(--google-green)">
-          <div class="metric-abbr" style="color:var(--google-green)">FOR</div>
           <div class="metric-name">False Outright Refusal</div>
-          <div class="metric-def">The percentage of benign (No Risk) prompts that were incorrectly refused by the model. High FOR indicates an over-cautious model that degrades usability. The balance between ASR and FOR captures the safety–utility trade-off.</div>
+          <div class="metric-def">The percentage of benign (No Risk) prompts that were incorrectly refused by the model. A high False Outright Refusal rate indicates an over-cautious model that degrades usability. The balance between Attack Success Rate and False Outright Refusal captures the safety–utility trade-off.</div>
           <span class="metric-target" style="background:var(--green-tonal)">Target: &lt; 10%</span>
         </div>
         <div class="metric-card" style="border-top-color:var(--google-yellow)">
-          <div class="metric-abbr" style="color:var(--google-yellow)">Drift</div>
           <div class="metric-name">Drift Coefficient</div>
           <div class="metric-def">The change in failure rate per conversation turn across a 10-turn multi-turn probe (applied to 5% of the sample). A coefficient near zero means guardrails hold under prolonged pressure; a positive value indicates guardrail erosion.</div>
           <span class="metric-target" style="background:var(--yellow-tonal);color:var(--warning)">Target: &lt; 0.5% / turn</span>
         </div>
         <div class="metric-card" style="border-top-color:var(--google-red)">
-          <div class="metric-abbr" style="color:var(--google-red)">Prov</div>
           <div class="metric-name">Provenance Score</div>
           <div class="metric-def">The percentage of evaluated samples for which the NeuralJudge successfully produced a parseable chain-of-reasoning JSON response. High provenance is required for GSAR 552.239-7001 forensic traceability and audit log completeness.</div>
           <span class="metric-target" style="background:var(--red-tonal);color:var(--error)">Target: &gt; 95%</span>
@@ -859,19 +896,32 @@ window.switchTab = switchTab;
 Chart.defaults.font.family = "'Roboto', sans-serif";
 Chart.defaults.font.size   = 11;
 Chart.defaults.color       = '#80868B';
+
+/* Return theme-aware chart colours at call time so dark mode is respected */
+function chartTheme() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return {
+    grid:   dark ? '#3A3A3C' : '#F1F3F4',
+    tick:   dark ? '#AEAEB2' : '#9AA0A6',
+    bg:     dark ? '#1C1C1E' : '#FFFFFF',
+    border: dark ? '#3A3A3C' : '#DADCE0',
+    label:  dark ? '#AEAEB2' : '#80868B',
+  };
+}
 const GR='#F1F3F4', TK='#9AA0A6', TB='#FFFFFF', TBD='#DADCE0';
 
 function lineOpts(fmt) {
+  const t = chartTheme();
   return {
     responsive:true, maintainAspectRatio:false,
     plugins:{
-      legend:{ position:'bottom', labels:{color:'#5F6368',boxWidth:10,padding:14,font:{size:11}} },
-      tooltip:{ backgroundColor:TB,borderColor:TBD,borderWidth:1,titleColor:'#202124',bodyColor:'#5F6368',
+      legend:{ position:'bottom', labels:{color:t.label,boxWidth:10,padding:14,font:{size:11}} },
+      tooltip:{ backgroundColor:t.bg,borderColor:t.border,borderWidth:1,titleColor:t.tick,bodyColor:t.label,
         callbacks:{label:c=>` ${c.dataset.label}: ${fmt(c.raw)}`} }
     },
     scales:{
-      x:{grid:{color:GR},ticks:{color:TK}},
-      y:{grid:{color:GR},ticks:{color:TK,callback:fmt}}
+      x:{grid:{color:t.grid},ticks:{color:t.tick}},
+      y:{grid:{color:t.grid},ticks:{color:t.tick,callback:fmt}}
     }
   };
 }
@@ -903,8 +953,8 @@ function buildInsights(d) {
 
   return [
     `In the latest evaluation run (<strong>${runLabel}</strong>), <strong>${safest.display_name}</strong> (${safest.provider}) achieved the lowest Attack Success Rate of <strong>${pct(safest.asr)}</strong>, ranking as the safest model across all ${lb.length} models tested.`,
-    `Across all providers, the average ASR was <strong>${avgASR.toFixed(1)}%</strong>, indicating a <strong>${safetyLevel}</strong> overall safety posture — <strong>${riskiest.display_name}</strong> showed the highest bypass rate at <strong>${pct(riskiest.asr)}</strong>.`,
-    `False Outright Refusal rates averaged <strong>${avgFOR.toFixed(1)}%</strong> across the group; <strong>${neutral.display_name}</strong> achieved the best safety-utility balance with a FOR of <strong>${pct(neutral.for_rate)}</strong>.`,
+    `Across all providers, the average Attack Success Rate was <strong>${avgASR.toFixed(1)}%</strong>, indicating a <strong>${safetyLevel}</strong> overall safety posture — <strong>${riskiest.display_name}</strong> showed the highest bypass rate at <strong>${pct(riskiest.asr)}</strong>.`,
+    `False Outright Refusal rates averaged <strong>${avgFOR.toFixed(1)}%</strong> across the group; <strong>${neutral.display_name}</strong> achieved the best safety-utility balance with a False Outright Refusal rate of <strong>${pct(neutral.for_rate)}</strong>.`,
     `<strong>${stable.display_name}</strong> exhibited the most stable guardrail performance under multi-turn adversarial pressure, with a drift coefficient of <strong>${dft(stable.drift_coefficient)}</strong> across the 10-turn probe.`,
     `Provenance scores averaged <strong>${avgProv.toFixed(1)}%</strong> across all models, reflecting <strong>${provLevel}</strong> chain-of-reasoning coverage for GSAR 552.239-7001 forensic audit compliance.`
   ];
@@ -937,7 +987,7 @@ function renderSummary(d) {
 
   $('summary-grid').innerHTML = [
     sc('blue',  '🛡️','Safest Model',       pct(safest.asr,1),            safest.display_name, safest.provider,  `${safest.critical_failures||0} critical failures`),
-    sc('green', '✅','Most Neutral (FOR)',  pct(neutral.for_rate,1),      neutral.display_name,neutral.provider, 'Fewest false refusals'),
+    sc('green', '✅','Lowest False Outright Refusal',  pct(neutral.for_rate,1),      neutral.display_name,neutral.provider, 'Fewest false refusals'),
     sc('yellow','📉','Lowest Drift',        dft(stable.drift_coefficient),stable.display_name,  stable.provider, 'Safety per-turn change'),
     sc('blue',  '🔢','Total Evaluations',   total.toLocaleString(),       `${lb.length} models`, d.latest_week||'', `Since ${(d.weeks||[])[0]||'—'}`),
   ].join('');
@@ -1056,7 +1106,7 @@ function renderRadar(mid) {
   const rd=d.radar_data[mid], model=d.models?.find(m=>m.model_id===mid);
   if(!rd||!model) return;
   ST.radarId=mid;
-  $('radar-title').textContent=model.display_name+' — Risk Category ASR';
+  $('radar-title').textContent=model.display_name+' — Risk Category Attack Success Rate';
   document.querySelectorAll('.mp-btn').forEach(b=>b.classList.toggle('active',b.dataset.mid===mid));
   if(CH.radar) CH.radar.destroy();
   CH.radar=new Chart($('c-radar'),{
@@ -1074,7 +1124,7 @@ function renderRadar(mid) {
       plugins:{
         legend:{display:false},
         tooltip:{backgroundColor:TB,borderColor:TBD,borderWidth:1,titleColor:'#202124',bodyColor:'#5F6368',
-          callbacks:{title:c=>CATS[c[0].dataIndex],label:c=>` ASR: ${c.raw.toFixed(1)}%`}}
+          callbacks:{title:c=>CATS[c[0].dataIndex],label:c=>` Attack Success Rate: ${c.raw.toFixed(1)}%`}}
       },
       scales:{r:{min:0,max:100,
         grid:{color:GR},angleLines:{color:GR},
@@ -1148,6 +1198,46 @@ async function init() {
   buildNISTTabs(d);
   if(d.leaderboard?.length) renderNIST(d.leaderboard[0].model_id);
 }
+
+/* ── Dark / Light mode toggle ── */
+(function() {
+  const STORAGE_KEY = 'rai-theme';
+  const root = document.documentElement;
+
+  function applyTheme(dark) {
+    root.setAttribute('data-theme', dark ? 'dark' : 'light');
+    // Update Chart.js default colors when charts exist
+    if (window.Chart) {
+      Chart.defaults.color = dark ? '#AEAEB2' : '#5F6368';
+      Chart.defaults.borderColor = dark ? '#3A3A3C' : '#E8EAED';
+    }
+    // Re-render any live charts so grid/label colors update
+    Object.values(CH).forEach(c => { if (c && typeof c.update === 'function') c.update(); });
+  }
+
+  function toggleTheme() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    const next = !isDark;
+    try { localStorage.setItem(STORAGE_KEY, next ? 'dark' : 'light'); } catch(e) {}
+    applyTheme(next);
+  }
+
+  // Apply saved preference immediately (before paint)
+  (function() {
+    let saved = 'light';
+    try { saved = localStorage.getItem(STORAGE_KEY) || 'light'; } catch(e) {}
+    // Also respect OS preference if no saved setting
+    if (!localStorage.getItem(STORAGE_KEY) && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      saved = 'dark';
+    }
+    applyTheme(saved === 'dark');
+  })();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.addEventListener('click', toggleTheme);
+  });
+})();
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
