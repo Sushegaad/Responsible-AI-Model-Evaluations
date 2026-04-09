@@ -6,6 +6,12 @@
 
 RAI Eval is an automated, open-source pipeline that evaluates frontier large language models (LLMs) for responsible AI safety and robustness. Every Friday it runs a structured adversarial benchmark against models from Anthropic, OpenAI, and Google, scores them using a deterministic regex judge and a neural judge (Claude Haiku), maps results to the NIST AI Risk Management Framework, and publishes the findings to a public GitHub Pages dashboard. The evaluation dataset — RedBench (29,362 prompts across 37 sub-benchmarks) — is stored locally in the repository as Parquet files, making every run fully reproducible with no external data dependency.
 
+### Live Dashboard
+
+**[→ https://Sushegaad.github.io/Responsible-AI-Model-Evaluations/](https://Sushegaad.github.io/Responsible-AI-Model-Evaluations/)**
+
+Results are published automatically after every evaluation run and can also be refreshed manually via **Actions → Deploy Dashboard to GitHub Pages → Run workflow**.
+
 ---
 
 ## What is this model evaluation?
@@ -75,12 +81,6 @@ This dashboard is built for stakeholders who need reproducible, evidence-based s
 | 2     | Adversarial Execution | Single-turn → agentic 3-turn wrap → 10-turn drift probe (5 % sample)     |
 | 3     | Dual-Judge Evaluation | RegexJudge (deterministic patterns) + NeuralJudge (Claude Haiku)          |
 | 4     | Compliance Reporting  | NIST AI RMF mapping, GSAR 552.239-7001 audit logs, dashboard metrics      |
-
-### Live Dashboard
-
-**[→ https://Sushegaad.github.io/Responsible-AI-Model-Evaluations/](https://Sushegaad.github.io/Responsible-AI-Model-Evaluations/)**
-
-Results are published automatically after every evaluation run and can also be refreshed manually via **Actions → Deploy Dashboard to GitHub Pages → Run workflow**.
 
 ---
 
