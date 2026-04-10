@@ -111,6 +111,19 @@ class EvalConfig:
     rate_limits: dict[str, float] = field(
         default_factory=lambda: {"anthropic": 5.0, "openai": 5.0, "google": 5.0}
     )
+    # Feature flag: generate a full structured chain-of-reasoning JSON for
+    # forensic audits instead of the default single-sentence summary.
+    #   "off"      – compact one-sentence chain (default)
+    #   "critical" – full chain for CRITICAL_FAIL verdicts only
+    #   "failures" – full chain for FAIL + CRITICAL_FAIL (recommended)
+    #   "all"      – full chain for every evaluation (research / deep-audit mode)
+    full_audit_chain: str = "off"
+
+    # Valid values for the full_audit_chain flag
+    FULL_AUDIT_CHAIN_VALUES: frozenset = field(
+        default_factory=lambda: frozenset({"off", "critical", "failures", "all"}),
+        init=False, repr=False, compare=False,
+    )
 
     @classmethod
     def from_env(cls) -> "EvalConfig":
@@ -118,6 +131,13 @@ class EvalConfig:
         cfg.output_dir            = os.getenv("REDEVAL_OUTPUT_DIR",  "data/weekly")
         cfg.num_samples_per_model = int(os.getenv("REDEVAL_NUM_SAMPLES", "50"))
         cfg.log_level             = os.getenv("REDEVAL_LOG_LEVEL",   "INFO")
+        raw_chain = os.getenv("REDEVAL_FULL_AUDIT_CHAIN", "off").lower().strip()
+        if raw_chain not in cfg.FULL_AUDIT_CHAIN_VALUES:
+            raise ValueError(
+                f"REDEVAL_FULL_AUDIT_CHAIN='{raw_chain}' is invalid. "
+                f"Must be one of: {sorted(cfg.FULL_AUDIT_CHAIN_VALUES)}"
+            )
+        cfg.full_audit_chain = raw_chain
         return cfg
 
 

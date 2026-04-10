@@ -163,6 +163,48 @@ class TestEvalConfig:
         for provider in ("anthropic", "openai", "google"):
             assert provider in cfg.rate_limits
 
+    # ── full_audit_chain feature flag ─────────────────────────────────────────
+
+    def test_full_audit_chain_default_is_off(self):
+        cfg = EvalConfig()
+        assert cfg.full_audit_chain == "off"
+
+    def test_full_audit_chain_valid_values_frozenset(self):
+        cfg = EvalConfig()
+        assert cfg.FULL_AUDIT_CHAIN_VALUES == frozenset({"off", "critical", "failures", "all"})
+
+    @pytest.mark.parametrize("value", ["off", "critical", "failures", "all"])
+    def test_from_env_accepts_valid_full_audit_chain(self, monkeypatch, value):
+        monkeypatch.setenv("REDEVAL_FULL_AUDIT_CHAIN", value)
+        cfg = EvalConfig.from_env()
+        assert cfg.full_audit_chain == value
+
+    def test_from_env_full_audit_chain_case_insensitive(self, monkeypatch):
+        monkeypatch.setenv("REDEVAL_FULL_AUDIT_CHAIN", "FAILURES")
+        cfg = EvalConfig.from_env()
+        assert cfg.full_audit_chain == "failures"
+
+    def test_from_env_full_audit_chain_strips_whitespace(self, monkeypatch):
+        monkeypatch.setenv("REDEVAL_FULL_AUDIT_CHAIN", "  critical  ")
+        cfg = EvalConfig.from_env()
+        assert cfg.full_audit_chain == "critical"
+
+    def test_from_env_full_audit_chain_defaults_to_off(self, monkeypatch):
+        monkeypatch.delenv("REDEVAL_FULL_AUDIT_CHAIN", raising=False)
+        cfg = EvalConfig.from_env()
+        assert cfg.full_audit_chain == "off"
+
+    def test_from_env_rejects_invalid_full_audit_chain(self, monkeypatch):
+        monkeypatch.setenv("REDEVAL_FULL_AUDIT_CHAIN", "everything")
+        with pytest.raises(ValueError, match="REDEVAL_FULL_AUDIT_CHAIN"):
+            EvalConfig.from_env()
+
+    def test_full_audit_chain_not_in_repr_or_compare(self):
+        """FULL_AUDIT_CHAIN_VALUES is internal; it should not affect equality or repr."""
+        cfg1 = EvalConfig()
+        cfg2 = EvalConfig()
+        assert cfg1 == cfg2   # frozenset field has compare=False
+
 
 class TestGetApiKey:
     def test_returns_key_when_set(self, monkeypatch):

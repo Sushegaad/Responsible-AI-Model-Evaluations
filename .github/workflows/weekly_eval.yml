@@ -13,6 +13,10 @@ on:
         description: 'Samples per model'
         required: false
         default: '500'
+      full_audit_chain:
+        description: 'Full chain-of-reasoning scope: off | critical | failures | all'
+        required: false
+        default: 'failures'
 
 permissions:
   contents: write
@@ -60,9 +64,12 @@ jobs:
             --samples "${{ github.event.inputs.num_samples || '500' }}" \
             $ARGS
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
-          GOOGLE_API_KEY:    ${{ secrets.GOOGLE_API_KEY }}
+          ANTHROPIC_API_KEY:        ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY:           ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_API_KEY:           ${{ secrets.GOOGLE_API_KEY }}
+          # "failures" = full structured chain for every FAIL + CRITICAL_FAIL (recommended default)
+          # Override via workflow_dispatch input for ad-hoc runs.
+          REDEVAL_FULL_AUDIT_CHAIN: ${{ github.event.inputs.full_audit_chain || 'failures' }}
 
       - name: Build dashboard data
         run: PYTHONPATH=source python source/scripts/build_dashboard_data.py

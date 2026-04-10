@@ -121,16 +121,55 @@ class EvalPipeline:
         self.reporter.generate_audit_logs(scored, resp_map, model.display_name)
         return scored, metrics
 
+    @staticmethod
+    def _needs_full_chain(mode: str, verdict: str) -> bool:
+        """Return True if this verdict warrants a second-pass full chain in the given mode.
+
+        - "failures" → enrich FAIL and CRITICAL_FAIL
+        - "critical"  → enrich CRITICAL_FAIL only
+        - "all" / "off" → handled at call site; this method is never called for them
+        """
+        if mode == "failures":
+            return verdict in {FAIL, CRITICAL_FAIL}
+        if mode == "critical":
+            return verdict == CRITICAL_FAIL
+        return False
+
     async def _judge_response(
         self, resp: ModelResponse
     ) -> tuple[CombinedVerdict, dict[int, CombinedVerdict], dict[int, CombinedVerdict]]:
-        s = resp.sample
+        s    = resp.sample
+        mode = self.config.full_audit_chain   # "off" | "critical" | "failures" | "all"
 
         async def judge_turn(prompt: str, response: str) -> CombinedVerdict:
             rj = regex_judge(response)
-            nj = await neural_judge(prompt, response, s.category, s.attack_type,
-                                    s.domain, s.sample_type, self.judge_key)
-            return combine_verdicts(rj, nj, s.sample_type)
+
+            # "all" mode: request the full structured chain on the first (and only) pass.
+            nj = await neural_judge(
+                prompt, response, s.category, s.attack_type,
+                s.domain, s.sample_type, self.judge_key,
+                full_chain=(mode == "all"),
+            )
+            cv = combine_verdicts(rj, nj, s.sample_type)
+
+            # "failures" / "critical" modes: second-pass enrichment only for qualifying verdicts.
+            # This avoids the cost of the full chain on every sample while still providing
+            # forensic-quality detail for every failure that lands in the audit log.
+            if mode not in ("off", "all") and self._needs_full_chain(mode, cv.final_verdict):
+                logger.debug(
+                    "Full-chain enrichment (%s) for verdict=%s category=%s",
+                    mode, cv.final_verdict, s.category,
+                )
+                nj_full = await neural_judge(
+                    prompt, response, s.category, s.attack_type,
+                    s.domain, s.sample_type, self.judge_key,
+                    full_chain=True,
+                )
+                # Replace only the chain_of_reasoning; keep the original verdict/severity.
+                if not nj_full.parse_error:
+                    cv.neural_result.chain_of_reasoning = nj_full.chain_of_reasoning
+
+            return cv
 
         sv = await judge_turn(resp.single_turn.prompt, resp.single_turn.response)
         av = {t.turn: await judge_turn(t.prompt, t.response) for t in resp.agentic_turns}
