@@ -146,8 +146,13 @@ body {
   font-family: var(--font-display); font-size: clamp(24px, 3.2vw, 38px);
   font-weight: 400; letter-spacing: -.02em; line-height: 1.15;
   color: var(--on-surface); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: nowrap;
 }
 .hero h1 b { font-weight: 700; }
+.hero-logo {
+  height: clamp(52px, 6vw, 72px); width: auto;
+  object-fit: contain; flex-shrink: 0;
+}
 .hero-desc { font-size: 14px; color: var(--on-surface-3); max-width: 560px; line-height: 1.75; }
 .hero-actions { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
 .btn-filled {
@@ -265,6 +270,82 @@ body {
   white-space:normal; min-width:220px; max-width:320px;
 }
 .lb-note:hover { color:var(--on-surface-2); }
+
+/* ── Critical count button ── */
+.cf-btn {
+  cursor:pointer; text-decoration:underline dotted;
+  transition:opacity .15s;
+}
+.cf-btn:hover { opacity:.75; }
+
+/* ── Critical Findings Modal ── */
+.cf-overlay {
+  display:none; position:fixed; inset:0; z-index:900;
+  background:rgba(0,0,0,.45); backdrop-filter:blur(3px);
+  align-items:center; justify-content:center; padding:24px;
+}
+.cf-overlay.open { display:flex; }
+.cf-modal {
+  background:var(--surface-0); border-radius:var(--r-xl);
+  box-shadow:var(--elev-3); width:100%; max-width:720px;
+  max-height:85vh; display:flex; flex-direction:column;
+  overflow:hidden;
+}
+.cf-modal-head {
+  padding:20px 24px 16px; border-bottom:1px solid var(--surface-3);
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  flex-shrink:0;
+}
+.cf-modal-title {
+  font-family:var(--font-ui); font-size:15px; font-weight:700;
+  color:var(--on-surface);
+}
+.cf-modal-sub {
+  font-size:12px; color:var(--on-surface-4); margin-top:2px;
+}
+.cf-close {
+  width:32px; height:32px; border-radius:50%; border:none;
+  background:var(--surface-2); color:var(--on-surface-3);
+  font-size:18px; cursor:pointer; display:flex; align-items:center;
+  justify-content:center; flex-shrink:0; transition:background .15s;
+}
+.cf-close:hover { background:var(--surface-3); color:var(--on-surface); }
+.cf-modal-body { overflow-y:auto; padding:16px 24px 24px; flex:1; }
+.cf-finding {
+  border:1px solid var(--surface-3); border-radius:var(--r-lg);
+  padding:16px 18px; margin-bottom:12px; background:var(--surface-1);
+}
+.cf-finding:last-child { margin-bottom:0; }
+.cf-finding-head {
+  display:flex; align-items:flex-start; gap:10px;
+  flex-wrap:wrap; margin-bottom:10px;
+}
+.cf-sev {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:28px; height:28px; border-radius:50%; flex-shrink:0;
+  font-family:var(--font-ui); font-size:11px; font-weight:700;
+  color:#fff; background:var(--error);
+}
+.cf-badges { display:flex; gap:6px; flex-wrap:wrap; flex:1; }
+.cf-badge {
+  display:inline-flex; align-items:center; padding:3px 9px;
+  border-radius:var(--r-pill); font-size:11px; font-weight:500;
+  font-family:var(--font-ui);
+}
+.cf-badge.cat  { background:var(--red-tonal);    color:var(--error); }
+.cf-badge.nist { background:var(--blue-tonal);   color:var(--google-blue); }
+.cf-badge.dom  { background:var(--surface-3);    color:var(--on-surface-3); }
+.cf-badge.sig  { background:var(--yellow-tonal); color:var(--warning); }
+.cf-reasoning {
+  font-size:12px; color:var(--on-surface-3); line-height:1.65;
+  border-top:1px solid var(--surface-3); padding-top:10px; margin-top:4px;
+}
+.cf-reasoning strong { color:var(--on-surface-2); font-size:11px;
+  text-transform:uppercase; letter-spacing:.04em; display:block; margin-bottom:4px;
+}
+.cf-empty {
+  text-align:center; color:var(--on-surface-4); padding:32px 0; font-size:13px;
+}
 .rank-badge {
   width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;
   justify-content:center;font-family:var(--font-ui);font-size:12px;font-weight:700;
@@ -527,6 +608,22 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
 </head>
 <body>
 
+<!-- CRITICAL FINDINGS MODAL -->
+<div class="cf-overlay" id="cf-overlay" role="dialog" aria-modal="true" aria-labelledby="cf-modal-title">
+  <div class="cf-modal">
+    <div class="cf-modal-head">
+      <div>
+        <div class="cf-modal-title" id="cf-modal-title">Critical Findings</div>
+        <div class="cf-modal-sub"  id="cf-modal-sub"></div>
+      </div>
+      <button class="cf-close" onclick="closeCF()" aria-label="Close">✕</button>
+    </div>
+    <div class="cf-modal-body" id="cf-modal-body">
+      <div class="cf-empty">Loading…</div>
+    </div>
+  </div>
+</div>
+
 <!-- APP BAR -->
 <div class="app-bar">
   <div class="app-bar-inner">
@@ -552,7 +649,7 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
   <div class="hero">
     <div>
       <div class="hero-eyebrow">RedBench · 22 Risk Categories · 19 Domains · NIST AI RMF</div>
-      <h1>Model Evaluation for<br><b>Responsible AI</b></h1>
+      <h1><img class="hero-logo" src="responsible-ai-logo.png" alt="Responsible AI logo">Model Evaluation for<br><b>Responsible AI</b></h1>
       <p class="hero-desc">
         Weekly automated safety benchmarking of frontier LLMs from Anthropic, Google, and OpenAI
         using the RedBench adversarial dataset. Scored via dual-judge evaluation and mapped to the
@@ -1130,7 +1227,9 @@ function renderLB(d) {
       <td><span class="mv ${cc(m.for_rate)}">${pct(m.for_rate)}</span></td>
       <td><span class="mv n">${dft(m.drift_coefficient)}</span></td>
       <td><span class="mv i">${pct(m.provenance_score)}</span></td>
-      <td><span class="mv ${(m.critical_failures||0)>0?'b':'g'}">${m.critical_failures||0}</span></td>
+      <td>${(m.critical_failures||0)>0
+        ? `<span class="mv b cf-btn" onclick="openCF('${m.model_id}')" title="Click to view findings">${m.critical_failures}</span>`
+        : `<span class="mv g">0</span>`}</td>
       <td class="lb-note">${note}</td>
     </tr>`;
   }).join('');
@@ -1138,6 +1237,65 @@ function renderLB(d) {
   $('lb-wrap').innerHTML=`<table class="lb-table"><thead><tr>${ths}</tr></thead><tbody>${rows}</tbody></table>`;
 }
 window.sLB = key => { if(ST.sortKey===key)ST.asc=!ST.asc; else{ST.sortKey=key;ST.asc=true;} renderLB(ST.data); };
+
+/* ── Critical Findings modal ── */
+function openCF(modelId) {
+  const d   = ST.data;
+  const row = d?.leaderboard?.find(m => m.model_id === modelId);
+  if (!row) return;
+
+  const findings = row.critical_findings || [];
+  $('cf-modal-title').textContent = row.display_name + ' — Critical Findings';
+  $('cf-modal-sub').textContent   =
+    findings.length
+      ? `${findings.length} finding${findings.length > 1 ? 's' : ''} · sorted by severity`
+      : 'No detail available for this run';
+
+  if (!findings.length) {
+    $('cf-modal-body').innerHTML =
+      `<div class="cf-empty">Detail data is only available for runs after this feature was added.<br>
+       Download the GitHub Actions artifact for full audit logs.</div>`;
+  } else {
+    $('cf-modal-body').innerHTML = findings.map(f => {
+      const sigs = (f.regex_signals || []).map(s =>
+        `<span class="cf-badge sig">⚑ ${s}</span>`).join('');
+      return `
+      <div class="cf-finding">
+        <div class="cf-finding-head">
+          <span class="cf-sev" title="Severity ${f.severity}/10">${f.severity}</span>
+          <div class="cf-badges">
+            <span class="cf-badge cat">${f.category}</span>
+            <span class="cf-badge nist">${f.nist_function} · ${f.nist_category}</span>
+            <span class="cf-badge dom">${f.domain}</span>
+            ${sigs}
+          </div>
+        </div>
+        <div class="cf-reasoning">
+          <strong>NeuralJudge reasoning</strong>
+          ${f.chain_of_reasoning || '—'}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  $('cf-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCF() {
+  $('cf-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close on overlay click (outside modal) or Escape key
+document.addEventListener('click', e => {
+  if (e.target.id === 'cf-overlay') closeCF();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeCF();
+});
+window.openCF = openCF;
+window.closeCF = closeCF;
 
 /* ── Trend charts ── */
 function buildTrend(id, key, fmt) {

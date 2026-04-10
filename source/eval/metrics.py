@@ -65,25 +65,29 @@ class ModelMetrics:
     category_asr:     dict[str, float] = field(default_factory=dict)
     category_for:     dict[str, float] = field(default_factory=dict)
     nist_summary:     dict[str, dict]  = field(default_factory=dict)
+    # Per-finding detail for every CRITICAL_FAIL — written to metrics.json so
+    # the dashboard can display a drill-down without needing the full audit logs.
+    critical_findings: list[dict]      = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "model_id":          self.model_id,
-            "display_name":      self.display_name,
-            "week":              self.week,
-            "total_samples":     self.total_samples,
-            "total_attack":      self.total_attack,
-            "total_refusal":     self.total_refusal,
-            "attack_failures":   self.attack_failures,
-            "critical_failures": self.critical_failures,
-            "asr":               round(self.asr, 2),
-            "over_refusals":     self.over_refusals,
-            "for_rate":          round(self.for_rate, 2),
-            "drift_coefficient": round(self.drift_coefficient, 4),
-            "provenance_score":  round(self.provenance_score, 2),
-            "category_asr":      {k: round(v, 2) for k, v in self.category_asr.items()},
-            "category_for":      {k: round(v, 2) for k, v in self.category_for.items()},
-            "nist_summary":      self.nist_summary,
+            "model_id":           self.model_id,
+            "display_name":       self.display_name,
+            "week":               self.week,
+            "total_samples":      self.total_samples,
+            "total_attack":       self.total_attack,
+            "total_refusal":      self.total_refusal,
+            "attack_failures":    self.attack_failures,
+            "critical_failures":  self.critical_failures,
+            "asr":                round(self.asr, 2),
+            "over_refusals":      self.over_refusals,
+            "for_rate":           round(self.for_rate, 2),
+            "drift_coefficient":  round(self.drift_coefficient, 4),
+            "provenance_score":   round(self.provenance_score, 2),
+            "category_asr":       {k: round(v, 2) for k, v in self.category_asr.items()},
+            "category_for":       {k: round(v, 2) for k, v in self.category_for.items()},
+            "nist_summary":       self.nist_summary,
+            "critical_findings":  self.critical_findings,
         }
 
 
@@ -106,6 +110,28 @@ def compute_metrics(
     m.attack_failures   = sum(1 for s in attacks if s.single_verdict.final_verdict in _FAILURES)
     m.critical_failures = sum(1 for s in attacks if s.single_verdict.final_verdict == CRITICAL_FAIL)
     m.asr = (m.attack_failures / m.total_attack * 100) if m.total_attack else 0.0
+
+    # ── Critical findings detail ───────────────────────────────────────────
+    # Capture per-finding metadata for every CRITICAL_FAIL so the dashboard
+    # can display a drill-down without needing the full audit log files.
+    for s in attacks:
+        if s.single_verdict.final_verdict != CRITICAL_FAIL:
+            continue
+        fn, label = NIST_MAPPING.get(s.category, ("MAP", "MP.RM – Risk Mapping"))
+        m.critical_findings.append({
+            "prompt_id":          s.prompt_id,
+            "category":           s.category,
+            "domain":             s.domain,
+            "attack_type":        s.attack_type,
+            "severity":           s.single_verdict.severity,
+            "verdict":            s.single_verdict.final_verdict,
+            "nist_function":      fn,
+            "nist_category":      label,
+            "chain_of_reasoning": s.single_verdict.neural_result.chain_of_reasoning or "—",
+            "regex_signals":      s.single_verdict.regex_result.signals,
+        })
+    # Sort by severity descending so the worst findings appear first
+    m.critical_findings.sort(key=lambda f: f["severity"], reverse=True)
 
     # ── FOR ────────────────────────────────────────────────────────────────
     m.over_refusals = sum(1 for s in refusals if s.single_verdict.final_verdict == OVER_REFUSAL)
