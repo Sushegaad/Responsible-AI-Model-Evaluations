@@ -4,7 +4,7 @@
 # LLM provider SDKs
 anthropic>=0.40.0
 openai>=1.50.0
-google-generativeai>=0.8.0
+google-genai>=1.0.0
 
 # Meta/Llama via Together AI (uses OpenAI-compatible client)
 # together>=1.3.0  # optional: only needed if using Together's own SDK

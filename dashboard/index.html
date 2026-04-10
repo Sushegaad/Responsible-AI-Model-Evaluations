@@ -1085,6 +1085,17 @@ async function loadData() {
   } catch(e) { return null; }
 }
 
+/* ── Date formatter: YYYY-DD-MM  →  YYYY-MMM-DD ── */
+const _MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtWeek(w) {
+  if (!w || w === '—') return w || '—';
+  const p = w.split('-');
+  if (p.length !== 3) return w;
+  const [year, day, mon] = p;
+  const mName = _MONTHS[parseInt(mon, 10) - 1];
+  return mName ? `${year}-${mName}-${day.padStart(2,'0')}` : w;
+}
+
 /* ── Insights (5-sentence auto-summary) ── */
 function buildInsights(d) {
   const lb = d.leaderboard;
@@ -1100,7 +1111,7 @@ function buildInsights(d) {
   const avgFOR   = lb.reduce((s,m) => s + (m.for_rate||0),          0) / lb.length;
   const safetyLevel = avgASR < 5 ? 'strong' : avgASR < 15 ? 'moderate' : 'concerning';
   const provLevel   = avgProv >= 95 ? 'excellent' : avgProv >= 80 ? 'adequate' : 'limited';
-  const runLabel    = d.latest_week || '—';
+  const runLabel    = fmtWeek(d.latest_week);
 
   return [
     `In the latest evaluation run (<strong>${runLabel}</strong>), <strong>${safest.display_name}</strong> (${safest.provider}) achieved the lowest Attack Success Rate of <strong>${pct(safest.asr)}</strong>, ranking as the safest model across all ${lb.length} models tested.`,
@@ -1132,15 +1143,15 @@ function renderSummary(d) {
   const stable  = [...lb].sort((a,b) => Math.abs(a.drift_coefficient) - Math.abs(b.drift_coefficient))[0];
   const total   = lb.reduce((s,m) => s+(m.total_samples||0), 0);
 
-  $('hero-week').textContent = d.latest_week || '—';
-  $('ab-week').textContent   = d.latest_week || '—';
+  $('hero-week').textContent = fmtWeek(d.latest_week);
+  $('ab-week').textContent   = fmtWeek(d.latest_week);
   $('hero-sub').innerHTML    = `${total.toLocaleString()} evaluations · ${lb.length} models · <a href="https://huggingface.co/datasets/knoveleng/redbench" target="_blank">RedBench</a>`;
 
   $('summary-grid').innerHTML = [
     sc('blue',  '🛡️','Safest Model',       pct(safest.asr,1),            safest.display_name, safest.provider,  `${safest.critical_failures||0} critical failures`),
     sc('green', '✅','Lowest False Outright Refusal',  pct(neutral.for_rate,1),      neutral.display_name,neutral.provider, 'Fewest false refusals'),
     sc('yellow','📉','Lowest Drift',        dft(stable.drift_coefficient),stable.display_name,  stable.provider, 'Safety per-turn change'),
-    sc('blue',  '🔢','Total Evaluations',   total.toLocaleString(),       `${lb.length} models`, d.latest_week||'', `Since ${(d.weeks||[])[0]||'—'}`),
+    sc('blue',  '🔢','Total Evaluations',   total.toLocaleString(),       `${lb.length} models`, fmtWeek(d.latest_week), `Since ${fmtWeek((d.weeks||[])[0])}`),
   ].join('');
 }
 
@@ -1309,7 +1320,7 @@ function buildTrend(id, key, fmt) {
     borderColor:m.color, backgroundColor:m.color+'20',
     borderWidth:2, pointRadius:3, pointHoverRadius:5, tension:0.35, fill:false,
   }));
-  CH[id]=new Chart(ctx,{type:'line',data:{labels:wks,datasets},options:lineOpts(fmt)});
+  CH[id]=new Chart(ctx,{type:'line',data:{labels:wks.map(fmtWeek),datasets},options:lineOpts(fmt)});
 }
 
 /* ── Radar ── */

@@ -137,18 +137,28 @@ async def _call_openai(model_str: str, messages: list[dict], system: str, key: s
 
 
 async def _call_google(model_str: str, messages: list[dict], system: str, key: str) -> tuple[str, int]:
-    import google.generativeai as genai  # type: ignore
-    genai.configure(api_key=key)
-    model = genai.GenerativeModel(model_name=model_str, system_instruction=system)
+    from google import genai  # type: ignore
+    from google.genai import types  # type: ignore
+
+    client = genai.Client(api_key=key)
+    # Build typed history from all but the final message.
     history = [
-        {"role": "user" if m["role"] == "user" else "model", "parts": [m["content"]]}
+        types.Content(
+            role="user" if m["role"] == "user" else "model",
+            parts=[types.Part(text=m["content"])],
+        )
         for m in messages[:-1]
     ]
     last = messages[-1]["content"] if messages else ""
+    config = types.GenerateContentConfig(
+        system_instruction=system,
+        max_output_tokens=512,
+    )
+    # client.aio.chats.create() is synchronous (returns AsyncChat); send_message is async.
     t0 = time.monotonic()
-    chat = model.start_chat(history=history)
     try:
-        resp = await asyncio.get_event_loop().run_in_executor(None, lambda: chat.send_message(last))
+        chat = client.aio.chats.create(model=model_str, history=history, config=config)
+        resp = await chat.send_message(last)
         text = resp.text or ""
     except Exception as exc:
         return f"[API_ERROR:{exc}]", 0
