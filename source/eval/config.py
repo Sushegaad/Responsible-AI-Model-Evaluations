@@ -80,8 +80,8 @@ MODEL_REGISTRY: list[ModelConfig] = [
     ModelConfig("claude-sonnet-4-6", "Claude Sonnet 4.6", "anthropic", "claude-sonnet-4-6", "#E8956D"),
     ModelConfig("gpt-4o",            "GPT-4o",            "openai",    "gpt-4o",             "#10A37F"),
     ModelConfig("gpt-4o-mini",       "GPT-4o Mini",       "openai",    "gpt-4o-mini",        "#1ABC9C"),
-    ModelConfig("gemini-2.0-flash",  "Gemini 2.0 Flash",  "google",    "gemini-2.0-flash",   "#4285F4"),
-    ModelConfig("gemini-1.5-pro",    "Gemini 1.5 Pro",    "google",    "gemini-1.5-pro",     "#34A853"),
+    ModelConfig("gemini-2.0-flash",  "Gemini 2.0 Flash",  "google",    "gemini-2.0-flash-001", "#4285F4"),
+    ModelConfig("gemini-1.5-pro",    "Gemini 1.5 Pro",    "google",    "gemini-1.5-pro-002",   "#34A853"),
 ]
 
 # Judge model — used only for neural evaluation; must be an Anthropic model.

@@ -265,6 +265,14 @@ body {
 .lb-table td { padding:12px 16px; border-bottom:1px solid var(--surface-2); vertical-align:middle; }
 .lb-table tr:last-child td { border-bottom:none; }
 .lb-table tr:hover td { background:var(--surface-1); }
+/* Failed-evaluation row */
+.lb-table tr.eval-failed td { opacity:.6; }
+.lb-na { font-family:var(--font-mono,monospace); font-size:12px; color:var(--on-surface-4); letter-spacing:.04em; }
+.eval-failed-badge {
+  display:inline-flex; align-items:center; gap:5px; padding:3px 8px;
+  border-radius:var(--r-pill); background:var(--surface-2);
+  font-size:11px; font-weight:500; color:var(--on-surface-3);
+}
 .lb-note {
   font-size:12px; color:var(--on-surface-3); line-height:1.55;
   white-space:normal; min-width:220px; max-width:320px;
@@ -1134,7 +1142,8 @@ function fmtWeek(w) {
 
 /* ── Insights (5-sentence auto-summary) ── */
 function buildInsights(d) {
-  const lb = d.leaderboard;
+  // Exclude models whose evaluation failed — their metrics are not meaningful.
+  const lb = (d.leaderboard || []).filter(m => !m.eval_failed);
   if (!lb?.length) return null;
 
   const safest   = lb[0];
@@ -1169,7 +1178,8 @@ function renderInsights(d) {
 
 /* ── Highlights (summary cards) ── */
 function renderSummary(d) {
-  const lb = d.leaderboard;
+  // Only rank models that completed successfully.
+  const lb = (d.leaderboard || []).filter(m => !m.eval_failed);
   if (!lb?.length) {
     $('summary-grid').innerHTML=`<div class="empty" style="grid-column:1/-1"><span class="ei">📡</span><strong>No data yet</strong>Run the GitHub Actions workflow to generate the first evaluation.</div>`;
     return;
@@ -1227,6 +1237,7 @@ function renderLB(d) {
 
   /* Build a short plain-English note for each leaderboard row */
   function lbNote(m, rank) {
+    if (m.eval_failed) return `<span class="eval-failed-badge">⚠️ Evaluation failed — API errors (${(m.api_error_count||0).toLocaleString()} samples). Data unavailable.</span>`;
     const parts = [];
     const asr   = m.asr            || 0;
     const forR  = m.for_rate       || 0;
@@ -1263,8 +1274,18 @@ function renderLB(d) {
 
   const rows = sorted.map((m,i) => {
     const r=i+1, rc=r===1?'rk-1':r===2?'rk-2':r===3?'rk-3':'rk-n';
-    const bw=Math.min(100, m.asr/maxASR*100);
     const note = lbNote(m, r);
+    const na = `<span class="lb-na">N/A</span>`;
+    if (m.eval_failed) {
+      return `<tr class="eval-failed">
+        <td><span class="rank-badge rk-n">—</span></td>
+        <td><div class="mc"><span class="mc-dot" style="background:${m.color}"></span>
+          <div><div class="mc-name">${m.display_name}</div><div class="mc-prov">${m.provider}</div></div></div></td>
+        <td>${na}</td><td>${na}</td><td>${na}</td><td>${na}</td><td>${na}</td>
+        <td class="lb-note">${note}</td>
+      </tr>`;
+    }
+    const bw=Math.min(100, m.asr/maxASR*100);
     return `<tr>
       <td><span class="rank-badge ${rc}">${r}</span></td>
       <td><div class="mc"><span class="mc-dot" style="background:${m.color}"></span>

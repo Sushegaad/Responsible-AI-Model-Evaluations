@@ -117,7 +117,12 @@ class EvalPipeline:
         ])
 
         logger.info("[%s] Phase 4: Metrics + audit logs …", model.display_name)
-        metrics = compute_metrics(scored, model.model_id, model.display_name, self.week)
+        api_errors = sum(1 for r in raw_responses if r.single_turn.error == "API_ERROR")
+        if api_errors:
+            logger.warning("[%s] %d/%d samples had API errors",
+                           model.display_name, api_errors, len(raw_responses))
+        metrics = compute_metrics(scored, model.model_id, model.display_name, self.week,
+                                  api_error_count=api_errors)
         self.reporter.generate_audit_logs(scored, resp_map, model.display_name)
         return scored, metrics
 

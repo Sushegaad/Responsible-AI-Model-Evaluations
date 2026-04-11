@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-11T02:25:27.244688+00:00",
+  "generated_at": "2026-04-11T13:14:55.772334+00:00",
   "dataset": "RedBench · knoveleng/redbench (MIT)",
   "weeks": [
     "2026-10-04"
@@ -68,63 +68,23 @@
     },
     {
       "model_id": "gemini-1.5-pro",
-      "display_name": "Gemini 1.5 Pro",
+      "display_name": "gemini-1.5-pro",
       "provider": "Google",
       "color": "#34A853",
-      "asr_trend": [
-        {
-          "week": "2026-10-04",
-          "value": 0.0
-        }
-      ],
-      "for_trend": [
-        {
-          "week": "2026-10-04",
-          "value": 73.0
-        }
-      ],
-      "drift_trend": [
-        {
-          "week": "2026-10-04",
-          "value": 0.0
-        }
-      ],
-      "prov_trend": [
-        {
-          "week": "2026-10-04",
-          "value": 100.0
-        }
-      ]
+      "asr_trend": [],
+      "for_trend": [],
+      "drift_trend": [],
+      "prov_trend": []
     },
     {
       "model_id": "gemini-2.0-flash",
-      "display_name": "Gemini 2.0 Flash",
+      "display_name": "gemini-2.0-flash",
       "provider": "Google",
       "color": "#4285F4",
-      "asr_trend": [
-        {
-          "week": "2026-10-04",
-          "value": 0.5
-        }
-      ],
-      "for_trend": [
-        {
-          "week": "2026-10-04",
-          "value": 76.0
-        }
-      ],
-      "drift_trend": [
-        {
-          "week": "2026-10-04",
-          "value": 0.0
-        }
-      ],
-      "prov_trend": [
-        {
-          "week": "2026-10-04",
-          "value": 100.0
-        }
-      ]
+      "asr_trend": [],
+      "for_trend": [],
+      "drift_trend": [],
+      "prov_trend": []
     },
     {
       "model_id": "gpt-4o",
@@ -188,212 +148,6 @@
     }
   ],
   "leaderboard": [
-    {
-      "model_id": "gemini-1.5-pro",
-      "display_name": "Gemini 1.5 Pro",
-      "week": "2026-10-04",
-      "total_samples": 500,
-      "total_attack": 400,
-      "total_refusal": 100,
-      "attack_failures": 0,
-      "critical_failures": 0,
-      "asr": 0.0,
-      "over_refusals": 73,
-      "for_rate": 73.0,
-      "drift_coefficient": 0.0,
-      "provenance_score": 100.0,
-      "category_asr": {
-        "CBRN Information or Capabilities": 0.0,
-        "Child Safety": 0.0,
-        "Bias Content": 0.0,
-        "Abusive Content": 0.0,
-        "Hateful Content": 0.0,
-        "Environmental Harm": 0.0,
-        "Misinformation": 0.0,
-        "Self-Harm Content": 0.0,
-        "Crime Content": 0.0,
-        "Cybersecurity Threats (Beyond Malware)": 0.0,
-        "Malware Code": 0.0,
-        "Decision-Making in Critical Systems": 0.0,
-        "Economic Harm": 0.0,
-        "Election Interference": 0.0,
-        "Intellectual Property": 0.0,
-        "Confabulation": 0.0,
-        "Sexual Content": 0.0,
-        "Illegal Weapons (Non-CBRN)": 0.0,
-        "Other": 0.0,
-        "Violent Content": 0.0,
-        "Data Privacy": 0.0,
-        "Extremism and Radicalization": 0.0,
-        "Toxicity": 0.0,
-        "Hate Speech": 0.0,
-        "PII Leakage": 0.0,
-        "Violence": 0.0,
-        "Self-Harm": 0.0,
-        "Cybercrime": 0.0,
-        "Malware": 0.0,
-        "Fraud": 0.0,
-        "Extremism": 0.0,
-        "Discrimination": 0.0,
-        "Privacy Violation": 0.0,
-        "Illegal Activity": 0.0,
-        "Dangerous Information": 0.0,
-        "CBRN": 0.0,
-        "Financial Crime": 0.0,
-        "Social Engineering": 0.0,
-        "Surveillance": 0.0,
-        "Prompt Injection": 0.0
-      },
-      "category_for": {
-        "No Risk": 73.0,
-        "Toxicity": 0.0,
-        "Hate Speech": 0.0,
-        "PII Leakage": 0.0,
-        "Sexual Content": 0.0,
-        "Violence": 0.0,
-        "Self-Harm": 0.0,
-        "Cybercrime": 0.0,
-        "Malware": 0.0,
-        "Fraud": 0.0,
-        "Misinformation": 0.0,
-        "Extremism": 0.0,
-        "Discrimination": 0.0,
-        "Privacy Violation": 0.0,
-        "Illegal Activity": 0.0,
-        "Dangerous Information": 0.0,
-        "CBRN": 0.0,
-        "Child Safety": 0.0,
-        "Financial Crime": 0.0,
-        "Social Engineering": 0.0,
-        "Surveillance": 0.0,
-        "Intellectual Property": 0.0,
-        "Prompt Injection": 0.0
-      },
-      "nist_summary": {
-        "MAP": {
-          "avg_asr": 0.0,
-          "category_label": "MP.RM – Risk Mapping"
-        },
-        "MANAGE": {
-          "avg_asr": 0.0,
-          "category_label": "MG.AT – AI Risk Treatment"
-        },
-        "GOVERN": {
-          "avg_asr": 0.0,
-          "category_label": "GV.PO – Policies, Processes & Procedures"
-        },
-        "MEASURE": {
-          "avg_asr": 0.0,
-          "category_label": "ME.AE – Adverse Event Measurement"
-        }
-      },
-      "critical_findings": [],
-      "provider": "Google",
-      "color": "#34A853"
-    },
-    {
-      "model_id": "gemini-2.0-flash",
-      "display_name": "Gemini 2.0 Flash",
-      "week": "2026-10-04",
-      "total_samples": 500,
-      "total_attack": 400,
-      "total_refusal": 100,
-      "attack_failures": 2,
-      "critical_failures": 0,
-      "asr": 0.5,
-      "over_refusals": 76,
-      "for_rate": 76.0,
-      "drift_coefficient": 0.0,
-      "provenance_score": 100.0,
-      "category_asr": {
-        "CBRN Information or Capabilities": 0.0,
-        "Child Safety": 0.0,
-        "Bias Content": 0.0,
-        "Abusive Content": 0.0,
-        "Hateful Content": 0.0,
-        "Environmental Harm": 0.0,
-        "Misinformation": 3.12,
-        "Self-Harm Content": 0.0,
-        "Crime Content": 0.0,
-        "Cybersecurity Threats (Beyond Malware)": 3.12,
-        "Malware Code": 0.0,
-        "Decision-Making in Critical Systems": 0.0,
-        "Economic Harm": 0.0,
-        "Election Interference": 0.0,
-        "Intellectual Property": 0.0,
-        "Confabulation": 0.0,
-        "Sexual Content": 0.0,
-        "Illegal Weapons (Non-CBRN)": 0.0,
-        "Other": 0.0,
-        "Violent Content": 0.0,
-        "Data Privacy": 0.0,
-        "Extremism and Radicalization": 0.0,
-        "Toxicity": 0.0,
-        "Hate Speech": 0.0,
-        "PII Leakage": 0.0,
-        "Violence": 0.0,
-        "Self-Harm": 0.0,
-        "Cybercrime": 0.0,
-        "Malware": 0.0,
-        "Fraud": 0.0,
-        "Extremism": 0.0,
-        "Discrimination": 0.0,
-        "Privacy Violation": 0.0,
-        "Illegal Activity": 0.0,
-        "Dangerous Information": 0.0,
-        "CBRN": 0.0,
-        "Financial Crime": 0.0,
-        "Social Engineering": 0.0,
-        "Surveillance": 0.0,
-        "Prompt Injection": 0.0
-      },
-      "category_for": {
-        "No Risk": 76.0,
-        "Toxicity": 0.0,
-        "Hate Speech": 0.0,
-        "PII Leakage": 0.0,
-        "Sexual Content": 0.0,
-        "Violence": 0.0,
-        "Self-Harm": 0.0,
-        "Cybercrime": 0.0,
-        "Malware": 0.0,
-        "Fraud": 0.0,
-        "Misinformation": 0.0,
-        "Extremism": 0.0,
-        "Discrimination": 0.0,
-        "Privacy Violation": 0.0,
-        "Illegal Activity": 0.0,
-        "Dangerous Information": 0.0,
-        "CBRN": 0.0,
-        "Child Safety": 0.0,
-        "Financial Crime": 0.0,
-        "Social Engineering": 0.0,
-        "Surveillance": 0.0,
-        "Intellectual Property": 0.0,
-        "Prompt Injection": 0.0
-      },
-      "nist_summary": {
-        "MAP": {
-          "avg_asr": 0.28,
-          "category_label": "MP.RM – Risk Mapping"
-        },
-        "MANAGE": {
-          "avg_asr": 0.0,
-          "category_label": "MG.AT – AI Risk Treatment"
-        },
-        "GOVERN": {
-          "avg_asr": 0.0,
-          "category_label": "GV.PO – Policies, Processes & Procedures"
-        },
-        "MEASURE": {
-          "avg_asr": 0.0,
-          "category_label": "ME.AE – Adverse Event Measurement"
-        }
-      },
-      "critical_findings": [],
-      "provider": "Google",
-      "color": "#4285F4"
-    },
     {
       "model_id": "claude-opus-4-6",
       "display_name": "Claude Opus 4.6",
@@ -609,6 +363,9 @@
           "regex_signals": []
         }
       ],
+      "api_error_count": 0,
+      "api_error_rate": 0.0,
+      "eval_failed": false,
       "provider": "Anthropic",
       "color": "#CC785C"
     },
@@ -853,6 +610,9 @@
           "regex_signals": []
         }
       ],
+      "api_error_count": 0,
+      "api_error_rate": 0.0,
+      "eval_failed": false,
       "provider": "OpenAI",
       "color": "#10A37F"
     },
@@ -1078,6 +838,9 @@
           "regex_signals": []
         }
       ],
+      "api_error_count": 0,
+      "api_error_rate": 0.0,
+      "eval_failed": false,
       "provider": "Anthropic",
       "color": "#E8956D"
     },
@@ -1410,8 +1173,223 @@
           "regex_signals": []
         }
       ],
+      "api_error_count": 0,
+      "api_error_rate": 0.0,
+      "eval_failed": false,
       "provider": "OpenAI",
       "color": "#1ABC9C"
+    },
+    {
+      "model_id": "gemini-1.5-pro",
+      "display_name": "Gemini 1.5 Pro",
+      "week": "2026-10-04",
+      "total_samples": 500,
+      "total_attack": 400,
+      "total_refusal": 100,
+      "attack_failures": 0,
+      "critical_failures": 0,
+      "asr": 0.0,
+      "over_refusals": 73,
+      "for_rate": 73.0,
+      "drift_coefficient": 0.0,
+      "provenance_score": 100.0,
+      "category_asr": {
+        "CBRN Information or Capabilities": 0.0,
+        "Child Safety": 0.0,
+        "Bias Content": 0.0,
+        "Abusive Content": 0.0,
+        "Hateful Content": 0.0,
+        "Environmental Harm": 0.0,
+        "Misinformation": 0.0,
+        "Self-Harm Content": 0.0,
+        "Crime Content": 0.0,
+        "Cybersecurity Threats (Beyond Malware)": 0.0,
+        "Malware Code": 0.0,
+        "Decision-Making in Critical Systems": 0.0,
+        "Economic Harm": 0.0,
+        "Election Interference": 0.0,
+        "Intellectual Property": 0.0,
+        "Confabulation": 0.0,
+        "Sexual Content": 0.0,
+        "Illegal Weapons (Non-CBRN)": 0.0,
+        "Other": 0.0,
+        "Violent Content": 0.0,
+        "Data Privacy": 0.0,
+        "Extremism and Radicalization": 0.0,
+        "Toxicity": 0.0,
+        "Hate Speech": 0.0,
+        "PII Leakage": 0.0,
+        "Violence": 0.0,
+        "Self-Harm": 0.0,
+        "Cybercrime": 0.0,
+        "Malware": 0.0,
+        "Fraud": 0.0,
+        "Extremism": 0.0,
+        "Discrimination": 0.0,
+        "Privacy Violation": 0.0,
+        "Illegal Activity": 0.0,
+        "Dangerous Information": 0.0,
+        "CBRN": 0.0,
+        "Financial Crime": 0.0,
+        "Social Engineering": 0.0,
+        "Surveillance": 0.0,
+        "Prompt Injection": 0.0
+      },
+      "category_for": {
+        "No Risk": 73.0,
+        "Toxicity": 0.0,
+        "Hate Speech": 0.0,
+        "PII Leakage": 0.0,
+        "Sexual Content": 0.0,
+        "Violence": 0.0,
+        "Self-Harm": 0.0,
+        "Cybercrime": 0.0,
+        "Malware": 0.0,
+        "Fraud": 0.0,
+        "Misinformation": 0.0,
+        "Extremism": 0.0,
+        "Discrimination": 0.0,
+        "Privacy Violation": 0.0,
+        "Illegal Activity": 0.0,
+        "Dangerous Information": 0.0,
+        "CBRN": 0.0,
+        "Child Safety": 0.0,
+        "Financial Crime": 0.0,
+        "Social Engineering": 0.0,
+        "Surveillance": 0.0,
+        "Intellectual Property": 0.0,
+        "Prompt Injection": 0.0
+      },
+      "nist_summary": {
+        "MAP": {
+          "avg_asr": 0.0,
+          "category_label": "MP.RM – Risk Mapping"
+        },
+        "MANAGE": {
+          "avg_asr": 0.0,
+          "category_label": "MG.AT – AI Risk Treatment"
+        },
+        "GOVERN": {
+          "avg_asr": 0.0,
+          "category_label": "GV.PO – Policies, Processes & Procedures"
+        },
+        "MEASURE": {
+          "avg_asr": 0.0,
+          "category_label": "ME.AE – Adverse Event Measurement"
+        }
+      },
+      "critical_findings": [],
+      "api_error_count": 500,
+      "api_error_rate": 1.0,
+      "eval_failed": true,
+      "provider": "Google",
+      "color": "#34A853"
+    },
+    {
+      "model_id": "gemini-2.0-flash",
+      "display_name": "Gemini 2.0 Flash",
+      "week": "2026-10-04",
+      "total_samples": 500,
+      "total_attack": 400,
+      "total_refusal": 100,
+      "attack_failures": 2,
+      "critical_failures": 0,
+      "asr": 0.5,
+      "over_refusals": 76,
+      "for_rate": 76.0,
+      "drift_coefficient": 0.0,
+      "provenance_score": 100.0,
+      "category_asr": {
+        "CBRN Information or Capabilities": 0.0,
+        "Child Safety": 0.0,
+        "Bias Content": 0.0,
+        "Abusive Content": 0.0,
+        "Hateful Content": 0.0,
+        "Environmental Harm": 0.0,
+        "Misinformation": 3.12,
+        "Self-Harm Content": 0.0,
+        "Crime Content": 0.0,
+        "Cybersecurity Threats (Beyond Malware)": 3.12,
+        "Malware Code": 0.0,
+        "Decision-Making in Critical Systems": 0.0,
+        "Economic Harm": 0.0,
+        "Election Interference": 0.0,
+        "Intellectual Property": 0.0,
+        "Confabulation": 0.0,
+        "Sexual Content": 0.0,
+        "Illegal Weapons (Non-CBRN)": 0.0,
+        "Other": 0.0,
+        "Violent Content": 0.0,
+        "Data Privacy": 0.0,
+        "Extremism and Radicalization": 0.0,
+        "Toxicity": 0.0,
+        "Hate Speech": 0.0,
+        "PII Leakage": 0.0,
+        "Violence": 0.0,
+        "Self-Harm": 0.0,
+        "Cybercrime": 0.0,
+        "Malware": 0.0,
+        "Fraud": 0.0,
+        "Extremism": 0.0,
+        "Discrimination": 0.0,
+        "Privacy Violation": 0.0,
+        "Illegal Activity": 0.0,
+        "Dangerous Information": 0.0,
+        "CBRN": 0.0,
+        "Financial Crime": 0.0,
+        "Social Engineering": 0.0,
+        "Surveillance": 0.0,
+        "Prompt Injection": 0.0
+      },
+      "category_for": {
+        "No Risk": 76.0,
+        "Toxicity": 0.0,
+        "Hate Speech": 0.0,
+        "PII Leakage": 0.0,
+        "Sexual Content": 0.0,
+        "Violence": 0.0,
+        "Self-Harm": 0.0,
+        "Cybercrime": 0.0,
+        "Malware": 0.0,
+        "Fraud": 0.0,
+        "Misinformation": 0.0,
+        "Extremism": 0.0,
+        "Discrimination": 0.0,
+        "Privacy Violation": 0.0,
+        "Illegal Activity": 0.0,
+        "Dangerous Information": 0.0,
+        "CBRN": 0.0,
+        "Child Safety": 0.0,
+        "Financial Crime": 0.0,
+        "Social Engineering": 0.0,
+        "Surveillance": 0.0,
+        "Intellectual Property": 0.0,
+        "Prompt Injection": 0.0
+      },
+      "nist_summary": {
+        "MAP": {
+          "avg_asr": 0.28,
+          "category_label": "MP.RM – Risk Mapping"
+        },
+        "MANAGE": {
+          "avg_asr": 0.0,
+          "category_label": "MG.AT – AI Risk Treatment"
+        },
+        "GOVERN": {
+          "avg_asr": 0.0,
+          "category_label": "GV.PO – Policies, Processes & Procedures"
+        },
+        "MEASURE": {
+          "avg_asr": 0.0,
+          "category_label": "ME.AE – Adverse Event Measurement"
+        }
+      },
+      "critical_findings": [],
+      "api_error_count": 500,
+      "api_error_rate": 1.0,
+      "eval_failed": true,
+      "provider": "Google",
+      "color": "#4285F4"
     }
   ],
   "radar_data": {
@@ -1563,90 +1541,6 @@
       "Other": 4.55,
       "Violent Content": 0.0,
       "Data Privacy": 6.25,
-      "Extremism and Radicalization": 0.0,
-      "Toxicity": 0.0,
-      "Hate Speech": 0.0,
-      "PII Leakage": 0.0,
-      "Violence": 0.0,
-      "Self-Harm": 0.0,
-      "Cybercrime": 0.0,
-      "Malware": 0.0,
-      "Fraud": 0.0,
-      "Extremism": 0.0,
-      "Discrimination": 0.0,
-      "Privacy Violation": 0.0,
-      "Illegal Activity": 0.0,
-      "Dangerous Information": 0.0,
-      "CBRN": 0.0,
-      "Financial Crime": 0.0,
-      "Social Engineering": 0.0,
-      "Surveillance": 0.0,
-      "Prompt Injection": 0.0
-    },
-    "gemini-2.0-flash": {
-      "CBRN Information or Capabilities": 0.0,
-      "Child Safety": 0.0,
-      "Bias Content": 0.0,
-      "Abusive Content": 0.0,
-      "Hateful Content": 0.0,
-      "Environmental Harm": 0.0,
-      "Misinformation": 3.12,
-      "Self-Harm Content": 0.0,
-      "Crime Content": 0.0,
-      "Cybersecurity Threats (Beyond Malware)": 3.12,
-      "Malware Code": 0.0,
-      "Decision-Making in Critical Systems": 0.0,
-      "Economic Harm": 0.0,
-      "Election Interference": 0.0,
-      "Intellectual Property": 0.0,
-      "Confabulation": 0.0,
-      "Sexual Content": 0.0,
-      "Illegal Weapons (Non-CBRN)": 0.0,
-      "Other": 0.0,
-      "Violent Content": 0.0,
-      "Data Privacy": 0.0,
-      "Extremism and Radicalization": 0.0,
-      "Toxicity": 0.0,
-      "Hate Speech": 0.0,
-      "PII Leakage": 0.0,
-      "Violence": 0.0,
-      "Self-Harm": 0.0,
-      "Cybercrime": 0.0,
-      "Malware": 0.0,
-      "Fraud": 0.0,
-      "Extremism": 0.0,
-      "Discrimination": 0.0,
-      "Privacy Violation": 0.0,
-      "Illegal Activity": 0.0,
-      "Dangerous Information": 0.0,
-      "CBRN": 0.0,
-      "Financial Crime": 0.0,
-      "Social Engineering": 0.0,
-      "Surveillance": 0.0,
-      "Prompt Injection": 0.0
-    },
-    "gemini-1.5-pro": {
-      "CBRN Information or Capabilities": 0.0,
-      "Child Safety": 0.0,
-      "Bias Content": 0.0,
-      "Abusive Content": 0.0,
-      "Hateful Content": 0.0,
-      "Environmental Harm": 0.0,
-      "Misinformation": 0.0,
-      "Self-Harm Content": 0.0,
-      "Crime Content": 0.0,
-      "Cybersecurity Threats (Beyond Malware)": 0.0,
-      "Malware Code": 0.0,
-      "Decision-Making in Critical Systems": 0.0,
-      "Economic Harm": 0.0,
-      "Election Interference": 0.0,
-      "Intellectual Property": 0.0,
-      "Confabulation": 0.0,
-      "Sexual Content": 0.0,
-      "Illegal Weapons (Non-CBRN)": 0.0,
-      "Other": 0.0,
-      "Violent Content": 0.0,
-      "Data Privacy": 0.0,
       "Extremism and Radicalization": 0.0,
       "Toxicity": 0.0,
       "Hate Speech": 0.0,

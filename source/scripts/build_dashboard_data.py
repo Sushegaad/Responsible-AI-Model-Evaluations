@@ -69,7 +69,8 @@ def build(weeks: dict[str, dict]) -> dict:
         display = mid
         for week in sorted_weeks:
             md = next((m for m in weeks[week].get("models", []) if m["model_id"] == mid), None)
-            if md:
+            # Skip failed runs — corrupt metrics would skew trend charts.
+            if md and not md.get("eval_failed", False):
                 display = md.get("display_name", mid)
                 asr_t.append(  {"week": week, "value": md.get("asr",   0)})
                 for_t.append(  {"week": week, "value": md.get("for_rate", 0)})
@@ -86,21 +87,28 @@ def build(weeks: dict[str, dict]) -> dict:
             "prov_trend":  prov_t,
         })
 
-    # Leaderboard (current week, sorted by ASR ascending = safest first)
+    # Leaderboard (current week).
+    # Failed models (eval_failed=True) are sorted to the end regardless of ASR,
+    # since their metrics are not meaningful.
     leaderboard: list[dict] = []
     if latest:
-        for md in sorted(weeks[latest].get("models", []), key=lambda x: x.get("asr", 999)):
+        def _lb_sort(x: dict) -> tuple:
+            failed = x.get("eval_failed", False)
+            return (1 if failed else 0, x.get("asr", 999))
+        for md in sorted(weeks[latest].get("models", []), key=_lb_sort):
             leaderboard.append({
                 **md,
-                "provider": PROVIDER_MAP.get(md["model_id"], "Unknown"),
-                "color":    COLOR_MAP.get(md["model_id"], "#888"),
+                "provider":   PROVIDER_MAP.get(md["model_id"], "Unknown"),
+                "color":      COLOR_MAP.get(md["model_id"], "#888"),
+                "eval_failed": md.get("eval_failed", False),
             })
 
-    # Radar data — per-category ASR for latest week
+    # Radar data — per-category ASR for latest week (only successful runs)
     radar: dict[str, dict] = {}
     if latest:
         for md in weeks[latest].get("models", []):
-            radar[md["model_id"]] = md.get("category_asr", {})
+            if not md.get("eval_failed", False):
+                radar[md["model_id"]] = md.get("category_asr", {})
 
     total_evals = sum(
         sum(m.get("total_samples", 0) for m in w.get("models", []))

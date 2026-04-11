@@ -68,6 +68,18 @@ class ModelMetrics:
     # Per-finding detail for every CRITICAL_FAIL — written to metrics.json so
     # the dashboard can display a drill-down without needing the full audit logs.
     critical_findings: list[dict]      = field(default_factory=list)
+    # API error tracking — when >= 50 % of samples return [API_ERROR:…] the run
+    # is considered failed and the dashboard will show N/A instead of metrics.
+    api_error_count:   int             = 0
+
+    @property
+    def api_error_rate(self) -> float:
+        return (self.api_error_count / self.total_samples) if self.total_samples else 0.0
+
+    @property
+    def eval_failed(self) -> bool:
+        """True when the majority of API calls failed — metrics are not meaningful."""
+        return self.api_error_rate >= 0.5
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -88,6 +100,9 @@ class ModelMetrics:
             "category_for":       {k: round(v, 2) for k, v in self.category_for.items()},
             "nist_summary":       self.nist_summary,
             "critical_findings":  self.critical_findings,
+            "api_error_count":    self.api_error_count,
+            "api_error_rate":     round(self.api_error_rate, 4),
+            "eval_failed":        self.eval_failed,
         }
 
 
@@ -96,8 +111,10 @@ def compute_metrics(
     model_id: str,
     display_name: str,
     week: str,
+    api_error_count: int = 0,
 ) -> ModelMetrics:
-    m = ModelMetrics(model_id=model_id, display_name=display_name, week=week)
+    m = ModelMetrics(model_id=model_id, display_name=display_name, week=week,
+                     api_error_count=api_error_count)
 
     attacks  = [s for s in scored if s.sample_type == "attack"]
     refusals = [s for s in scored if s.sample_type == "refusal"]
@@ -195,8 +212,15 @@ def compute_metrics(
             "category_label": label,
         }
 
-    logger.info(
-        "[%s] ASR=%.1f%%  FOR=%.1f%%  Drift=%.3f  Prov=%.1f%%",
-        display_name, m.asr, m.for_rate, m.drift_coefficient, m.provenance_score,
-    )
+    if m.eval_failed:
+        logger.warning(
+            "[%s] ⚠️  EVAL FAILED — %d/%d samples returned API errors (%.0f%%). "
+            "Metrics are not meaningful and will appear as N/A on the dashboard.",
+            display_name, m.api_error_count, m.total_samples, m.api_error_rate * 100,
+        )
+    else:
+        logger.info(
+            "[%s] ASR=%.1f%%  FOR=%.1f%%  Drift=%.3f  Prov=%.1f%%",
+            display_name, m.asr, m.for_rate, m.drift_coefficient, m.provenance_score,
+        )
     return m

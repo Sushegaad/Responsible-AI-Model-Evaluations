@@ -141,24 +141,26 @@ async def _call_google(model_str: str, messages: list[dict], system: str, key: s
     from google.genai import types  # type: ignore
 
     client = genai.Client(api_key=key)
-    # Build typed history from all but the final message.
-    history = [
-        types.Content(
-            role="user" if m["role"] == "user" else "model",
-            parts=[types.Part(text=m["content"])],
-        )
-        for m in messages[:-1]
-    ]
-    last = messages[-1]["content"] if messages else ""
     config = types.GenerateContentConfig(
         system_instruction=system,
         max_output_tokens=512,
     )
-    # client.aio.chats.create() is synchronous (returns AsyncChat); send_message is async.
+    # Build the full conversation as a Contents list and call generate_content directly.
+    # This avoids the separate /chat endpoint which caused 404s with the google-genai SDK.
+    contents = [
+        types.Content(
+            role="user" if m["role"] == "user" else "model",
+            parts=[types.Part(text=m["content"])],
+        )
+        for m in messages
+    ]
     t0 = time.monotonic()
     try:
-        chat = client.aio.chats.create(model=model_str, history=history, config=config)
-        resp = await chat.send_message(last)
+        resp = await client.aio.models.generate_content(
+            model=model_str,
+            contents=contents,
+            config=config,
+        )
         text = resp.text or ""
     except Exception as exc:
         return f"[API_ERROR:{exc}]", 0
