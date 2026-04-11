@@ -377,7 +377,14 @@ body {
 .radar-layout { display:grid; grid-template-columns:200px 1fr; gap:16px; align-items:start; }
 @media(max-width:640px){ .radar-layout{ grid-template-columns:1fr; } }
 .model-picker { background:var(--surface-0);border-radius:var(--r-xl);box-shadow:var(--elev-1);padding:16px;display:flex;flex-direction:column;gap:6px; }
-.mp-head { font-family:var(--font-ui);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--on-surface-4);margin-bottom:4px; }
+.mp-head { font-family:var(--font-ui);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--on-surface-4);margin-bottom:2px; }
+.mp-actions { display:flex;gap:6px;margin-bottom:4px; }
+.mp-action {
+  flex:1;padding:4px 0;border-radius:var(--r-sm);border:1px solid var(--surface-3);
+  background:var(--surface-1);cursor:pointer;font-family:var(--font-ui);font-size:10px;
+  font-weight:500;color:var(--on-surface-3);transition:background .15s;
+}
+.mp-action:hover { background:var(--surface-2); }
 .mp-btn {
   display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-md);
   border:1px solid var(--surface-3);background:var(--surface-0);cursor:pointer;
@@ -386,8 +393,32 @@ body {
 }
 .mp-btn:hover { background:var(--surface-1); }
 .mp-btn.active { background:var(--blue-tonal);border-color:var(--google-blue); }
+/* Checkbox inside model picker */
+.mp-check {
+  width:15px;height:15px;border-radius:3px;border:2px solid var(--surface-3);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:background .15s,border-color .15s;font-size:9px;color:#fff;
+}
+.mp-btn.active .mp-check { content:'✓'; }
 .mp-dot { width:10px;height:10px;border-radius:50%;flex-shrink:0; }
 .mp-sub { font-size:10px;color:var(--on-surface-4); }
+
+/* ── Radar category detail panel ── */
+.rd-card {
+  margin-top:14px;background:var(--surface-0);border-radius:var(--r-lg);
+  box-shadow:var(--elev-1);padding:16px;animation:fadeIn .2s ease;
+}
+.rd-title { font-family:var(--font-ui);font-size:13px;margin-bottom:12px;color:var(--on-surface-1); }
+.rd-hint  { font-size:11px;color:var(--on-surface-4);margin-top:-8px;margin-bottom:10px; }
+.rd-rows  { display:flex;flex-direction:column;gap:7px; }
+.rd-row   { display:grid;grid-template-columns:18px 12px 1fr 120px 46px;align-items:center;gap:8px; }
+.rd-rank  { font-family:var(--font-ui);font-size:10px;font-weight:700;color:var(--on-surface-4);text-align:right; }
+.rd-dot2  { width:10px;height:10px;border-radius:50%; }
+.rd-name  { font-family:var(--font-ui);font-size:12px;color:var(--on-surface-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.rd-bar-wrap { height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden; }
+.rd-bar   { height:100%;border-radius:4px;transition:width .4s ease; }
+.rd-val   { font-family:var(--font-mono,monospace);font-size:12px;font-weight:600;text-align:right; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
 
 /* ── NIST ── */
 .nist-tabs { display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px; }
@@ -746,13 +777,18 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
       </div>
       <div class="radar-layout">
         <div class="model-picker">
-          <div class="mp-head">Select model</div>
+          <div class="mp-head">Compare models</div>
+          <div class="mp-actions">
+            <button class="mp-action" onclick="radarSelectAll()">All</button>
+            <button class="mp-action" onclick="radarClearAll()">None</button>
+          </div>
           <div id="radar-list"></div>
         </div>
         <div class="chart-card">
           <div class="ct-title" id="radar-title">Category Radar</div>
-          <div class="ct-desc">Smaller shape = fewer guardrail bypasses = safer model</div>
+          <div class="ct-desc">Smaller shape = fewer guardrail bypasses = safer model · <strong>Click any category</strong> to compare models</div>
           <div class="ct-wrap tall"><canvas id="c-radar"></canvas></div>
+          <div id="radar-detail"></div>
         </div>
       </div>
     </div>
@@ -1012,7 +1048,7 @@ const CATS = [
 
 const NIST_ORDER = ['GOVERN','MAP','MEASURE','MANAGE','PROTECT','DETECT'];
 
-let ST = { data:null, radarId:null, nistId:null, sortKey:'asr', asc:true };
+let ST = { data:null, radarId:null, radarIds:new Set(), nistId:null, sortKey:'asr', asc:true };
 let CH = {};
 
 const $   = id => document.getElementById(id);
@@ -1037,7 +1073,7 @@ function switchTab(name) {
       buildTrend('c-for','for',  v=>v?.toFixed(1)+'%');
       buildTrend('c-drift','drift',v=>v?.toFixed(3));
       buildTrend('c-prov','prov', v=>v?.toFixed(1)+'%');
-      if (ST.radarId) renderRadar(ST.radarId);
+      if (ST.radarIds.size) renderRadar();
     }, 50);
   }
 }
@@ -1324,50 +1360,143 @@ function buildTrend(id, key, fmt) {
 }
 
 /* ── Radar ── */
-function renderRadar(mid) {
-  const d=ST.data; if(!d?.radar_data) return;
-  const rd=d.radar_data[mid], model=d.models?.find(m=>m.model_id===mid);
-  if(!rd||!model) return;
-  ST.radarId=mid;
-  $('radar-title').textContent=model.display_name+' — Risk Category Attack Success Rate';
-  document.querySelectorAll('.mp-btn').forEach(b=>b.classList.toggle('active',b.dataset.mid===mid));
-  if(CH.radar) CH.radar.destroy();
-  CH.radar=new Chart($('c-radar'),{
-    type:'radar',
-    data:{
-      labels:CATS.map(c=>c.length>14?c.slice(0,12)+'…':c),
-      datasets:[{
-        label:model.display_name, data:CATS.map(c=>rd[c]||0),
-        borderColor:model.color, backgroundColor:model.color+'20',
-        borderWidth:2, pointBackgroundColor:model.color, pointRadius:3,
-      }],
+function renderRadar() {
+  const d = ST.data; if (!d?.radar_data) return;
+  const models = (d.models || []).filter(m => ST.radarIds.has(m.model_id));
+
+  // Update picker button states
+  document.querySelectorAll('.mp-btn').forEach(b => {
+    const on = ST.radarIds.has(b.dataset.mid);
+    b.classList.toggle('active', on);
+    const chk = b.querySelector('.mp-check');
+    if (chk) { chk.textContent = on ? '✓' : ''; chk.style.background = on ? b.dataset.color : ''; chk.style.borderColor = on ? b.dataset.color : ''; }
+  });
+
+  // Update title
+  const titleEl = $('radar-title');
+  if (models.length === 0) {
+    titleEl.textContent = 'Select at least one model';
+    if (CH.radar) { CH.radar.destroy(); CH.radar = null; }
+    $('radar-detail').innerHTML = '';
+    return;
+  }
+  titleEl.textContent = models.length === 1
+    ? models[0].display_name + ' — Risk Category Attack Success Rate'
+    : models.length + ' models — Risk Category Attack Success Rate (overlay)';
+
+  // Keep last-selected for backward compat (applyTheme, etc.)
+  ST.radarId = [...ST.radarIds][ST.radarIds.size - 1] || null;
+
+  if (CH.radar) CH.radar.destroy();
+  const t = chartTheme();
+  CH.radar = new Chart($('c-radar'), {
+    type: 'radar',
+    data: {
+      labels: CATS.map(c => c.length > 14 ? c.slice(0,12) + '…' : c),
+      datasets: models.map(m => ({
+        label: m.display_name,
+        data: CATS.map(c => (d.radar_data[m.model_id] || {})[c] || 0),
+        borderColor: m.color,
+        backgroundColor: m.color + (models.length > 1 ? '15' : '22'),
+        borderWidth: 2,
+        pointBackgroundColor: m.color,
+        pointRadius: 3, pointHoverRadius: 6,
+        pointHitRadius: 12,
+      })),
     },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:(()=>{ const t=chartTheme(); return {backgroundColor:t.bg,borderColor:t.border,borderWidth:1,titleColor:t.tick,bodyColor:t.label,
-          callbacks:{title:c=>CATS[c[0].dataIndex],label:c=>` Attack Success Rate: ${c.raw.toFixed(1)}%`}}; })()
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 350 },
+      onClick: (_evt, elements) => {
+        if (elements.length > 0) showRadarCategoryDetail(elements[0].index);
       },
-      scales:{r:{min:0,max:100,
-        grid:(()=>{ const t=chartTheme(); return {color:t.grid}; })(),
-        angleLines:(()=>{ const t=chartTheme(); return {color:t.grid}; })(),
-        pointLabels:{color:chartTheme().tick,font:{size:9,family:"'Roboto'"}},
-        ticks:{color:chartTheme().tick,stepSize:25,backdropColor:'transparent',font:{size:9}},
+      plugins: {
+        legend: {
+          display: models.length > 1, position: 'bottom',
+          labels: { color: t.tick, boxWidth: 12, padding: 14, font: { size: 11 } },
+        },
+        tooltip: {
+          backgroundColor: t.bg, borderColor: t.border, borderWidth: 1,
+          titleColor: t.tick, bodyColor: t.label,
+          callbacks: {
+            title: c => CATS[c[0].dataIndex],
+            label: c => ` ${c.dataset.label}: ${c.raw.toFixed(1)}%`,
+          },
+        },
+      },
+      scales: { r: { min: 0, max: 100,
+        grid: { color: t.grid },
+        angleLines: { color: t.grid },
+        pointLabels: { color: t.tick, font: { size: 9, family: "'Roboto'" } },
+        ticks: { color: t.tick, stepSize: 25, backdropColor: 'transparent', font: { size: 9 } },
       }},
     },
   });
 }
-window.renderRadar=renderRadar;
+window.renderRadar = renderRadar;
+
+/* Click a category spoke → ranked detail panel */
+function showRadarCategoryDetail(catIdx) {
+  const d = ST.data; if (!d?.radar_data) return;
+  const cat = CATS[catIdx];
+  const rows = (d.models || []).map(m => ({
+    model: m, val: (d.radar_data[m.model_id] || {})[cat] || 0,
+  })).sort((a, b) => a.val - b.val);
+  const maxVal = Math.max(...rows.map(r => r.val), 1);
+
+  $('radar-detail').innerHTML = `
+    <div class="rd-card">
+      <div class="rd-title"><strong>${cat}</strong></div>
+      <div class="rd-hint">Attack Success Rate — all models ranked (lower is safer)</div>
+      <div class="rd-rows">
+        ${rows.map((r, i) => `
+          <div class="rd-row">
+            <span class="rd-rank">${i + 1}</span>
+            <span class="rd-dot2" style="background:${r.model.color}"></span>
+            <span class="rd-name">${r.model.display_name}</span>
+            <div class="rd-bar-wrap">
+              <div class="rd-bar" style="width:${(r.val/maxVal)*100}%;background:${r.model.color}50;border-right:2px solid ${r.model.color}"></div>
+            </div>
+            <span class="rd-val" style="color:${cv(r.val)}">${r.val.toFixed(1)}%</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+window.showRadarCategoryDetail = showRadarCategoryDetail;
+
+/* Select All / Clear All helpers */
+function radarSelectAll() {
+  const d = ST.data; if (!d?.models) return;
+  d.models.forEach(m => ST.radarIds.add(m.model_id));
+  $('radar-detail').innerHTML = '';
+  renderRadar();
+}
+function radarClearAll() {
+  ST.radarIds.clear();
+  $('radar-detail').innerHTML = '';
+  renderRadar();
+}
+window.radarSelectAll = radarSelectAll;
+window.radarClearAll  = radarClearAll;
 
 function buildRadarList(d) {
-  if(!d.models) return;
-  $('radar-list').innerHTML=d.models.map(m=>`
-    <button class="mp-btn" data-mid="${m.model_id}" onclick="renderRadar('${m.model_id}')">
+  if (!d.models) return;
+  $('radar-list').innerHTML = d.models.map(m => `
+    <button class="mp-btn" data-mid="${m.model_id}" data-color="${m.color}"
+      onclick="radarToggle('${m.model_id}')">
+      <span class="mp-check" style="border-color:${m.color}"></span>
       <span class="mp-dot" style="background:${m.color}"></span>
       <div><div>${m.display_name}</div><div class="mp-sub">${m.provider}</div></div>
     </button>`).join('');
 }
+
+function radarToggle(mid) {
+  if (ST.radarIds.has(mid)) ST.radarIds.delete(mid);
+  else ST.radarIds.add(mid);
+  $('radar-detail').innerHTML = '';
+  renderRadar();
+}
+window.radarToggle = radarToggle;
 
 /* ── NIST ── */
 function renderNIST(mid) {
@@ -1418,7 +1547,11 @@ async function init() {
   buildTrend('c-drift','drift',v=>v?.toFixed(3));
   buildTrend('c-prov','prov', v=>v?.toFixed(1)+'%');
   buildRadarList(d);
-  if(d.models?.length)      renderRadar(d.models[0].model_id);
+  if (d.models?.length) {
+    // Seed the first model as selected by default
+    ST.radarIds.add(d.models[0].model_id);
+    renderRadar();
+  }
   buildNISTTabs(d);
   if(d.leaderboard?.length) renderNIST(d.leaderboard[0].model_id);
 }
@@ -1441,7 +1574,7 @@ async function init() {
       buildTrend('c-for',  'for',   v => v?.toFixed(1)+'%');
       buildTrend('c-drift','drift', v => v?.toFixed(3));
       buildTrend('c-prov', 'prov',  v => v?.toFixed(1)+'%');
-      if (ST.radarId) renderRadar(ST.radarId);
+      if (ST.radarIds.size) renderRadar();
     }
   }
 
