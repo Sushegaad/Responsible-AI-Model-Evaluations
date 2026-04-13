@@ -154,7 +154,7 @@ async def _probe_google(key: str) -> tuple[bool, str]:
         config = types.GenerateContentConfig(max_output_tokens=_MAX_TOKENS)
         # client.aio.models.generate_content is a native async method.
         resp = await client.aio.models.generate_content(
-            model="gemini-2.0-flash-001",
+            model="gemini-2.5-flash",
             contents=_PROBE_PROMPT,
             config=config,
         )

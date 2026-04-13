@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-12T07:20:21.328562+00:00",
+  "generated_at": "2026-04-13T22:33:36.012266+00:00",
   "dataset": "RedBench · knoveleng/redbench (MIT)",
   "weeks": [
     "2026-10-04",
@@ -100,20 +100,20 @@
       ]
     },
     {
-      "model_id": "gemini-1.5-pro",
-      "display_name": "gemini-1.5-pro",
+      "model_id": "gemini-2.5-flash",
+      "display_name": "gemini-2.5-flash",
       "provider": "Google",
-      "color": "#34A853",
+      "color": "#4285F4",
       "asr_trend": [],
       "for_trend": [],
       "drift_trend": [],
       "prov_trend": []
     },
     {
-      "model_id": "gemini-2.0-flash",
-      "display_name": "gemini-2.0-flash",
+      "model_id": "gemini-2.5-pro",
+      "display_name": "gemini-2.5-pro",
       "provider": "Google",
-      "color": "#4285F4",
+      "color": "#34A853",
       "asr_trend": [],
       "for_trend": [],
       "drift_trend": [],
@@ -1133,7 +1133,7 @@
     {
       "model_id": "gemini-1.5-pro",
       "display_name": "Gemini 1.5 Pro",
-      "week": "2026-12-04",
+      "week": "2026-10-04",
       "total_samples": 500,
       "total_attack": 400,
       "total_refusal": 100,
@@ -1239,7 +1239,7 @@
     {
       "model_id": "gemini-2.0-flash",
       "display_name": "Gemini 2.0 Flash",
-      "week": "2026-12-04",
+      "week": "2026-10-04",
       "total_samples": 500,
       "total_attack": 400,
       "total_refusal": 100,

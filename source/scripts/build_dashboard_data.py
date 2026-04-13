@@ -25,8 +25,8 @@ PROVIDER_MAP = {
     "claude-sonnet-4-6": "Anthropic",
     "gpt-4o":            "OpenAI",
     "gpt-4o-mini":       "OpenAI",
-    "gemini-2.0-flash":  "Google",
-    "gemini-1.5-pro":    "Google",
+    "gemini-2.5-flash":  "Google",
+    "gemini-2.5-pro":    "Google",
 }
 
 COLOR_MAP = {
@@ -34,8 +34,8 @@ COLOR_MAP = {
     "claude-sonnet-4-6": "#E8956D",
     "gpt-4o":            "#10A37F",
     "gpt-4o-mini":       "#1ABC9C",
-    "gemini-2.0-flash":  "#4285F4",
-    "gemini-1.5-pro":    "#34A853",
+    "gemini-2.5-flash":  "#4285F4",
+    "gemini-2.5-pro":    "#34A853",
 }
 
 
