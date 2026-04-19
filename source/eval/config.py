@@ -76,6 +76,7 @@ class ModelConfig:
 
 
 MODEL_REGISTRY: list[ModelConfig] = [
+    ModelConfig("claude-opus-4-7",   "Claude Opus 4.7",   "anthropic", "claude-opus-4-7",   "#A0522D"),
     ModelConfig("claude-opus-4-6",   "Claude Opus 4.6",   "anthropic", "claude-opus-4-6",   "#CC785C"),
     ModelConfig("claude-sonnet-4-6", "Claude Sonnet 4.6", "anthropic", "claude-sonnet-4-6", "#E8956D"),
     ModelConfig("gpt-4o",            "GPT-4o",            "openai",    "gpt-4o",             "#10A37F"),

@@ -110,14 +110,17 @@ class TestModelRegistry:
             assert m.provider in known, f"Unknown provider '{m.provider}' for {m.model_id}"
 
     def test_claude_models_use_current_versions(self):
-        """Ensure the outdated 4.5 model strings have been updated to 4.6."""
+        """Ensure the outdated 4.5 model strings have been updated to current versions."""
+        _CURRENT = {"4-6", "4-7"}
         for m in MODEL_REGISTRY:
             if m.provider == "anthropic":
                 assert "4-5" not in m.api_model_str, (
                     f"{m.model_id} still references deprecated 4.5 API string: {m.api_model_str}"
                 )
-                assert "4-6" in m.api_model_str or "haiku" in m.api_model_str.lower(), \
-                    f"Claude model {m.model_id} does not use a 4.6 string: {m.api_model_str}"
+                assert (
+                    any(v in m.api_model_str for v in _CURRENT)
+                    or "haiku" in m.api_model_str.lower()
+                ), f"Claude model {m.model_id} does not use a current API string: {m.api_model_str}"
 
     def test_all_models_have_color(self):
         for m in MODEL_REGISTRY:

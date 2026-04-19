@@ -21,6 +21,7 @@ DASHBOARD_DATA = Path("dashboard/data")
 OUT_FILE       = DASHBOARD_DATA / "results.json"
 
 PROVIDER_MAP = {
+    "claude-opus-4-7":   "Anthropic",
     "claude-opus-4-6":   "Anthropic",
     "claude-sonnet-4-6": "Anthropic",
     "gpt-4o":            "OpenAI",
@@ -30,6 +31,7 @@ PROVIDER_MAP = {
 }
 
 COLOR_MAP = {
+    "claude-opus-4-7":   "#A0522D",
     "claude-opus-4-6":   "#CC785C",
     "claude-sonnet-4-6": "#E8956D",
     "gpt-4o":            "#10A37F",
