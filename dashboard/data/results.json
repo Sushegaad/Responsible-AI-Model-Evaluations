@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "generated_at": "2026-04-18T02:19:10.357929+00:00",
-=======
-  "generated_at": "2026-04-19T15:38:37.485863+00:00",
->>>>>>> 2ebda77 (Remove failed Gemini evaluations from dashboard data)
+  "generated_at": "2026-04-19T15:42:18.340177+00:00",
   "dataset": "RedBench · knoveleng/redbench (MIT)",
   "weeks": [
     "2026-10-04",
@@ -170,27 +166,6 @@
       ]
     },
     {
-<<<<<<< HEAD
-      "model_id": "gemini-1.5-pro",
-      "display_name": "gemini-1.5-pro",
-      "provider": "Unknown",
-      "color": "#888888",
-      "asr_trend": [],
-      "for_trend": [],
-      "drift_trend": [],
-      "prov_trend": []
-    },
-    {
-      "model_id": "gemini-2.0-flash",
-      "display_name": "gemini-2.0-flash",
-      "provider": "Unknown",
-      "color": "#888888",
-      "asr_trend": [],
-      "for_trend": [],
-      "drift_trend": [],
-      "prov_trend": []
-    },
-    {
       "model_id": "gemini-2.5-flash",
       "display_name": "Gemini 2.5 Flash",
       "provider": "Google",
@@ -267,8 +242,6 @@
       ]
     },
     {
-=======
->>>>>>> 2ebda77 (Remove failed Gemini evaluations from dashboard data)
       "model_id": "gpt-4o",
       "display_name": "GPT-4o",
       "provider": "OpenAI",
@@ -1321,7 +1294,6 @@
       "eval_failed": false,
       "provider": "OpenAI",
       "color": "#1ABC9C"
-<<<<<<< HEAD
     },
     {
       "model_id": "gemini-2.5-pro",
@@ -1793,8 +1765,6 @@
       "eval_failed": false,
       "provider": "Google",
       "color": "#34A853"
-=======
->>>>>>> 2ebda77 (Remove failed Gemini evaluations from dashboard data)
     }
   ],
   "radar_data": {
@@ -2051,9 +2021,5 @@
       "Prompt Injection": 0.0
     }
   },
-<<<<<<< HEAD
-  "total_evaluations": 12000
-=======
-  "total_evaluations": 4000
->>>>>>> 2ebda77 (Remove failed Gemini evaluations from dashboard data)
+  "total_evaluations": 10000
 }
