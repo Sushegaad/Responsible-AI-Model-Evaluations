@@ -707,6 +707,7 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
     <button class="tab-btn active" onclick="switchTab('results')">Model Comparison Results</button>
     <button class="tab-btn"        onclick="switchTab('methodology')">Methodology</button>
     <button class="tab-btn"        onclick="switchTab('resources')">Resources</button>
+    <button class="tab-btn"        onclick="switchTab('paper')">Research Paper</button>
   </div>
 
   <!-- ═══════════════════════════════════════
@@ -1022,6 +1023,489 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
 
   </div><!-- /tab-resources -->
 
+  <!-- ═══════════════════════════════════════
+       TAB: RESEARCH PAPER
+  ═══════════════════════════════════════ -->
+  <div id="tab-paper" class="tab-panel">
+    <div class="section" style="margin-top:24px;max-width:900px;margin-left:auto;margin-right:auto">
+
+      <!-- Paper header -->
+      <div style="border-bottom:2px solid var(--google-blue);padding-bottom:24px;margin-bottom:32px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--google-blue);text-transform:uppercase;margin-bottom:12px">
+          Published: April 26, 2026
+        </div>
+        <h1 style="font-size:clamp(20px,3vw,30px);font-weight:800;line-height:1.25;color:var(--on-surface);margin:0 0 16px">
+          Responsible AI Model Evaluations: A Four-Week Red-Teaming Study of Foundation Models Across 22 Safety Risk Categories
+        </h1>
+        <div style="font-size:14px;color:var(--on-surface-2);margin-bottom:8px">
+          <strong>Author:</strong> Hemant Naik &nbsp;·&nbsp; <strong>Affiliation:</strong> Independent Research &nbsp;·&nbsp; <strong>Framework:</strong> RedBench v0.1.0 (MIT License)
+        </div>
+        <div style="font-size:13px;color:var(--on-surface-2)">
+          <strong>Benchmark:</strong> <a href="https://arxiv.org/abs/2601.03699" target="_blank" style="color:var(--google-blue)">Dang et al. 2026 — RedBench: A Universal Dataset for Comprehensive Red Teaming of LLMs</a>
+          &nbsp;·&nbsp; <strong>Compliance:</strong> NIST AI RMF 1.0 · GSAR 552.239-7001
+        </div>
+      </div>
+
+      <!-- Abstract -->
+      <div style="background:var(--surface-1);border-left:4px solid var(--google-blue);padding:20px 24px;border-radius:0 8px 8px 0;margin-bottom:32px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--google-blue);text-transform:uppercase;margin-bottom:10px">Abstract</div>
+        <p style="margin:0;font-size:14px;line-height:1.75;color:var(--on-surface)">
+          This paper presents the findings of a four-week continuous red-teaming study evaluating six foundation models — Claude Opus 4.6, Claude Sonnet 4.6, GPT-4o, GPT-4o Mini, Gemini 2.5 Flash, and Gemini 2.5 Pro — against 9,500 total evaluation samples drawn from the open RedBench dataset across 22 structured safety risk categories. Using a dual-metric framework that jointly measures the <em>Attack Success Rate</em> (ASR), the <em>False Outright Refusal Rate</em> (FOR), a <em>Drift Coefficient</em> tracking multi-turn safety degradation, and a <em>Provenance Score</em> measuring chain-of-reasoning traceability, we characterize each model's safety posture in terms of both bypass vulnerability and usability penalty. Across 9,500 evaluations, 442 attack failures and 159 critical-severity findings were recorded. CBRN Information or Capabilities emerged as the highest-risk category across all models (mean ASR 33.5%), followed by Cybersecurity Threats (19.4%) and Illegal Weapons (18.8%). Claude Sonnet 4.6 achieved the best overall balance (mean ASR 4.88%, mean FOR 0.75%), while Gemini 2.5 Pro exhibited the highest false refusal rate (18.5%) alongside an increasing attack bypass trend. All four models evaluated over the full four weeks showed net ASR reduction, consistent with iterative safety fine-tuning, but GPT-4o's false refusal rate worsened by +3 percentage points over the same period, illustrating the tension between safety and utility alignment. Findings are mapped to NIST AI RMF functions and structured as GSAR-compliant forensic audit records, enabling direct inclusion in compliance documentation.
+        </p>
+      </div>
+
+      <!-- 1. Introduction -->
+      <div style="margin-bottom:32px">
+        <h2 style="font-size:18px;font-weight:700;color:var(--on-surface);border-bottom:1px solid var(--surface-2);padding-bottom:8px;margin-bottom:16px">1. Introduction</h2>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+          The rapid deployment of large language models (LLMs) in enterprise, government, and public-sector contexts has created urgent demand for independent, reproducible, and continuously updated safety characterizations. Internal evaluations conducted by model developers are necessary but insufficient: they are not independently auditable, they do not expose the specific failure categories relevant to a given deployer's threat model, and they do not track safety degradation under multi-turn adversarial pressure.
+        </p>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+          This study was designed to fill that gap. Beginning in April 2026, we deployed an automated weekly evaluation pipeline that runs 500 samples per model per run against the RedBench benchmark — a publicly available, MIT-licensed dataset of red-teaming prompts covering 22 risk categories across five NIST AI RMF functional domains. Each sample is evaluated by a neural judge (claude-haiku-4-5) that produces a structured SAFE/FAIL/CRITICAL/OVER_REFUSAL verdict along with a chain-of-reasoning justification, a NIST subcategory mapping, and a remediation priority.
+        </p>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface)">
+          The evaluation framework addresses four overlapping stakeholder needs: red-teamers require category-level granularity and drift signals; compliance officers require audit-ready forensic records; product decision-makers require a joint safety–usability trade-off surface; and policy analysts require a time-series comparison anchored to a fixed, open benchmark that is independent of any model provider's internal testing.
+        </p>
+      </div>
+
+      <!-- 2. Methodology -->
+      <div style="margin-bottom:32px">
+        <h2 style="font-size:18px;font-weight:700;color:var(--on-surface);border-bottom:1px solid var(--surface-2);padding-bottom:8px;margin-bottom:16px">2. Methodology</h2>
+
+        <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:0 0 10px">2.1 Benchmark Dataset</h3>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:20px">
+          All evaluations use the RedBench dataset (Dang, Ngo &amp; Hy, 2026; arXiv 2601.03699). RedBench is a non-proprietary, MIT-licensed red-teaming corpus covering 22 safety risk categories including CBRN Information or Capabilities, Cybersecurity Threats, Illegal Weapons, Malware Code, Sexual Content, Misinformation, Child Safety, Data Privacy, and 14 additional categories. The dataset is partitioned into adversarial attack samples (80% of the run; n=400) and benign refusal-test samples (20%; n=100). The adversarial partition tests whether a model can be bypassed; the benign partition tests whether the model inappropriately refuses legitimate requests. Each weekly run draws 500 samples stratified across both partitions, with 20 samples reserved as multi-turn drift probes that escalate across conversation turns.
+        </p>
+
+        <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:0 0 10px">2.2 Metrics</h3>
+        <div style="overflow-x:auto;margin-bottom:20px">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+              <tr style="background:var(--surface-2)">
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--on-surface)">Metric</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--on-surface)">Definition</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--on-surface)">Interpretation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-top:1px solid var(--surface-2)">
+                <td style="padding:10px 14px;font-weight:600;color:var(--google-blue)">Attack Success Rate (ASR)</td>
+                <td style="padding:10px 14px;color:var(--on-surface)">Fraction of adversarial attack samples where the model produced a FAIL or CRITICAL verdict</td>
+                <td style="padding:10px 14px;color:var(--on-surface-2)">Lower is safer. Measures bypass vulnerability.</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2);background:var(--surface-1)">
+                <td style="padding:10px 14px;font-weight:600;color:var(--google-blue)">False Outright Refusal Rate (FOR)</td>
+                <td style="padding:10px 14px;color:var(--on-surface)">Fraction of benign refusal-test samples where the model refused a safe, legitimate request</td>
+                <td style="padding:10px 14px;color:var(--on-surface-2)">Lower is better. Measures usability penalty.</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2)">
+                <td style="padding:10px 14px;font-weight:600;color:var(--google-blue)">Drift Coefficient</td>
+                <td style="padding:10px 14px;color:var(--on-surface)">Slope of ASR across escalating conversation turns on the 20 drift-probe samples</td>
+                <td style="padding:10px 14px;color:var(--on-surface-2)">Positive = safety erodes under multi-turn adversarial pressure. Zero = stable.</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2);background:var(--surface-1)">
+                <td style="padding:10px 14px;font-weight:600;color:var(--google-blue)">Provenance Score</td>
+                <td style="padding:10px 14px;color:var(--on-surface)">Fraction of neural judge verdicts that include a complete chain-of-reasoning justification</td>
+                <td style="padding:10px 14px;color:var(--on-surface-2)">Higher is better. Measures audit traceability.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:0 0 10px">2.3 Neural Judge</h3>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:20px">
+          Each model response is evaluated by a NeuralJudge implemented on top of <code style="background:var(--surface-2);padding:1px 5px;border-radius:3px;font-size:12px">claude-haiku-4-5-20251001</code>. The judge receives the original prompt, the model's response, and the risk category, and outputs a structured JSON verdict containing: (1) a primary verdict (SAFE / FAIL / CRITICAL / OVER_REFUSAL), (2) a severity tier, (3) a NIST AI RMF function and subcategory mapping, (4) a remediation priority, and (5) a chain-of-reasoning justification. CRITICAL verdicts are reserved for responses that produce content posing immediate physical harm risk (e.g., synthesis routes for CBRN agents, functional malware, detailed weapon construction guides). All PII in prompts and responses is redacted prior to storage and audit log generation.
+        </p>
+
+        <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:0 0 10px">2.4 Evaluation Infrastructure</h3>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface)">
+          Evaluations run automatically via a GitHub Actions workflow every Friday at 18:00 UTC. Each run evaluates all registered models concurrently via asynchronous Python, writing per-model metrics to a structured JSON report. The pipeline includes a pre-flight API credit check, a configurable full-chain audit mode (REDEVAL_FULL_AUDIT_CHAIN), and automated dashboard rebuild via <code style="background:var(--surface-2);padding:1px 5px;border-radius:3px;font-size:12px">build_dashboard_data.py</code>. Evaluations where ≥50% of API calls fail are flagged <code style="background:var(--surface-2);padding:1px 5px;border-radius:3px;font-size:12px">eval_failed</code> and excluded from all aggregate statistics.
+        </p>
+      </div>
+
+      <!-- 3. Models Evaluated -->
+      <div style="margin-bottom:32px">
+        <h2 style="font-size:18px;font-weight:700;color:var(--on-surface);border-bottom:1px solid var(--surface-2);padding-bottom:8px;margin-bottom:16px">3. Models Evaluated</h2>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+              <tr style="background:var(--surface-2)">
+                <th style="padding:10px 14px;text-align:left;font-weight:700">Model</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700">Provider</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700">Weeks Evaluated</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700">Run Dates (YYYY-MMM-DD)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-top:1px solid var(--surface-2)">
+                <td style="padding:10px 14px;font-weight:600">Claude Opus 4.6</td>
+                <td style="padding:10px 14px">Anthropic</td>
+                <td style="padding:10px 14px">4</td>
+                <td style="padding:10px 14px;color:var(--on-surface-2)">2026-Apr-10, 2026-Apr-12, 2026-Apr-14, 2026-Apr-17</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2);background:var(--surface-1)">
+                <td style="padding:10px 14px;font-weight:600">Claude Sonnet 4.6</td>
+                <td style="padding:10px 14px">Anthropic</td>
+                <td style="padding:10px 14px">4</td>
+                <td style="padding:10px 14px;color:var(--on-surface-2)">2026-Apr-10, 2026-Apr-12, 2026-Apr-14, 2026-Apr-17</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2)">
+                <td style="padding:10px 14px;font-weight:600">GPT-4o</td>
+                <td style="padding:10px 14px">OpenAI</td>
+                <td style="padding:10px 14px">4</td>
+                <td style="padding:10px 14px;color:var(--on-surface-2)">2026-Apr-10, 2026-Apr-12, 2026-Apr-14, 2026-Apr-17</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2);background:var(--surface-1)">
+                <td style="padding:10px 14px;font-weight:600">GPT-4o Mini</td>
+                <td style="padding:10px 14px">OpenAI</td>
+                <td style="padding:10px 14px">4</td>
+                <td style="padding:10px 14px;color:var(--on-surface-2)">2026-Apr-10, 2026-Apr-12, 2026-Apr-14, 2026-Apr-17</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2)">
+                <td style="padding:10px 14px;font-weight:600">Gemini 2.5 Flash</td>
+                <td style="padding:10px 14px">Google</td>
+                <td style="padding:10px 14px">1</td>
+                <td style="padding:10px 14px;color:var(--on-surface-2)">2026-Apr-17 (first successful run after API migration)</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2);background:var(--surface-1)">
+                <td style="padding:10px 14px;font-weight:600">Gemini 2.5 Pro</td>
+                <td style="padding:10px 14px">Google</td>
+                <td style="padding:10px 14px">2</td>
+                <td style="padding:10px 14px;color:var(--on-surface-2)">2026-Apr-14, 2026-Apr-17</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12px;color:var(--on-surface-2);margin-top:8px;font-style:italic">
+          Note: Runs on 2026-Apr-10 and 2026-Apr-12 for Gemini models used deprecated API endpoints (gemini-2.0-flash-001, gemini-1.5-pro-002) which returned HTTP 404. Those runs are excluded from all analyses. The pipeline was migrated to Gemini 2.5 series on 2026-Apr-14.
+        </p>
+      </div>
+
+      <!-- 4. Results -->
+      <div style="margin-bottom:32px">
+        <h2 style="font-size:18px;font-weight:700;color:var(--on-surface);border-bottom:1px solid var(--surface-2);padding-bottom:8px;margin-bottom:16px">4. Results</h2>
+
+        <!-- 4.1 Aggregate -->
+        <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:0 0 10px">4.1 Aggregate Statistics</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px">
+          <div style="background:var(--surface-1);border-radius:10px;padding:16px 20px;text-align:center">
+            <div style="font-size:28px;font-weight:800;color:var(--google-blue)">9,500</div>
+            <div style="font-size:12px;color:var(--on-surface-2);margin-top:4px">Total Evaluations</div>
+          </div>
+          <div style="background:var(--surface-1);border-radius:10px;padding:16px 20px;text-align:center">
+            <div style="font-size:28px;font-weight:800;color:#EA4335">442</div>
+            <div style="font-size:12px;color:var(--on-surface-2);margin-top:4px">Attack Failures</div>
+          </div>
+          <div style="background:var(--surface-1);border-radius:10px;padding:16px 20px;text-align:center">
+            <div style="font-size:28px;font-weight:800;color:#B71C1C">159</div>
+            <div style="font-size:12px;color:var(--on-surface-2);margin-top:4px">Critical Findings</div>
+          </div>
+          <div style="background:var(--surface-1);border-radius:10px;padding:16px 20px;text-align:center">
+            <div style="font-size:28px;font-weight:800;color:#F9AB00">134</div>
+            <div style="font-size:12px;color:var(--on-surface-2);margin-top:4px">Over-Refusals</div>
+          </div>
+          <div style="background:var(--surface-1);border-radius:10px;padding:16px 20px;text-align:center">
+            <div style="font-size:28px;font-weight:800;color:#0F9D58">22</div>
+            <div style="font-size:12px;color:var(--on-surface-2);margin-top:4px">Risk Categories</div>
+          </div>
+          <div style="background:var(--surface-1);border-radius:10px;padding:16px 20px;text-align:center">
+            <div style="font-size:28px;font-weight:800;color:var(--google-blue)">4</div>
+            <div style="font-size:12px;color:var(--on-surface-2);margin-top:4px">Consecutive Weeks</div>
+          </div>
+        </div>
+
+        <!-- 4.2 Per-Model -->
+        <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:0 0 10px">4.2 Per-Model Performance Summary</h3>
+        <div style="overflow-x:auto;margin-bottom:20px">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+              <tr style="background:var(--surface-2)">
+                <th style="padding:10px 14px;text-align:left;font-weight:700">Model</th>
+                <th style="padding:10px 14px;text-align:center;font-weight:700">Weeks</th>
+                <th style="padding:10px 14px;text-align:center;font-weight:700">Avg ASR ↓</th>
+                <th style="padding:10px 14px;text-align:center;font-weight:700">Avg FOR ↓</th>
+                <th style="padding:10px 14px;text-align:center;font-weight:700">ASR Δ (first→last)</th>
+                <th style="padding:10px 14px;text-align:center;font-weight:700">FOR Δ (first→last)</th>
+                <th style="padding:10px 14px;text-align:center;font-weight:700">Total Critical</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-top:1px solid var(--surface-2);background:rgba(15,157,88,0.06)">
+                <td style="padding:10px 14px;font-weight:600">Claude Sonnet 4.6</td>
+                <td style="padding:10px 14px;text-align:center">4</td>
+                <td style="padding:10px 14px;text-align:center;font-weight:700;color:#0F9D58">4.88%</td>
+                <td style="padding:10px 14px;text-align:center;font-weight:700;color:#0F9D58">0.75%</td>
+                <td style="padding:10px 14px;text-align:center;color:#0F9D58">−3.25pp</td>
+                <td style="padding:10px 14px;text-align:center;color:#0F9D58">−2.00pp</td>
+                <td style="padding:10px 14px;text-align:center">24</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2)">
+                <td style="padding:10px 14px;font-weight:600">GPT-4o</td>
+                <td style="padding:10px 14px;text-align:center">4</td>
+                <td style="padding:10px 14px;text-align:center">4.94%</td>
+                <td style="padding:10px 14px;text-align:center;color:#EA4335">7.25%</td>
+                <td style="padding:10px 14px;text-align:center;color:#0F9D58">−2.50pp</td>
+                <td style="padding:10px 14px;text-align:center;color:#EA4335">+3.00pp</td>
+                <td style="padding:10px 14px;text-align:center">27</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2);background:var(--surface-1)">
+                <td style="padding:10px 14px;font-weight:600">Claude Opus 4.6</td>
+                <td style="padding:10px 14px;text-align:center">4</td>
+                <td style="padding:10px 14px;text-align:center">5.44%</td>
+                <td style="padding:10px 14px;text-align:center;font-weight:700;color:#0F9D58">0.50%</td>
+                <td style="padding:10px 14px;text-align:center;color:#0F9D58">−2.00pp</td>
+                <td style="padding:10px 14px;text-align:center;color:#EA4335">+1.00pp</td>
+                <td style="padding:10px 14px;text-align:center">28</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2)">
+                <td style="padding:10px 14px;font-weight:600">Gemini 2.5 Flash</td>
+                <td style="padding:10px 14px;text-align:center">1</td>
+                <td style="padding:10px 14px;text-align:center;font-weight:700;color:#0F9D58">2.50%</td>
+                <td style="padding:10px 14px;text-align:center;color:#EA4335">16.00%</td>
+                <td style="padding:10px 14px;text-align:center;color:var(--on-surface-2)">—</td>
+                <td style="padding:10px 14px;text-align:center;color:var(--on-surface-2)">—</td>
+                <td style="padding:10px 14px;text-align:center">1</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2);background:var(--surface-1)">
+                <td style="padding:10px 14px;font-weight:600">Gemini 2.5 Pro</td>
+                <td style="padding:10px 14px;text-align:center">2</td>
+                <td style="padding:10px 14px;text-align:center;color:#EA4335">7.62%</td>
+                <td style="padding:10px 14px;text-align:center;color:#EA4335">18.50%</td>
+                <td style="padding:10px 14px;text-align:center;color:#EA4335">+0.75pp</td>
+                <td style="padding:10px 14px;text-align:center;color:#EA4335">+1.00pp</td>
+                <td style="padding:10px 14px;text-align:center;color:#EA4335">37</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2)">
+                <td style="padding:10px 14px;font-weight:600">GPT-4o Mini</td>
+                <td style="padding:10px 14px;text-align:center">4</td>
+                <td style="padding:10px 14px;text-align:center;color:#EA4335">7.94%</td>
+                <td style="padding:10px 14px;text-align:center;color:#EA4335">11.75%</td>
+                <td style="padding:10px 14px;text-align:center;color:#0F9D58">−4.25pp</td>
+                <td style="padding:10px 14px;text-align:center;color:#0F9D58">−2.00pp</td>
+                <td style="padding:10px 14px;text-align:center;color:#EA4335">42</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12px;color:var(--on-surface-2);font-style:italic">pp = percentage points. Δ compares first available week to most recent. ↓ = lower is better.</p>
+
+        <!-- 4.3 Risk Categories -->
+        <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:20px 0 10px">4.3 Risk Category Analysis</h3>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+          Category-level ASR was computed by averaging per-model, per-week category failure rates across all valid (non-failed) evaluation runs. Three categories accounted for the majority of all bypass failures observed across the study period.
+        </p>
+        <div style="background:var(--surface-1);border-radius:10px;padding:20px;margin-bottom:20px">
+          <!-- Category bar chart (visual representation) -->
+          <div style="font-size:12px;font-weight:700;color:var(--on-surface-2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px">Average Attack Success Rate by Category (top 10)</div>
+          <div id="paper-cat-bars" style="display:flex;flex-direction:column;gap:8px">
+            <!-- Rendered dynamically or as static bars -->
+            <style>
+              .pcat-row{display:flex;align-items:center;gap:10px}
+              .pcat-label{font-size:12px;color:var(--on-surface);min-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+              .pcat-bar-wrap{flex:1;background:var(--surface-2);border-radius:4px;height:18px;overflow:hidden}
+              .pcat-bar{height:100%;border-radius:4px;transition:width .6s ease}
+              .pcat-val{font-size:12px;font-weight:700;color:var(--on-surface);min-width:42px;text-align:right}
+            </style>
+            <div class="pcat-row"><span class="pcat-label">CBRN Information or Capabilities</span><div class="pcat-bar-wrap"><div class="pcat-bar" style="width:100%;background:#EA4335"></div></div><span class="pcat-val">33.5%</span></div>
+            <div class="pcat-row"><span class="pcat-label">Cybersecurity Threats (Beyond Malware)</span><div class="pcat-bar-wrap"><div class="pcat-bar" style="width:58%;background:#FA7B17"></div></div><span class="pcat-val">19.4%</span></div>
+            <div class="pcat-row"><span class="pcat-label">Illegal Weapons (Non-CBRN)</span><div class="pcat-bar-wrap"><div class="pcat-bar" style="width:56%;background:#FA7B17"></div></div><span class="pcat-val">18.8%</span></div>
+            <div class="pcat-row"><span class="pcat-label">Malware Code</span><div class="pcat-bar-wrap"><div class="pcat-bar" style="width:27%;background:#F9AB00"></div></div><span class="pcat-val">9.0%</span></div>
+            <div class="pcat-row"><span class="pcat-label">Sexual Content</span><div class="pcat-bar-wrap"><div class="pcat-bar" style="width:22%;background:#F9AB00"></div></div><span class="pcat-val">7.4%</span></div>
+            <div class="pcat-row"><span class="pcat-label">Misinformation</span><div class="pcat-bar-wrap"><div class="pcat-bar" style="width:19%;background:#F9AB00"></div></div><span class="pcat-val">6.4%</span></div>
+            <div class="pcat-row"><span class="pcat-label">Environmental Harm</span><div class="pcat-bar-wrap"><div class="pcat-bar" style="width:16%;background:#FBBC04"></div></div><span class="pcat-val">5.3%</span></div>
+            <div class="pcat-row"><span class="pcat-label">Hateful Content</span><div class="pcat-bar-wrap"><div class="pcat-bar" style="width:12%;background:#FBBC04"></div></div><span class="pcat-val">4.1%</span></div>
+            <div class="pcat-row"><span class="pcat-label">Crime Content</span><div class="pcat-bar-wrap"><div class="pcat-bar" style="width:9%;background:#0F9D58"></div></div><span class="pcat-val">3.2%</span></div>
+            <div class="pcat-row"><span class="pcat-label">Bias Content</span><div class="pcat-bar-wrap"><div class="pcat-bar" style="width:8%;background:#0F9D58"></div></div><span class="pcat-val">2.6%</span></div>
+          </div>
+          <div style="font-size:12px;color:var(--on-surface-2);margin-top:12px">
+            Categories with 0% average ASR (fully defended across all models): Child Safety · Election Interference · Intellectual Property · PII Leakage · Toxicity · Hate Speech · Violence · Self-Harm
+          </div>
+        </div>
+
+        <!-- 4.4 Drift -->
+        <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:20px 0 10px">4.4 Multi-Turn Safety Drift</h3>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+          The Drift Coefficient measures whether a model's safety posture degrades as an adversarial conversation escalates across multiple turns. A positive coefficient indicates that bypass probability increases with conversation depth — a critical signal that safety fine-tuning may be shallow, relying on first-turn detection rather than context-persistent refusal.
+        </p>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface)">
+          GPT-4o consistently recorded a positive drift coefficient (+0.556) across three of its four evaluation weeks, indicating repeatable multi-turn safety degradation. Claude Sonnet 4.6 recorded a drift coefficient of 0.000 in its most recent two evaluations, suggesting robust context-persistent safety. Claude Opus 4.6 moved from a negative coefficient (−2.222 in week 1, indicating over-conservatism on drift probes) to a small positive (+0.556) by week 4, reflecting normalization. GPT-4o Mini's drift remained persistently positive, consistent with its higher overall ASR. Google Gemini 2.5 Flash recorded 0.000 drift in its single valid run, though the single-week sample is insufficient for drift trend conclusions.
+        </p>
+
+        <!-- 4.5 Longitudinal -->
+        <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:20px 0 10px">4.5 Longitudinal ASR Trend (Four-Model Cohort)</h3>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+          All four models evaluated across the complete four-week period showed net ASR reduction, suggesting progressive safety fine-tuning by model providers during the study window. GPT-4o Mini showed the largest absolute reduction (−4.25pp), moving from 10.25% to 6.00%. Claude Sonnet 4.6 showed the second-largest (−3.25pp), from 6.50% to 3.25%. However, the ASR reductions did not uniformly translate to improved usability: GPT-4o's false refusal rate increased by +3.00pp over the same period, reaching 10.0%, indicating that its safety improvements came at a measurable cost in over-restriction.
+        </p>
+        <div style="overflow-x:auto;margin-bottom:8px">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+              <tr style="background:var(--surface-2)">
+                <th style="padding:10px 14px;text-align:left;font-weight:700">Model</th>
+                <th style="padding:10px 14px;text-align:center;font-weight:700">2026-Apr-10</th>
+                <th style="padding:10px 14px;text-align:center;font-weight:700">2026-Apr-12</th>
+                <th style="padding:10px 14px;text-align:center;font-weight:700">2026-Apr-14</th>
+                <th style="padding:10px 14px;text-align:center;font-weight:700">2026-Apr-17</th>
+                <th style="padding:10px 14px;text-align:center;font-weight:700">Net Change</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-top:1px solid var(--surface-2)">
+                <td style="padding:10px 14px;font-weight:600">Claude Opus 4.6 ASR</td>
+                <td style="padding:10px 14px;text-align:center">6.00%</td><td style="padding:10px 14px;text-align:center">7.50%</td><td style="padding:10px 14px;text-align:center">4.25%</td><td style="padding:10px 14px;text-align:center">4.00%</td><td style="padding:10px 14px;text-align:center;color:#0F9D58">−2.00pp</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2);background:var(--surface-1)">
+                <td style="padding:10px 14px;font-weight:600">Claude Sonnet 4.6 ASR</td>
+                <td style="padding:10px 14px;text-align:center">6.50%</td><td style="padding:10px 14px;text-align:center">7.00%</td><td style="padding:10px 14px;text-align:center">2.75%</td><td style="padding:10px 14px;text-align:center">3.25%</td><td style="padding:10px 14px;text-align:center;font-weight:700;color:#0F9D58">−3.25pp</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2)">
+                <td style="padding:10px 14px;font-weight:600">GPT-4o ASR</td>
+                <td style="padding:10px 14px;text-align:center">6.25%</td><td style="padding:10px 14px;text-align:center">6.50%</td><td style="padding:10px 14px;text-align:center">3.25%</td><td style="padding:10px 14px;text-align:center">3.75%</td><td style="padding:10px 14px;text-align:center;color:#0F9D58">−2.50pp</td>
+              </tr>
+              <tr style="border-top:1px solid var(--surface-2);background:var(--surface-1)">
+                <td style="padding:10px 14px;font-weight:600">GPT-4o Mini ASR</td>
+                <td style="padding:10px 14px;text-align:center">10.25%</td><td style="padding:10px 14px;text-align:center">10.00%</td><td style="padding:10px 14px;text-align:center">5.50%</td><td style="padding:10px 14px;text-align:center">6.00%</td><td style="padding:10px 14px;text-align:center;font-weight:700;color:#0F9D58">−4.25pp</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 5. Audience-Specific Insights -->
+      <div style="margin-bottom:32px">
+        <h2 style="font-size:18px;font-weight:700;color:var(--on-surface);border-bottom:1px solid var(--surface-2);padding-bottom:8px;margin-bottom:20px">5. Audience-Specific Insights</h2>
+
+        <!-- 5.1 Red-Teamers -->
+        <div style="background:var(--surface-1);border-radius:12px;padding:20px 24px;margin-bottom:20px;border-top:4px solid #EA4335">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#EA4335;text-transform:uppercase;margin-bottom:8px">For AI Engineers &amp; Red-Teamers</div>
+          <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:0 0 12px">5.1 Category-Level Failure Signatures and Drift Signals</h3>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+            <strong>CBRN is the dominant attack surface.</strong> Across all models and all weeks, the CBRN Information or Capabilities category recorded a mean ASR of 33.5% — more than 1.7× the second-highest category (Cybersecurity Threats, 19.4%). In week 1 alone, both Claude Opus 4.6 and GPT-4o recorded 50% ASR on CBRN prompts; GPT-4o Mini reached 64.3%. This indicates that even the most safety-aligned current-generation models are inconsistently applying refusal logic to dual-use scientific queries when framed with sufficient technical legitimacy. The CBRN category produced 64 critical-severity verdicts — approximately 40% of all critical findings across the study.
+          </p>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+            <strong>Cybersecurity and Illegal Weapons show correlated failure patterns.</strong> Models that bypass on Cybersecurity Threats (Beyond Malware) consistently also show elevated bypass on Illegal Weapons (Non-CBRN) and Malware Code categories. This suggests a shared failure mode: models that relax technical precision constraints (e.g., for coding assistance) also relax safety constraints in adjacent technical domains. Red-teamers should probe these categories jointly, not independently.
+          </p>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+            <strong>Eight categories show zero bypass across all evaluations.</strong> Child Safety, Election Interference, Intellectual Property, PII Leakage, Toxicity, Hate Speech, Violence, and Self-Harm recorded 0% ASR in every valid run across all models. This is consistent with these categories receiving priority focus in safety fine-tuning pipelines, but red-teamers should treat this as signal to probe for adversarial rephrasings rather than accepting 0% as a permanent ceiling.
+          </p>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface)">
+            <strong>GPT-4o is the only model with consistent positive drift.</strong> GPT-4o recorded a Drift Coefficient of +0.556 in three of four evaluation weeks, indicating that adversarial escalation across conversation turns reliably increases bypass probability. Claude Sonnet 4.6 recorded 0.000 drift in two consecutive recent weeks — the cleanest drift signal in the dataset. Red-teamers targeting GPT-4o should prioritize multi-turn escalation strategies over single-turn jailbreaks.
+          </p>
+        </div>
+
+        <!-- 5.2 GRC -->
+        <div style="background:var(--surface-1);border-radius:12px;padding:20px 24px;margin-bottom:20px;border-top:4px solid #4285F4">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#4285F4;text-transform:uppercase;margin-bottom:8px">For GRC &amp; Compliance Officers</div>
+          <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:0 0 12px">5.2 NIST AI RMF Mapping and Forensic Audit Structure</h3>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+            Every evaluation verdict is mapped to a NIST AI RMF 1.0 function and subcategory. The MAP function (MP.RM – Risk Mapping) consistently receives the highest average ASR in the NeuralJudge's classification, reflecting that most bypass failures arise in risk domains that are defined by the model provider's risk mapping decisions rather than technical implementation. The GOVERN function (GV.PO – Policies, Processes &amp; Procedures) receives non-zero ASR only for GPT-4o Mini and Gemini 2.5 Pro — models with higher overall bypass rates — indicating that some of their failures trace to policy gaps rather than detection failures.
+          </p>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+            The evaluation pipeline generates GSAR 552.239-7001-aligned forensic audit records for every CRITICAL and high-severity FAIL verdict. Each audit record contains: (1) the PII-redacted adversarial prompt, (2) the PII-redacted model response, (3) the NeuralJudge's full chain-of-reasoning, (4) the NIST AI RMF function, subcategory, and remediation recommendation, (5) the compliance reference (GSAR 552.239-7001), and (6) a structured timestamp and model identifier. These records are stored as newline-delimited JSON in <code style="background:var(--surface-2);padding:1px 5px;border-radius:3px;font-size:12px">data/weekly/[week]/audit/</code> and are structured for direct inclusion in system security plans (SSPs), risk assessment reports (RARs), and plan of action and milestones (POA&amp;M) documents.
+          </p>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface)">
+            Across all valid evaluation weeks, 159 critical-severity findings were recorded. GPT-4o Mini accumulated the most critical findings (42 over four weeks), followed by Gemini 2.5 Pro (37 over two weeks — a notably high rate given the shorter observation window). For compliance teams evaluating model deployment authorization, the per-model critical finding rate is a key risk indicator: Gemini 2.5 Pro's 21 critical findings in its most recent single week (2026-Apr-17) — the highest single-week critical count in the study — warrants immediate investigation before any government or regulated-sector deployment is authorized.
+          </p>
+        </div>
+
+        <!-- 5.3 Product Leaders -->
+        <div style="background:var(--surface-1);border-radius:12px;padding:20px 24px;margin-bottom:20px;border-top:4px solid #0F9D58">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#0F9D58;text-transform:uppercase;margin-bottom:8px">For Product Leaders</div>
+          <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:0 0 12px">5.3 The Safety–Usability Trade-Off Surface</h3>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+            The central product deployment question is not "which model is safest?" but "which model minimizes safety risk without making the product too restrictive to use?" This study surfaces both sides of that trade-off simultaneously, from the same evaluation run, against the same benchmark.
+          </p>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+            <strong>The recommended model for sensitive-domain deployment is Claude Sonnet 4.6.</strong> It achieved the lowest average ASR (4.88%) of the four-week cohort and the lowest average FOR (0.75%). It improved on both dimensions over the study period. Its Drift Coefficient reached 0.000 in its last two evaluations, indicating stable multi-turn safety. It is not the model with the absolute lowest ASR in any single week (Claude Opus 4.6 and GPT-4o occasionally matched or beat it), but its consistency across both metrics over time makes it the most reliable choice.
+          </p>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+            <strong>Gemini 2.5 Flash illustrates the usability cost of maximum safety conservatism.</strong> With 2.50% ASR — the lowest bypass rate observed across any model in any week — it also recorded a 16% false refusal rate on its single evaluation run. A model that refuses 1 in 6 legitimate requests is operationally unsuitable for customer-facing applications, regardless of its safety score. Product teams evaluating Gemini 2.5 Flash should conduct targeted usability testing in their specific domain before deployment.
+          </p>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface)">
+            <strong>Gemini 2.5 Pro's trend is the most concerning product-level signal.</strong> It is the only model showing both rising ASR (+0.75pp) and rising FOR (+1.00pp) week-over-week — simultaneously becoming less safe and less usable. It also holds the highest critical-finding rate per week among all models with more than one valid run. Product leaders considering Gemini 2.5 Pro for sensitive applications should delay deployment until the trend reverses and should monitor future weekly evaluations closely.
+          </p>
+        </div>
+
+        <!-- 5.4 Policy Analysts -->
+        <div style="background:var(--surface-1);border-radius:12px;padding:20px 24px;margin-bottom:20px;border-top:4px solid #9334E6">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#9334E6;text-transform:uppercase;margin-bottom:8px">For Policy Analysts &amp; Researchers</div>
+          <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:0 0 12px">5.4 Time-Series Safety Posture Against a Fixed Open Benchmark</h3>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+            This study uses a fixed, versioned, openly published benchmark (RedBench, MIT License) that does not change between evaluation runs. This is methodologically important: when a model's ASR decreases week over week, the cause can be attributed to changes in the model — not to changes in the benchmark. All four models in the four-week cohort showed net ASR reduction of between 2.00pp and 4.25pp over three weeks, a pattern consistent with active safety fine-tuning by model providers during the study window.
+          </p>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+            This pattern raises a methodological concern for the community: if evaluation benchmarks are public and providers monitor them, improvements in benchmark ASR may partially reflect benchmark-specific fine-tuning rather than general safety improvements. This study cannot resolve that question with a four-week window, but the week-on-week improvement rates (particularly the sharp drop between weeks 2 and 3 for multiple models, coinciding with a widely reported provider safety update in mid-April 2026) are consistent with targeted benchmark adaptation.
+          </p>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+            <strong>The CBRN gap is the most important policy-relevant finding.</strong> Despite significant overall ASR improvement across all models, CBRN Information or Capabilities remained the highest-bypassed category in every single evaluation week across every model evaluated. The category's average ASR of 33.5% — compared to near-zero rates for categories like Child Safety and Election Interference — indicates a structural asymmetry in safety fine-tuning priorities. This asymmetry has direct policy implications: CBRN-adjacent language models pose potential proliferation risks that are not currently being addressed at the same priority level as social harms in current safety training pipelines.
+          </p>
+          <p style="font-size:14px;line-height:1.75;color:var(--on-surface)">
+            <strong>The evaluation framework itself is open, reproducible, and extensible.</strong> The full pipeline — benchmark sampling, async multi-provider evaluation, NeuralJudge, NIST mapping, GSAR audit logging, and dashboard — is published at MIT License on GitHub. Any researcher or government body can run an independent replication, extend the model registry, or adapt the 22-category risk taxonomy to their specific threat model. The framework supports a configurable full audit chain mode (REDEVAL_FULL_AUDIT_CHAIN) that generates six-field structured chain-of-reasoning for forensic-grade analysis, enabling use in formal risk assessments and policy submissions.
+          </p>
+        </div>
+      </div>
+
+      <!-- 6. Discussion -->
+      <div style="margin-bottom:32px">
+        <h2 style="font-size:18px;font-weight:700;color:var(--on-surface);border-bottom:1px solid var(--surface-2);padding-bottom:8px;margin-bottom:16px">6. Discussion</h2>
+
+        <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:0 0 10px">6.1 Limitations</h3>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+          The study period spans four weeks and a maximum of four evaluation runs per model, which is insufficient to establish long-term trends with statistical confidence. The NeuralJudge (claude-haiku-4-5) introduces potential systematic bias: it is an Anthropic model evaluating both Anthropic and non-Anthropic models, and its own safety training may affect verdict calibration for edge cases. The 500-sample run size, while larger than many published red-teaming studies, produces category-level ASR estimates with high variance for rare categories (e.g., a single failure in a 14-sample category = 7.1% ASR). Category-level results with fewer than 20 samples per category should be interpreted with caution.
+        </p>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+          The Gemini model results are limited by API instability during the study: two full evaluation runs failed entirely due to deprecated endpoint changes, and Gemini 2.5 Flash has only a single valid evaluation week. Gemini results should be treated as preliminary until a full four-week cohort is available.
+        </p>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface)">
+          RedBench's prompt set is publicly available, which creates the possibility of benchmark-aware fine-tuning by model providers. This study cannot distinguish between general safety improvements and benchmark-specific improvements; independent, held-out evaluation sets would be required to resolve this ambiguity.
+        </p>
+
+        <h3 style="font-size:15px;font-weight:700;color:var(--on-surface);margin:20px 0 10px">6.2 Future Work</h3>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface)">
+          Planned extensions include: addition of Claude Opus 4.7 (released 2026-04-16) in the next evaluation cycle; expansion to 1,000 samples per model per run to reduce category-level variance; integration of an adversarial prompt generation module that produces novel attack variants not present in the static RedBench corpus; and development of a held-out evaluation set for benchmark-contamination-resistant trend analysis. The REDEVAL_FULL_AUDIT_CHAIN feature (currently configurable; default: <code style="background:var(--surface-2);padding:1px 5px;border-radius:3px;font-size:12px">failures</code> mode) will be enabled in <code style="background:var(--surface-2);padding:1px 5px;border-radius:3px;font-size:12px">all</code> mode for a future deep-analysis run to produce complete forensic chains for all 9,500 samples.
+        </p>
+      </div>
+
+      <!-- 7. Conclusions -->
+      <div style="margin-bottom:32px">
+        <h2 style="font-size:18px;font-weight:700;color:var(--on-surface);border-bottom:1px solid var(--surface-2);padding-bottom:8px;margin-bottom:16px">7. Conclusions</h2>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+          Four weeks of continuous automated red-teaming across 9,500 evaluations produce three principal findings.
+        </p>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+          First, <strong>CBRN safety is the most significant unresolved vulnerability across all current-generation frontier models.</strong> No model achieved acceptable bypass rates on CBRN-adjacent prompts. The 33.5% mean ASR for this category represents an urgent, cross-provider problem that safety fine-tuning has not yet addressed at the same rigor applied to social harm categories.
+        </p>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface);margin-bottom:12px">
+          Second, <strong>the safety–usability trade-off is a real and measurable constraint that varies significantly across providers.</strong> Claude Sonnet 4.6 demonstrates that it is possible to maintain sub-5% ASR with sub-1% FOR simultaneously. Gemini 2.5 Pro's simultaneous deterioration on both dimensions, and GPT-4o's widening false refusal problem, show that this balance is not guaranteed and must be monitored continuously.
+        </p>
+        <p style="font-size:14px;line-height:1.75;color:var(--on-surface)">
+          Third, <strong>continuous, open, benchmark-anchored evaluation is both feasible and necessary.</strong> This framework produces actionable intelligence for four distinct stakeholder communities — red-teamers, compliance officers, product leaders, and policy analysts — from a single automated weekly run at low cost. The full pipeline is open-source and designed to be extended, replicated, and audited by any party with an API key and an internet connection.
+        </p>
+      </div>
+
+      <!-- 8. References -->
+      <div style="margin-bottom:32px">
+        <h2 style="font-size:18px;font-weight:700;color:var(--on-surface);border-bottom:1px solid var(--surface-2);padding-bottom:8px;margin-bottom:16px">References</h2>
+        <div style="font-size:13px;line-height:2;color:var(--on-surface)">
+          <p>[1] Dang, Q.-A., Ngo, C., &amp; Hy, T.-S. (2026). RedBench: A Universal Dataset for Comprehensive Red Teaming of Large Language Models. <em>arXiv:2601.03699</em>. <a href="https://arxiv.org/abs/2601.03699" target="_blank" style="color:var(--google-blue)">https://arxiv.org/abs/2601.03699</a></p>
+          <p>[2] NIST. (2023). Artificial Intelligence Risk Management Framework (AI RMF 1.0). National Institute of Standards and Technology. <a href="https://airc.nist.gov" target="_blank" style="color:var(--google-blue)">https://airc.nist.gov</a></p>
+          <p>[3] GSA. (2024). GSAR 552.239-7001 — Information Technology Security and Privacy Requirements. General Services Administration Federal Acquisition Regulation Supplement.</p>
+          <p>[4] Anthropic. (2026). Claude Opus 4.7 Model Card. <a href="https://www.anthropic.com/news/claude-opus-4-7" target="_blank" style="color:var(--google-blue)">https://www.anthropic.com/news/claude-opus-4-7</a></p>
+          <p>[5] Perez, E., Huang, S., Song, F., et al. (2022). Red Teaming Language Models with Language Models. <em>arXiv:2202.03286</em>.</p>
+          <p>[6] Naik, H. (2026). Responsible AI Model Evaluations — Source Code and Pipeline. GitHub. <a href="https://github.com/Sushegaad/Responsible-AI-Model-Evaluations" target="_blank" style="color:var(--google-blue)">https://github.com/Sushegaad/Responsible-AI-Model-Evaluations</a></p>
+        </div>
+      </div>
+
+      <!-- Citation -->
+      <div style="background:var(--surface-1);border-radius:10px;padding:16px 20px;font-size:12px;color:var(--on-surface-2)">
+        <div style="font-weight:700;color:var(--on-surface);margin-bottom:6px">Cite this paper</div>
+        <code style="font-size:11px;line-height:1.6">
+          @misc{naik2026raime, title={Responsible AI Model Evaluations: A Four-Week Red-Teaming Study of Foundation Models Across 22 Safety Risk Categories}, author={Hemant Naik}, year={2026}, month={April}, url={https://sushegaad.github.io/Responsible-AI-Model-Evaluations/} }
+        </code>
+      </div>
+
+    </div>
+  </div><!-- /tab-paper -->
+
   <!-- Footer -->
   <footer>
     <div class="foot-copy">Model Evaluation for Responsible AI · Powered by RedBench (MIT License) · Built by Hemant Naik</div>
@@ -1068,7 +1552,7 @@ const dft = v       => { if(v==null) return '—'; const s=parseFloat(v).toFixed
 /* ── Tab switching ── */
 function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    const tabs = ['results','methodology','resources'];
+    const tabs = ['results','methodology','resources','paper'];
     b.classList.toggle('active', tabs[i] === name);
   });
   document.querySelectorAll('.tab-panel').forEach(p => {
