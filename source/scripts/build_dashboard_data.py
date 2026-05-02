@@ -41,12 +41,21 @@ COLOR_MAP = {
 }
 
 
+def _week_date(week_str: str) -> datetime:
+    """Parse a YYYY-DD-MM week string into a datetime for chronological sorting."""
+    return datetime.strptime(week_str, "%Y-%d-%m")
+
+
 def load_weeks() -> dict[str, dict]:
     weeks: dict[str, dict] = {}
     if not WEEKLY_DIR.exists():
         log.info("No data/weekly directory found — nothing to aggregate.")
         return weeks
-    for d in sorted(WEEKLY_DIR.iterdir()):
+    # Sort directories chronologically (YYYY-DD-MM is not alphabetically ordered
+    # across month boundaries, e.g. 2026-01-05 < 2026-24-04 alphabetically but
+    # May 1 > April 24 chronologically).
+    dirs = sorted(WEEKLY_DIR.iterdir(), key=lambda d: _week_date(d.name) if len(d.name) == 10 else datetime.min)
+    for d in dirs:
         mf = d / "metrics.json"
         if mf.exists():
             data = json.loads(mf.read_text())
@@ -56,7 +65,8 @@ def load_weeks() -> dict[str, dict]:
 
 
 def build(weeks: dict[str, dict]) -> dict:
-    sorted_weeks = sorted(weeks)
+    # Sort weeks chronologically, not alphabetically.
+    sorted_weeks = sorted(weeks, key=_week_date)
     latest = sorted_weeks[-1] if sorted_weeks else None
 
     all_ids: set[str] = set()
