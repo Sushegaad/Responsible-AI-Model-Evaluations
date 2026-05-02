@@ -12,6 +12,12 @@ RAI Eval is an automated, open-source pipeline that evaluates frontier large lan
 
 Results are published automatically after every evaluation run and can also be refreshed manually via **Actions → Deploy Dashboard to GitHub Pages → Run workflow**.
 
+### Research Paper
+
+**[→ Download Research Paper (PDF)](research-paper.pdf)**
+
+*Responsible AI Model Evaluations: A Six-Week Red-Teaming Study of Foundation Models Across 22 Safety Risk Categories* — Hemant Naik, May 2, 2026. Covers 16,000 evaluations across 7 models, 267 critical findings, NIST AI RMF 1.0 mapping, and audience-specific insights for red-teamers, GRC officers, product leaders, and policy analysts.
+
 ---
 
 ## What is this model evaluation?
