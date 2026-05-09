@@ -210,6 +210,33 @@ body {
 }
 .sec-hint { font-size: 12px; color: var(--on-surface-4); }
 
+/* ── GROUP DIVIDER ── */
+.group-divider {
+  display: flex; align-items: center; gap: 14px;
+  margin: 40px 0 28px;
+}
+.group-divider-line {
+  flex: 1; height: 1px; background: var(--surface-4);
+}
+.group-divider-label {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface-0); border: 1px solid var(--surface-4);
+  border-radius: var(--r-pill); padding: 6px 16px;
+  box-shadow: var(--elev-1); white-space: nowrap;
+}
+.group-divider-label .gdl-icon { font-size: 14px; }
+.group-divider-label .gdl-text {
+  font-family: var(--font-ui); font-size: 12px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--on-surface-3);
+}
+.group-divider-label .gdl-badge {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  background: var(--blue-tonal); color: var(--google-blue);
+  border-radius: var(--r-pill); padding: 2px 8px;
+}
+.group-divider.current .group-divider-label { border-color: var(--google-blue)40; }
+.group-divider.current .gdl-text { color: var(--google-blue); }
+
 /* ── INSIGHTS ── */
 .insights-card {
   background: var(--surface-0); border-radius: var(--r-xl);
@@ -715,8 +742,19 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
   ═══════════════════════════════════════ -->
   <div id="tab-results" class="tab-panel active">
 
+    <!-- ── GROUP: ALL RUNS ── -->
+    <div class="group-divider" style="margin-top:28px">
+      <div class="group-divider-line"></div>
+      <div class="group-divider-label">
+        <span class="gdl-icon">📊</span>
+        <span class="gdl-text">Study-Wide Analysis</span>
+        <span class="gdl-badge" id="all-runs-badge">All Runs</span>
+      </div>
+      <div class="group-divider-line"></div>
+    </div>
+
     <!-- Insights -->
-    <div class="section" style="margin-top:24px">
+    <div class="section">
       <div class="sec-head">
         <span class="sec-title">Insights</span>
         <span class="sec-hint">Aggregated across all evaluation runs</span>
@@ -759,18 +797,29 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
     <!-- NIST AI RMF Alignment [All Runs] -->
     <div class="section">
       <div class="sec-head">
-        <span class="sec-title">NIST AI RMF Alignment [All Runs]</span>
+        <span class="sec-title">NIST AI RMF Alignment</span>
         <span class="sec-hint">Average Attack Success Rate per NIST function · averaged across all evaluation runs</span>
       </div>
       <div class="nist-tabs" id="nist-tabs"></div>
       <div class="nist-grid"  id="nist-grid"></div>
     </div>
 
-    <!-- Highlights of the current run -->
+    <!-- ── GROUP: CURRENT RUN ── -->
+    <div class="group-divider current">
+      <div class="group-divider-line"></div>
+      <div class="group-divider-label">
+        <span class="gdl-icon">🎯</span>
+        <span class="gdl-text">Current Run Snapshot</span>
+        <span class="gdl-badge" id="current-run-badge">Loading…</span>
+      </div>
+      <div class="group-divider-line"></div>
+    </div>
+
+    <!-- Highlights -->
     <div class="section">
       <div class="sec-head">
-        <span class="sec-title">Highlights [Current Run]</span>
-        <span class="sec-hint">Current run · lower Attack Success Rate = safer</span>
+        <span class="sec-title">Highlights</span>
+        <span class="sec-hint">Lower Attack Success Rate = safer</span>
       </div>
       <div class="summary-grid" id="summary-grid">
         <div class="loading" style="grid-column:1/-1"><div class="spinner"></div><span>Loading evaluation data…</span></div>
@@ -780,7 +829,7 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
     <!-- Safety Leaderboard -->
     <div class="section">
       <div class="sec-head">
-        <span class="sec-title">Safety Leaderboard [Current Run]</span>
+        <span class="sec-title">Safety Leaderboard</span>
         <span class="sec-hint">Click column headers to sort</span>
       </div>
       <div class="lb-card" id="lb-wrap">
@@ -791,7 +840,7 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
     <!-- Risk Category Breakdown -->
     <div class="section">
       <div class="sec-head">
-        <span class="sec-title">Risk Category Breakdown [Current Run]</span>
+        <span class="sec-title">Risk Category Breakdown</span>
         <span class="sec-hint">Attack Success Rate across all 22 RedBench categories</span>
       </div>
       <div class="radar-layout">
@@ -1665,6 +1714,12 @@ async function init() {
     return;
   }
   ST.data=d;
+  // Populate group-divider badges
+  const weekCount = (d.weeks||[]).length;
+  const allRunsBadge = $('all-runs-badge');
+  if(allRunsBadge) allRunsBadge.textContent = weekCount + (weekCount===1?' Run':' Runs');
+  const curBadge = $('current-run-badge');
+  if(curBadge) curBadge.textContent = d.latest_week ? fmtWeek(d.latest_week) : 'Latest';
   renderInsights(d);
   renderSummary(d);
   renderLB(d);
