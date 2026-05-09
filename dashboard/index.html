@@ -1095,8 +1095,17 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
             A Seven-Week Red-Teaming Study of Foundation Models Across 22 Safety Risk Categories
             &nbsp;·&nbsp; <span style="color:var(--google-blue);font-weight:600">Published May 9, 2026</span>
           </div>
+          <!-- Download counter badge -->
+          <div style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;
+                      background:var(--surface-2);border:1px solid var(--surface-4);
+                      border-radius:100px;padding:3px 10px 3px 7px;font-size:12px;color:var(--on-surface-3)">
+            <span style="font-size:13px">⬇</span>
+            <span id="pdf-dl-count" style="font-weight:700;color:var(--on-surface-2);font-family:var(--font-mono)">—</span>
+            <span>downloads</span>
+          </div>
         </div>
         <a href="paper/research-paper.pdf" download="RAIME-Research-Paper-2026.pdf"
+           id="pdf-dl-btn"
            style="display:inline-flex;align-items:center;gap:8px;background:var(--google-blue);
                   color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;
                   font-size:13px;font-weight:600;white-space:nowrap">
@@ -1121,6 +1130,7 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
               Download the paper to read it in a PDF viewer.
             </div>
             <a href="paper/research-paper.pdf" download="RAIME-Research-Paper-2026.pdf"
+               id="pdf-dl-btn-fallback"
                style="background:var(--google-blue);color:#fff;padding:10px 24px;
                       border-radius:8px;text-decoration:none;font-weight:600;font-size:13px">
               Download PDF
@@ -1793,6 +1803,56 @@ async function init() {
 })();
 
 document.addEventListener('DOMContentLoaded', init);
+
+/* ── PDF Download Counter ── */
+(function() {
+  const NAMESPACE = 'raime-dashboard';
+  const KEY       = 'pdf-downloads';
+  const API_BASE  = 'https://api.counterapi.dev/v1';
+
+  // Fetch current count and display it
+  function fetchCount() {
+    fetch(`${API_BASE}/${NAMESPACE}/${KEY}`)
+      .then(r => r.json())
+      .then(data => {
+        const el = document.getElementById('pdf-dl-count');
+        if (el && data?.count != null) el.textContent = data.count.toLocaleString();
+      })
+      .catch(() => {
+        const el = document.getElementById('pdf-dl-count');
+        if (el) el.closest('div').style.display = 'none'; // hide badge if API unavailable
+      });
+  }
+
+  // Increment counter + fire GA event, then update displayed count
+  function trackDownload() {
+    // Google Analytics event
+    if (typeof gtag === 'function') {
+      gtag('event', 'file_download', {
+        event_category: 'PDF',
+        event_label:    'research-paper',
+        file_name:      'RAIME-Research-Paper-2026.pdf',
+      });
+    }
+    // Increment counter API
+    fetch(`${API_BASE}/${NAMESPACE}/${KEY}/up`)
+      .then(r => r.json())
+      .then(data => {
+        const el = document.getElementById('pdf-dl-count');
+        if (el && data?.count != null) el.textContent = data.count.toLocaleString();
+      })
+      .catch(() => {});
+  }
+
+  // Wire up both download buttons once DOM is ready
+  document.addEventListener('DOMContentLoaded', function() {
+    fetchCount();
+    ['pdf-dl-btn', 'pdf-dl-btn-fallback'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) btn.addEventListener('click', trackDownload);
+    });
+  });
+})();
 </script>
 </body>
 </html>
