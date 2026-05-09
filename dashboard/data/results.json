@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "generated_at": "2026-05-09T14:46:51.789524+00:00",
+=======
+  "generated_at": "2026-05-09T18:44:01.640385+00:00",
+>>>>>>> f1f777c (feat(dashboard): NIST AI RMF averaged across all runs, moved below trends)
   "dataset": "RedBench · knoveleng/redbench (MIT)",
   "weeks": [
     "2026-10-04",
@@ -136,7 +140,29 @@
           "week": "2026-08-05",
           "value": 100.0
         }
-      ]
+      ],
+      "nist_avg": {
+        "MAP": {
+          "avg_asr": 4.89,
+          "run_count": 7,
+          "category_label": "MP.RM – Risk Mapping"
+        },
+        "MANAGE": {
+          "avg_asr": 0.0,
+          "run_count": 7,
+          "category_label": "MG.AT – AI Risk Treatment"
+        },
+        "GOVERN": {
+          "avg_asr": 0.0,
+          "run_count": 7,
+          "category_label": "GV.PO – Policies, Processes & Procedures"
+        },
+        "MEASURE": {
+          "avg_asr": 0.0,
+          "run_count": 7,
+          "category_label": "ME.AE – Adverse Event Measurement"
+        }
+      }
     },
     {
       "model_id": "claude-opus-4-7",
@@ -198,7 +224,29 @@
           "week": "2026-08-05",
           "value": 100.0
         }
-      ]
+      ],
+      "nist_avg": {
+        "MAP": {
+          "avg_asr": 3.78,
+          "run_count": 3,
+          "category_label": "MP.RM – Risk Mapping"
+        },
+        "GOVERN": {
+          "avg_asr": 0.42,
+          "run_count": 3,
+          "category_label": "GV.PO – Policies, Processes & Procedures"
+        },
+        "MANAGE": {
+          "avg_asr": 0.0,
+          "run_count": 3,
+          "category_label": "MG.AT – AI Risk Treatment"
+        },
+        "MEASURE": {
+          "avg_asr": 0.0,
+          "run_count": 3,
+          "category_label": "ME.AE – Adverse Event Measurement"
+        }
+      }
     },
     {
       "model_id": "claude-sonnet-4-6",
@@ -324,7 +372,29 @@
           "week": "2026-08-05",
           "value": 100.0
         }
-      ]
+      ],
+      "nist_avg": {
+        "MAP": {
+          "avg_asr": 4.68,
+          "run_count": 7,
+          "category_label": "MP.RM – Risk Mapping"
+        },
+        "MANAGE": {
+          "avg_asr": 0.0,
+          "run_count": 7,
+          "category_label": "MG.AT – AI Risk Treatment"
+        },
+        "GOVERN": {
+          "avg_asr": 0.0,
+          "run_count": 7,
+          "category_label": "GV.PO – Policies, Processes & Procedures"
+        },
+        "MEASURE": {
+          "avg_asr": 0.0,
+          "run_count": 7,
+          "category_label": "ME.AE – Adverse Event Measurement"
+        }
+      }
     },
     {
       "model_id": "gemini-2.5-flash",
@@ -402,7 +472,29 @@
           "week": "2026-08-05",
           "value": 100.0
         }
-      ]
+      ],
+      "nist_avg": {
+        "MAP": {
+          "avg_asr": 3.33,
+          "run_count": 4,
+          "category_label": "MP.RM – Risk Mapping"
+        },
+        "MANAGE": {
+          "avg_asr": 0.0,
+          "run_count": 4,
+          "category_label": "MG.AT – AI Risk Treatment"
+        },
+        "GOVERN": {
+          "avg_asr": 0.31,
+          "run_count": 4,
+          "category_label": "GV.PO – Policies, Processes & Procedures"
+        },
+        "MEASURE": {
+          "avg_asr": 0.0,
+          "run_count": 4,
+          "category_label": "ME.AE – Adverse Event Measurement"
+        }
+      }
     },
     {
       "model_id": "gemini-2.5-pro",
@@ -480,7 +572,29 @@
           "week": "2026-08-05",
           "value": 100.0
         }
-      ]
+      ],
+      "nist_avg": {
+        "MAP": {
+          "avg_asr": 7.58,
+          "run_count": 4,
+          "category_label": "MP.RM – Risk Mapping"
+        },
+        "MANAGE": {
+          "avg_asr": 0.0,
+          "run_count": 4,
+          "category_label": "MG.AT – AI Risk Treatment"
+        },
+        "GOVERN": {
+          "avg_asr": 1.88,
+          "run_count": 4,
+          "category_label": "GV.PO – Policies, Processes & Procedures"
+        },
+        "MEASURE": {
+          "avg_asr": 0.0,
+          "run_count": 4,
+          "category_label": "ME.AE – Adverse Event Measurement"
+        }
+      }
     },
     {
       "model_id": "gpt-4o",
@@ -606,7 +720,29 @@
           "week": "2026-08-05",
           "value": 99.8
         }
-      ]
+      ],
+      "nist_avg": {
+        "MAP": {
+          "avg_asr": 5.6,
+          "run_count": 7,
+          "category_label": "MP.RM – Risk Mapping"
+        },
+        "MANAGE": {
+          "avg_asr": 0.57,
+          "run_count": 7,
+          "category_label": "MG.AT – AI Risk Treatment"
+        },
+        "GOVERN": {
+          "avg_asr": 0.71,
+          "run_count": 7,
+          "category_label": "GV.PO – Policies, Processes & Procedures"
+        },
+        "MEASURE": {
+          "avg_asr": 0.0,
+          "run_count": 7,
+          "category_label": "ME.AE – Adverse Event Measurement"
+        }
+      }
     },
     {
       "model_id": "gpt-4o-mini",
@@ -732,7 +868,29 @@
           "week": "2026-08-05",
           "value": 100.0
         }
-      ]
+      ],
+      "nist_avg": {
+        "MAP": {
+          "avg_asr": 7.54,
+          "run_count": 7,
+          "category_label": "MP.RM – Risk Mapping"
+        },
+        "MANAGE": {
+          "avg_asr": 0.0,
+          "run_count": 7,
+          "category_label": "MG.AT – AI Risk Treatment"
+        },
+        "GOVERN": {
+          "avg_asr": 1.43,
+          "run_count": 7,
+          "category_label": "GV.PO – Policies, Processes & Procedures"
+        },
+        "MEASURE": {
+          "avg_asr": 0.0,
+          "run_count": 7,
+          "category_label": "ME.AE – Adverse Event Measurement"
+        }
+      }
     }
   ],
   "leaderboard": [

@@ -756,6 +756,16 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
       </div>
     </div>
 
+    <!-- NIST AI RMF Alignment [All Runs] -->
+    <div class="section">
+      <div class="sec-head">
+        <span class="sec-title">NIST AI RMF Alignment [All Runs]</span>
+        <span class="sec-hint">Average Attack Success Rate per NIST function · averaged across all evaluation runs</span>
+      </div>
+      <div class="nist-tabs" id="nist-tabs"></div>
+      <div class="nist-grid"  id="nist-grid"></div>
+    </div>
+
     <!-- Highlights of the current run -->
     <div class="section">
       <div class="sec-head">
@@ -802,15 +812,6 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
       </div>
     </div>
 
-    <!-- NIST AI RMF Alignment -->
-    <div class="section">
-      <div class="sec-head">
-        <span class="sec-title">NIST AI RMF Alignment [Current Run]</span>
-        <span class="sec-hint">Average Attack Success Rate per NIST AI Risk Management Framework function</span>
-      </div>
-      <div class="nist-tabs" id="nist-tabs"></div>
-      <div class="nist-grid"  id="nist-grid"></div>
-    </div>
 
   </div><!-- /tab-results -->
 
@@ -1620,23 +1621,24 @@ function radarToggle(mid) {
 }
 window.radarToggle = radarToggle;
 
-/* ── NIST ── */
+/* ── NIST (averaged across all runs via models[].nist_avg) ── */
 function renderNIST(mid) {
   ST.nistId=mid;
-  const entry=ST.data.leaderboard?.find(m=>m.model_id===mid);
-  if(!entry?.nist_summary) return;
+  const entry=ST.data.models?.find(m=>m.model_id===mid);
+  if(!entry?.nist_avg) return;
   document.querySelectorAll('.nist-tab').forEach(t=>{
     t.style.opacity=t.dataset.mid===mid?'1':'0.4';
     t.style.boxShadow=t.dataset.mid===mid?'var(--elev-1)':'none';
   });
-  const nist=entry.nist_summary;
+  const nist=entry.nist_avg;
+  const runCount=entry.asr_trend?.length||0;
   $('nist-grid').innerHTML=NIST_ORDER.map(fn=>{
-    const nd=nist[fn]||{avg_asr:0,category_label:fn}, asr=nd.avg_asr||0;
+    const nd=nist[fn]||{avg_asr:0,category_label:fn,run_count:0}, asr=nd.avg_asr||0;
     return `<div class="nist-card fn-${fn.toLowerCase()}">
       <div class="nist-fn fn-${fn.toLowerCase()}">${fn}</div>
       <div class="nist-lbl">${nd.category_label||fn}</div>
       <div class="nist-asr" style="color:${cv(asr)}">${asr.toFixed(1)}%</div>
-      <div class="nist-sub">avg Attack Success Rate</div>
+      <div class="nist-sub">avg ASR · ${nd.run_count||runCount} runs</div>
     </div>`;
   }).join('');
 }
@@ -1644,7 +1646,9 @@ window.renderNIST=renderNIST;
 
 function buildNISTTabs(d) {
   if(!d.models) return;
-  $('nist-tabs').innerHTML=d.models.map(m=>`
+  // Only show models that have nist_avg data
+  const eligible=d.models.filter(m=>m.nist_avg && Object.keys(m.nist_avg).length>0);
+  $('nist-tabs').innerHTML=eligible.map(m=>`
     <button class="nist-tab" data-mid="${m.model_id}"
       style="background:${m.color}15;border-color:${m.color}50;color:${m.color}"
       onclick="renderNIST('${m.model_id}')">
@@ -1675,7 +1679,8 @@ async function init() {
     renderRadar();
   }
   buildNISTTabs(d);
-  if(d.leaderboard?.length) renderNIST(d.leaderboard[0].model_id);
+  const firstNist=(d.models||[]).find(m=>m.nist_avg && Object.keys(m.nist_avg).length>0);
+  if(firstNist) renderNIST(firstNist.model_id);
 }
 
 /* ── Dark / Light mode toggle ── */

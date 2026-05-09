@@ -74,11 +74,14 @@ def build(weeks: dict[str, dict]) -> dict:
         for m in w.get("models", []):
             all_ids.add(m["model_id"])
 
-    # Per-model time series
+    # Per-model time series + averaged NIST summary across all successful runs
     model_series: list[dict] = []
     for mid in sorted(all_ids):
         asr_t, for_t, drift_t, prov_t = [], [], [], []
         display = mid
+        # Collect per-function NIST ASR values across all successful runs
+        nist_accumulator: dict[str, list[float]] = {}
+        nist_labels: dict[str, str] = {}
         for week in sorted_weeks:
             md = next((m for m in weeks[week].get("models", []) if m["model_id"] == mid), None)
             # Skip failed runs — corrupt metrics would skew trend charts.
@@ -88,6 +91,18 @@ def build(weeks: dict[str, dict]) -> dict:
                 for_t.append(  {"week": week, "value": md.get("for_rate", 0)})
                 drift_t.append({"week": week, "value": md.get("drift_coefficient", 0)})
                 prov_t.append( {"week": week, "value": md.get("provenance_score",  0)})
+                for fn, nd in md.get("nist_summary", {}).items():
+                    nist_accumulator.setdefault(fn, []).append(nd.get("avg_asr", 0))
+                    nist_labels[fn] = nd.get("category_label", fn)
+        # Average each NIST function across all runs where it appeared
+        nist_avg: dict[str, dict] = {
+            fn: {
+                "avg_asr": round(sum(vals) / len(vals), 2),
+                "run_count": len(vals),
+                "category_label": nist_labels.get(fn, fn),
+            }
+            for fn, vals in nist_accumulator.items()
+        }
         model_series.append({
             "model_id":    mid,
             "display_name": display,
@@ -97,6 +112,7 @@ def build(weeks: dict[str, dict]) -> dict:
             "for_trend":   for_t,
             "drift_trend": drift_t,
             "prov_trend":  prov_t,
+            "nist_avg":    nist_avg,
         })
 
     # Leaderboard (current week).
