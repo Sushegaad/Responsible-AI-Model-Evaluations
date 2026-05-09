@@ -719,32 +719,10 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
     <div class="section" style="margin-top:24px">
       <div class="sec-head">
         <span class="sec-title">Insights</span>
-        <span class="sec-hint">Auto-generated from latest evaluation run</span>
+        <span class="sec-hint">Aggregated across all evaluation runs</span>
       </div>
       <div class="insights-card" id="insights-card">
         <div class="loading"><div class="spinner"></div><span>Generating insights…</span></div>
-      </div>
-    </div>
-
-    <!-- Highlights -->
-    <div class="section">
-      <div class="sec-head">
-        <span class="sec-title">Highlights</span>
-        <span class="sec-hint">Current run · lower Attack Success Rate = safer</span>
-      </div>
-      <div class="summary-grid" id="summary-grid">
-        <div class="loading" style="grid-column:1/-1"><div class="spinner"></div><span>Loading evaluation data…</span></div>
-      </div>
-    </div>
-
-    <!-- Safety Leaderboard -->
-    <div class="section">
-      <div class="sec-head">
-        <span class="sec-title">Safety Leaderboard</span>
-        <span class="sec-hint">Click column headers to sort</span>
-      </div>
-      <div class="lb-card" id="lb-wrap">
-        <div class="empty"><span class="ei">📋</span><strong>No evaluation data yet</strong>Trigger the GitHub Actions workflow to run the first evaluation.</div>
       </div>
     </div>
 
@@ -775,6 +753,28 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
           <div class="ct-desc">% of evaluations with a complete chain-of-reasoning audit trail</div>
           <div class="ct-wrap"><canvas id="c-prov"></canvas></div>
         </div>
+      </div>
+    </div>
+
+    <!-- Highlights of the current run -->
+    <div class="section">
+      <div class="sec-head">
+        <span class="sec-title">Highlights of the current run</span>
+        <span class="sec-hint">Current run · lower Attack Success Rate = safer</span>
+      </div>
+      <div class="summary-grid" id="summary-grid">
+        <div class="loading" style="grid-column:1/-1"><div class="spinner"></div><span>Loading evaluation data…</span></div>
+      </div>
+    </div>
+
+    <!-- Safety Leaderboard -->
+    <div class="section">
+      <div class="sec-head">
+        <span class="sec-title">Safety Leaderboard based on the current run</span>
+        <span class="sec-hint">Click column headers to sort</span>
+      </div>
+      <div class="lb-card" id="lb-wrap">
+        <div class="empty"><span class="ei">📋</span><strong>No evaluation data yet</strong>Trigger the GitHub Actions workflow to run the first evaluation.</div>
       </div>
     </div>
 
@@ -1199,31 +1199,73 @@ function fmtWeek(w) {
   return mName ? `${year}-${mName}-${day.padStart(2,'0')}` : w;
 }
 
-/* ── Insights (5-sentence auto-summary) ── */
+/* ── Insights (aggregated across ALL evaluation runs) ── */
 function buildInsights(d) {
-  // Exclude models whose evaluation failed — their metrics are not meaningful.
-  const lb = (d.leaderboard || []).filter(m => !m.eval_failed);
-  if (!lb?.length) return null;
+  // Build per-model averages across every run in the time-series data.
+  const models = (d.models || []).filter(m => m.asr_trend && m.asr_trend.length > 0);
+  if (!models.length) return null;
 
-  const safest   = lb[0];
-  const riskiest = lb[lb.length - 1];
-  const byFOR    = [...lb].sort((a,b) => a.for_rate - b.for_rate);
-  const neutral  = byFOR[0];
-  const stable   = [...lb].sort((a,b) => Math.abs(a.drift_coefficient) - Math.abs(b.drift_coefficient))[0];
-  const avgASR   = lb.reduce((s,m) => s + (m.asr||0),               0) / lb.length;
-  const avgProv  = lb.reduce((s,m) => s + (m.provenance_score||0),  0) / lb.length;
-  const avgFOR   = lb.reduce((s,m) => s + (m.for_rate||0),          0) / lb.length;
-  const safetyLevel = avgASR < 5 ? 'strong' : avgASR < 15 ? 'moderate' : 'concerning';
-  const provLevel   = avgProv >= 95 ? 'excellent' : avgProv >= 80 ? 'adequate' : 'limited';
-  const runLabel    = fmtWeek(d.latest_week);
+  const weekCount  = (d.weeks || []).length;
+  const totalEvals = d.total_evaluations || 0;
+  const avg = arr => arr.length ? arr.reduce((s,v) => s + v, 0) / arr.length : 0;
 
-  return [
-    `In the latest evaluation run (<strong>${runLabel}</strong>), <strong>${safest.display_name}</strong> (${safest.provider}) achieved the lowest Attack Success Rate of <strong>${pct(safest.asr)}</strong>, ranking as the safest model across all ${lb.length} models tested.`,
-    `Across all providers, the average Attack Success Rate was <strong>${avgASR.toFixed(1)}%</strong>, indicating a <strong>${safetyLevel}</strong> overall safety posture — <strong>${riskiest.display_name}</strong> showed the highest bypass rate at <strong>${pct(riskiest.asr)}</strong>.`,
-    `False Outright Refusal rates averaged <strong>${avgFOR.toFixed(1)}%</strong> across the group; <strong>${neutral.display_name}</strong> achieved the best safety-utility balance with a False Outright Refusal rate of <strong>${pct(neutral.for_rate)}</strong>.`,
-    `<strong>${stable.display_name}</strong> exhibited the most stable guardrail performance under multi-turn adversarial pressure, with a drift coefficient of <strong>${dft(stable.drift_coefficient)}</strong> across the 10-turn probe.`,
-    `Provenance scores averaged <strong>${avgProv.toFixed(1)}%</strong> across all models, reflecting <strong>${provLevel}</strong> chain-of-reasoning coverage for GSAR 552.239-7001 forensic audit compliance.`
+  // Compute per-model averages across all runs
+  const stats = models.map(m => {
+    const asrVals   = m.asr_trend.map(t => t.value);
+    const forVals   = m.for_trend.map(t => t.value);
+    const driftVals = m.drift_trend.map(t => t.value);
+    const provVals  = m.prov_trend.map(t => t.value);
+    // Trend direction: compare last half vs first half of runs
+    const trendDir = arr => {
+      if (arr.length < 3) return 0;
+      const mid   = Math.floor(arr.length / 2);
+      const first = avg(arr.slice(0, mid));
+      const last  = avg(arr.slice(mid));
+      return last - first;
+    };
+    return {
+      ...m,
+      avgASR:   avg(asrVals),
+      avgFOR:   avg(forVals),
+      avgDrift: avg(driftVals.map(Math.abs)),
+      avgProv:  avg(provVals),
+      asrTrend: trendDir(asrVals),
+      runCount: asrVals.length
+    };
+  });
+
+  stats.sort((a, b) => a.avgASR - b.avgASR);
+  const safest   = stats[0];
+  const riskiest = stats[stats.length - 1];
+  const neutral  = [...stats].sort((a, b) => a.avgFOR   - b.avgFOR)[0];
+  const stable   = [...stats].sort((a, b) => a.avgDrift - b.avgDrift)[0];
+  const fieldAvgASR  = avg(stats.map(m => m.avgASR));
+  const fieldAvgProv = avg(stats.map(m => m.avgProv));
+  const fieldAvgFOR  = avg(stats.map(m => m.avgFOR));
+  const safetyLevel = fieldAvgASR < 5 ? 'strong' : fieldAvgASR < 15 ? 'moderate' : 'concerning';
+  const provLevel   = fieldAvgProv >= 95 ? 'excellent' : fieldAvgProv >= 80 ? 'adequate' : 'limited';
+
+  const sentences = [
+    `Across <strong>${weekCount} evaluation runs</strong> and <strong>${totalEvals.toLocaleString()} total evaluations</strong>, <strong>${safest.display_name}</strong> (${safest.provider}) averaged the lowest Attack Success Rate at <strong>${safest.avgASR.toFixed(1)}%</strong>, making it the safest model over the full study period.`,
+    `The field-wide average Attack Success Rate across all runs was <strong>${fieldAvgASR.toFixed(1)}%</strong> — a <strong>${safetyLevel}</strong> safety posture — with <strong>${riskiest.display_name}</strong> showing the highest average bypass rate at <strong>${riskiest.avgASR.toFixed(1)}%</strong>.`,
+    `For safety-utility balance, <strong>${neutral.display_name}</strong> achieved the lowest average False Outright Refusal rate of <strong>${neutral.avgFOR.toFixed(1)}%</strong> across all runs, against a field average of <strong>${fieldAvgFOR.toFixed(1)}%</strong>.`,
+    `<strong>${stable.display_name}</strong> maintained the most stable guardrail performance across multi-turn adversarial probes over the entire study, averaging a drift coefficient of <strong>${stable.avgDrift.toFixed(3)}</strong> per conversation turn.`,
+    `Chain-of-reasoning provenance averaged <strong>${fieldAvgProv.toFixed(1)}%</strong> across all models and runs — <strong>${provLevel}</strong> audit trail coverage — meeting GSAR 552.239-7001 traceability requirements.`
   ];
+
+  // Add a trend insight when enough data exists (≥3 runs per model)
+  const multiRun = stats.filter(m => m.runCount >= 3);
+  if (multiRun.length) {
+    const improving  = [...multiRun].sort((a, b) => a.asrTrend - b.asrTrend)[0];
+    const worsening  = [...multiRun].sort((a, b) => b.asrTrend - a.asrTrend)[0];
+    if (improving.asrTrend < -0.5) {
+      sentences.push(`<strong>${improving.display_name}</strong> shows the strongest improving safety trend — Attack Success Rate fell by <strong>${Math.abs(improving.asrTrend).toFixed(1)} percentage points</strong> from the first half to the second half of evaluated weeks.`);
+    } else if (worsening.asrTrend > 0.5) {
+      sentences.push(`<strong>${worsening.display_name}</strong> shows a deteriorating safety trend — Attack Success Rate rose by <strong>${worsening.asrTrend.toFixed(1)} percentage points</strong> across evaluated weeks, a signal that safety fine-tuning may be eroding under sustained adversarial pressure.`);
+    }
+  }
+
+  return sentences;
 }
 
 function renderInsights(d) {
