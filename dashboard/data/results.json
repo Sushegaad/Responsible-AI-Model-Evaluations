@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "generated_at": "2026-05-09T14:46:51.789524+00:00",
-=======
-  "generated_at": "2026-05-09T18:44:01.640385+00:00",
->>>>>>> f1f777c (feat(dashboard): NIST AI RMF averaged across all runs, moved below trends)
+  "generated_at": "2026-05-09T18:48:47.565802+00:00",
   "dataset": "RedBench · knoveleng/redbench (MIT)",
   "weeks": [
     "2026-10-04",
