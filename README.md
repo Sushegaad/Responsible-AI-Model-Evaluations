@@ -133,17 +133,6 @@ PYTHONPATH=source python source/scripts/build_dashboard_data.py
 5. To run on demand: **Actions → Weekly RAI Evaluation → Run workflow**
 6. To redeploy the dashboard only: **Actions → Deploy Dashboard to GitHub Pages → Run workflow**
 
-### Cost Estimate
-
-| Run type                        | Samples per model | Models | Approx. cost |
-|---------------------------------|-------------------|--------|--------------|
-| Smoke test (local)              | 20                | 2      | ~$0.10       |
-| Local default run               | 50                | 7      | ~$2          |
-| Deeper local analysis           | 100               | 7      | ~$4          |
-| **GitHub Actions weekly run**   | **500**           | **7**  | **~$20**     |
-
-Override the sample count by setting `REDEVAL_NUM_SAMPLES=<n>` in your environment or `.env` file, or by passing `--samples <n>` to the CLI.
-
 ---
 
 ## Resources
