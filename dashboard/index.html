@@ -740,9 +740,9 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
   <!-- TAB NAVIGATION -->
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('results')">Model Comparison Results</button>
+    <button class="tab-btn"        onclick="switchTab('paper')">Research Paper</button>
     <button class="tab-btn"        onclick="switchTab('methodology')">Methodology</button>
     <button class="tab-btn"        onclick="switchTab('resources')">Resources</button>
-    <button class="tab-btn"        onclick="switchTab('paper')">Research Paper</button>
   </div>
 
   <!-- ═══════════════════════════════════════
@@ -1092,8 +1092,8 @@ footer { border-top:1px solid var(--surface-3); padding:28px 0 0; margin-top:12p
         <div>
           <div style="font-size:18px;font-weight:700;color:var(--on-surface)">Research Paper</div>
           <div style="font-size:13px;color:var(--on-surface-2);margin-top:2px">
-            A Seven-Week Red-Teaming Study of Foundation Models Across 22 Safety Risk Categories
-            &nbsp;·&nbsp; <span style="color:var(--google-blue);font-weight:600">Published May 9, 2026</span>
+            An Eight-Week Red-Teaming Study of Foundation Models Across 22 Safety Risk Categories
+            &nbsp;·&nbsp; <span style="color:var(--google-blue);font-weight:600">Published May 16, 2026</span>
           </div>
           <!-- Download counter badge -->
           <div style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;
@@ -1195,7 +1195,7 @@ const dft = v       => { if(v==null) return '—'; const s=parseFloat(v).toFixed
 /* ── Tab switching ── */
 function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    const tabs = ['results','methodology','resources','paper'];
+    const tabs = ['results','paper','methodology','resources'];
     b.classList.toggle('active', tabs[i] === name);
   });
   document.querySelectorAll('.tab-panel').forEach(p => {
