@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "generated_at": "2026-05-23T17:54:19.620736+00:00",
+=======
+  "generated_at": "2026-05-23T17:52:59.715934+00:00",
+>>>>>>> ffdd959 (Update Research Paper with Week 9 results.)
   "dataset": "RedBench · knoveleng/redbench (MIT)",
   "weeks": [
     "2026-10-04",

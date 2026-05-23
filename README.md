@@ -16,7 +16,7 @@ Results are published automatically after every evaluation run and can also be r
 
 **[→ Download Research Paper (PDF)](research-paper.pdf)**
 
-*Responsible AI Model Evaluations: An Eight-Week Red-Teaming Study of Foundation Models Across 22 Safety Risk Categories* — Hemant Naik, May 16, 2026. Covers 23,000 evaluations across 7 models, 399 critical findings, NIST AI RMF 1.0 mapping, and audience-specific insights for red-teamers, GRC officers, product leaders, and policy analysts.
+*Responsible AI Model Evaluations: A Nine-Week Red-Teaming Study of Foundation Models Across 22 Safety Risk Categories* — Hemant Naik, May 22, 2026. Covers 26,500 evaluations across 7 models, 468 critical findings, NIST AI RMF 1.0 mapping, and audience-specific insights for red-teamers, GRC officers, product leaders, and policy analysts.
 
 ---
 
