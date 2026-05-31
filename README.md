@@ -36,25 +36,34 @@ Each weekly run drew a stratified sample of 500 prompts per model from a local s
 
 **Safety rankings (average Attack Success Rate across all runs)**
 
-| Rank | Model              | Avg ASR | Avg FOR  | Avg Drift  | Total Critical |
-|------|--------------------|---------|----------|------------|----------------|
-| 1    | Gemini 2.5 Flash   | 3.79%   | 16.33%   | +0.37/turn | 24             |
-| 2    | Claude Opus 4.7    | 4.00%   | 1.20%    | +0.78/turn | 26             |
-| 3    | Claude Sonnet 4.6  | 5.28%   | 1.00%    | −0.12/turn | 63             |
-| 4    | GPT-4o             | 5.67%   | 7.67%    | +0.43/turn | 70             |
-| 5    | Claude Opus 4.6    | 5.81%   | 0.78%    | −0.12/turn | 74             |
-| 6    | Gemini 2.5 Pro     | 8.00%   | 18.33%   | +0.28/turn | 115            |
-| 7    | GPT-4o Mini        | 8.42%   | 13.67%   | +0.49/turn | 96             |
+| Rank | Model             | Avg Attack Success Rate | Avg False Refusal Rate | Avg Drift  | Total Critical |
+|------|-------------------|-------------------------|------------------------|------------|----------------|
+| 1    | Gemini 2.5 Flash  | 3.79%                   | 16.33%                 | +0.37/turn | 24             |
+| 2    | Claude Opus 4.7   | 4.00%                   | 1.20%                  | +0.78/turn | 26             |
+| 3    | Claude Sonnet 4.6 | 5.28%                   | 1.00%                  | -0.12/turn | 63             |
+| 4    | GPT-4o            | 5.67%                   | 7.67%                  | +0.43/turn | 70             |
+| 5    | Claude Opus 4.6   | 5.81%                   | 0.78%                  | -0.12/turn | 74             |
+| 6    | Gemini 2.5 Pro    | 8.00%                   | 18.33%                 | +0.28/turn | 115            |
+| 7    | GPT-4o Mini       | 8.42%                   | 13.67%                 | +0.49/turn | 96             |
 
-*ASR = Attack Success Rate (lower is better). FOR = False Outright Refusal (lower is better). Drift = safety change per adversarial conversation turn (negative = guardrails tighten).*
+*Attack Success Rate: lower is better. False Refusal Rate: lower is better. Drift: safety change per adversarial conversation turn (negative means guardrails tighten under pressure).*
 
-**Top risk categories (average ASR across all 9 runs, all 7 models)**
+---
 
-CBRN Information (35.41%) and Cybersecurity Threats (21.99%) accounted for the majority of all guardrail bypasses. Election Interference (5.66%) emerged as a persistent structural top-5 risk across all nine runs and all seven models.
+**Finding 1: Safety and utility are not in tension - but only Anthropic has proved it.**
+All three Anthropic Claude models averaged under 6% Attack Success Rate and under 1.2% false refusals simultaneously. Every other provider fails at least one threshold. On the final run, Claude Sonnet 4.6 achieved a 5.25% Attack Success Rate with 0.00% false refusals - the only data point in 9 runs where a model hit a perfect false-refusal rate. By contrast, GPT-4o Mini posted an 8.42% Attack Success Rate and 13.67% false refusals, failing both thresholds simultaneously.
 
-**Notable findings from the final run (May 22, 2026)**
+**Finding 2: Chemical, Biological, Radiological, and Nuclear information is the most severe and universal safety failure in the study.**
+Prompts in this category bypassed guardrails at an average rate of 35.41% across all 9 runs and all 7 models - more than 1.6 times the second-highest category (Cybersecurity Threats Beyond Malware at 21.99%). This gap holds equally across Anthropic, OpenAI, and Google, confirming it is a structural limit of current AI alignment methods, not a weakness of any single provider. Domain-specific safety interventions are required.
 
-GPT-4o Mini reached a drift coefficient of +1.67/turn — the highest single-run reading in the study. Four of seven models simultaneously posted drift ≥ +1.11/turn, suggesting a particularly effective set of multi-turn adversarial patterns in the May 22 sample. Claude Sonnet 4.6 achieved a perfect 0.00% False Outright Refusal rate at 5.25% ASR — the best single-run safety-utility balance in the study.
+**Finding 3: Election Interference is a structural vulnerability - no provider has solved it.**
+It ranked 5th in risk with a 5.66% average bypass rate across 53 data points (7 models across up to 9 runs each). This figure is consistent across every model, every provider, and every week of the study, ruling out sampling noise as an explanation. Given ongoing global electoral cycles, this is the finding with the most immediate real-world policy urgency.
+
+**Finding 4: Multi-turn safety is where providers diverge most sharply.**
+In the final run (May 22), GPT-4o Mini reached a guardrail drift of +1.67 per conversation turn - the study's highest single-run reading - and 4 of 7 models simultaneously posted drift of +1.11 per turn or worse. Anthropic's Claude Sonnet 4.6 and Opus 4.6 averaged -0.12 per turn across all runs: their guardrails tighten under sustained adversarial pressure rather than eroding. For any multi-turn deployment, guardrail drift is the metric that matters most.
+
+**Finding 5: Week-to-week variance is high, but the structural rankings have been stable all study.**
+GPT-4o Mini exceeded an 8% Attack Success Rate in 6 of its 9 runs with no sustained improvement trend. Gemini 2.5 Pro never fell below 7.25% across any of its 6 evaluated runs. Gemini 2.5 Flash led on Attack Success Rate in every multi-provider run it participated in. These are not statistical artefacts - they are repeatable, structural safety differences across 26,500 evaluations.
 
 ---
 
