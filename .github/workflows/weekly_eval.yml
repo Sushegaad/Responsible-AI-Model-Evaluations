@@ -1,8 +1,10 @@
 name: Weekly RAI Evaluation
+# NOTE: Scheduled execution disabled — study concluded after 9 evaluation runs (Apr 10 – May 22, 2026).
+# Manual runs are still possible via workflow_dispatch for archival or ad-hoc purposes.
 
 on:
-  schedule:
-    - cron: '0 22 * * 5'   # Every Friday 22:00 UTC = 6 PM EDT (UTC-4, Mar–Nov) / 5 PM EST (UTC-5, Nov–Mar)
+  # schedule:
+  #   - cron: '0 22 * * 5'   # Disabled — nine-week study concluded May 22, 2026
   workflow_dispatch:
     inputs:
       models:
