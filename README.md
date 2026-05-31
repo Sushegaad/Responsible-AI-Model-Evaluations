@@ -143,6 +143,12 @@ Then update `_SNAPSHOT_DIR` in `source/eval/dataset.py` to point to the new fold
 
 ---
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for the full version history.
+
+---
+
 ## License & Disclaimer
 
 This project is licensed under the **MIT License**. The RedBench dataset is also MIT-licensed — see [knoveleng/redbench](https://huggingface.co/datasets/knoveleng/redbench).
